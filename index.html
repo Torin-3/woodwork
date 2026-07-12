@@ -359,9 +359,9 @@
     <span aria-hidden="true"><span class="wc"><span class="w" style="--i:0">Torin</span></span> <span class="wc"><span class="w" style="--i:1">Ellis-Morton,</span></span> <span class="wc"><span class="w" style="--i:2">Personal</span></span> <span class="wc"><span class="w" style="--i:3"><span class="hl">Portfolio</span>.</span></span></span>
   </h1>
   <div class="deck" id="deck" aria-label="The latest pieces — click one to see every angle">
-    <span class="bubble bubble-l fade-up" style="--d:950ms" aria-hidden="true">@turned</span>
-    <span class="bubble bubble-r fade-up" style="--d:1050ms" aria-hidden="true">@homeware</span>
-    <span class="bubble bubble-j fade-up" style="--d:1150ms" aria-hidden="true">@jewelry</span>
+    <span class="bubble bubble-l fade-up" style="--d:950ms" aria-hidden="true">bowls</span>
+    <span class="bubble bubble-r fade-up" style="--d:1050ms" aria-hidden="true">homeware</span>
+    <span class="bubble bubble-j fade-up" style="--d:1150ms" aria-hidden="true">jewelry</span>
   </div>
   <p class="lede fade-up" style="--d:550ms">I'm Torin. I turn everything from bowls to jewelry on my lathe, alongside various other woodworking projects in my workshop in NE Fife. All wood is sustainably sourced where possible.</p>
   <div class="hero-cta fade-up" style="--d:700ms">
@@ -429,20 +429,21 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Always open at the top (the hero), not wherever a prior visit or a mid-load layout shift
-  // left the scroll — iOS Safari was landing on the Work section. Skipped if the URL targets
-  // a specific section (e.g. someone follows a link ending in #work).
+  // Always open at the top (the hero). iOS Safari restores the previous scroll position when
+  // a page is shown — on reload and back/forward — which was landing on the Work section, and
+  // it does this AFTER load, so a one-shot scroll on load isn't enough. `pageshow` fires on
+  // every show (fresh load and bfcache restore), so we reset there. Skipped when the URL points
+  // at a specific section (e.g. a link ending in #work).
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  if (!location.hash) {
+  const toTop = () => {
+    if (location.hash) return;
+    const root = document.documentElement, prev = root.style.scrollBehavior;
+    root.style.scrollBehavior = 'auto'; // jump, don't smooth-animate the correction
     window.scrollTo(0, 0);
-    addEventListener('load', () => {
-      if (location.hash) return;
-      const root = document.documentElement, prev = root.style.scrollBehavior;
-      root.style.scrollBehavior = 'auto'; // jump, don't smooth-animate the correction
-      window.scrollTo(0, 0);
-      root.style.scrollBehavior = prev;
-    });
-  }
+    root.style.scrollBehavior = prev;
+  };
+  toTop();
+  addEventListener('pageshow', toTop);
 
   const finePointer = matchMedia('(pointer: fine)').matches;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
