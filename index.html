@@ -181,7 +181,7 @@
   /* ---------- Scrolling shelf (scroll-linked photo strip) ---------- */
   .strip-section { max-width: none; padding: 10px 0 90px; }
   .strip { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  @media (prefers-reduced-motion: no-preference) {
+  @media (prefers-reduced-motion: no-preference) and (pointer: fine) {
     .js .strip { overflow: hidden; }
   }
   .strip-track { display: flex; gap: 22px; padding: 14px 24px; width: max-content; will-change: transform; }
@@ -440,6 +440,11 @@
   // Escape user-editable strings from photos.js before they hit innerHTML.
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  // If a photo fails to load, swap in a transparent pixel so the browser's broken-image
+  // "?" glyph never shows — the element keeps its size and its warm-paper background.
+  const BLANK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='2'%3E%3C/svg%3E";
+  const softFail = im => im.addEventListener('error', () => { im.src = BLANK; }, { once: true });
+
   // ---- Hero deck: one card per piece, fanned like a hand of cards ----
   const deckEl = document.getElementById('deck');
   PIECES.forEach((piece, pi) => {
@@ -452,6 +457,7 @@
     im.alt = '';
     im.width = 1600; im.height = 1067;
     if (pi > 2) im.loading = 'lazy';
+    softFail(im);
     b.appendChild(im);
     b.addEventListener('click', () => openLightbox(pi, 0));
     deckEl.appendChild(b);
@@ -491,6 +497,7 @@
       im.alt = '';
       im.width = 1600; im.height = 1067;
       im.loading = 'lazy';
+      softFail(im);
       stripTrack.appendChild(im);
     });
   }
@@ -643,22 +650,27 @@
     document.getElementById('hero-title').classList.add('in');
   }));
 
-  // ---- Scroll-linked shelf drift ----
-  let ticking = false;
-  function onScroll() {
-    if (ticking || reduceMotion) return;
-    ticking = true;
-    requestAnimationFrame(() => {
-      ticking = false;
-      const r = stripEl.getBoundingClientRect();
-      const total = innerHeight + r.height;
-      const p = Math.min(1, Math.max(0, (innerHeight - r.top) / total));
-      const shift = Math.max(0, stripTrack.scrollWidth - stripEl.clientWidth);
-      stripTrack.style.transform = `translateX(${(-p * shift).toFixed(1)}px)`;
-    });
+  // ---- Scroll-linked shelf drift (desktop pointers only) ----
+  // On touch devices — iOS Safari especially — a scroll-linked JS transform stutters against
+  // the browser's momentum scrolling, so phones and tablets use the native horizontal
+  // scroller (see the `(pointer: fine)` guard on the `.js .strip { overflow: hidden }` rule).
+  if (finePointer && !reduceMotion) {
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        ticking = false;
+        const r = stripEl.getBoundingClientRect();
+        const total = innerHeight + r.height;
+        const p = Math.min(1, Math.max(0, (innerHeight - r.top) / total));
+        const shift = Math.max(0, stripTrack.scrollWidth - stripEl.clientWidth);
+        stripTrack.style.transform = `translateX(${(-p * shift).toFixed(1)}px)`;
+      });
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
   }
-  addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
 
   // ---- 3D tilt on gallery cards ----
   if (finePointer && !reduceMotion) {
