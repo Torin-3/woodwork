@@ -30,7 +30,8 @@
     --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: auto; }
+  html.smooth { scroll-behavior: smooth; } /* enabled by JS only after the page settles at the top */
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     background: var(--paper); color: var(--ink); line-height: 1.6;
@@ -429,21 +430,19 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Always open at the top (the hero). iOS Safari restores the previous scroll position when
-  // a page is shown — on reload and back/forward — which was landing on the Work section, and
-  // it does this AFTER load, so a one-shot scroll on load isn't enough. `pageshow` fires on
-  // every show (fresh load and bfcache restore), so we reset there. Skipped when the URL points
-  // at a specific section (e.g. a link ending in #work).
+  // Always open at the top (the hero). Two iOS Safari behaviours were sending the page to the
+  // Work section on load: Safari restores the previous scroll position when a page is shown
+  // (reload / back-forward), and `scroll-behavior: smooth` makes that restoration ANIMATE — so
+  // it looked like an automatic click-through to #work. Fix: keep scrolling instant through
+  // load, reset to the top on every pageshow, then switch smooth scrolling on (for the nav
+  // links) only afterwards. Skipped when the URL points at a section, e.g. a link ending #work.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-  const toTop = () => {
-    if (location.hash) return;
-    const root = document.documentElement, prev = root.style.scrollBehavior;
-    root.style.scrollBehavior = 'auto'; // jump, don't smooth-animate the correction
-    window.scrollTo(0, 0);
-    root.style.scrollBehavior = prev;
-  };
+  const docEl = document.documentElement;
+  const toTop = () => { if (!location.hash) window.scrollTo(0, 0); };
+  const enableSmooth = () => { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) docEl.classList.add('smooth'); };
   toTop();
-  addEventListener('pageshow', toTop);
+  addEventListener('pageshow', () => { docEl.classList.remove('smooth'); toTop(); requestAnimationFrame(enableSmooth); });
+  requestAnimationFrame(enableSmooth);
 
   const finePointer = matchMedia('(pointer: fine)').matches;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
