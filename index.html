@@ -430,32 +430,38 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Open at the hero, and hold it there. iOS Safari re-applies the previous scroll position
-  // (the Work section) on reloads and link opens — ignoring `scrollRestoration = 'manual'` and
-  // firing AFTER load — so a one-shot reset can't win. Instead: until the visitor actually
-  // interacts, treat any scroll away from the top that we didn't cause as restoration and snap
-  // it back. The moment they touch/scroll/click, release the guard and let them move freely
-  // (this is also when smooth scrolling turns on for the nav links). Pull-to-refresh from the
-  // top already stays put — which is exactly why only that path looked right. Honours #… links.
+  // Open at the hero and hold it there. iOS Safari re-applies the previous scroll position
+  // (the Work section) on reloads and link opens — it ignores `scrollRestoration = 'manual'`,
+  // fires a beat AFTER load, and often does NOT emit a 'scroll' event, so neither a one-shot
+  // reset nor a scroll listener catches it. So instead we poll every animation frame for ~1.5s
+  // after each load and force the page back to the top, until the visitor actually interacts.
+  // Any leftover in-page hash (e.g. #work from an earlier nav tap) is stripped first so the
+  // browser can't jump there itself. Pull-to-refresh from the top was the only path that
+  // already looked right — because there was nothing to restore.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
   const docEl = document.documentElement;
-  const atTop = () => { if (!location.hash) window.scrollTo(0, 0); };
   let interacted = false;
-  const guard = () => { if (!interacted && window.scrollY && !location.hash) atTop(); };
   const release = () => {
     if (interacted) return;
     interacted = true;
-    removeEventListener('scroll', guard);
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) docEl.classList.add('smooth');
   };
-  const arm = () => {
-    interacted = false;
-    atTop();
-    addEventListener('scroll', guard, { passive: true });
-    ['touchstart', 'wheel', 'keydown', 'mousedown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
+  let deadline = 0;
+  const lockFrame = () => {
+    if (interacted) return;
+    if (window.scrollY !== 0) window.scrollTo(0, 0);
+    if (performance.now() < deadline) requestAnimationFrame(lockFrame);
   };
-  arm();
-  addEventListener('pageshow', arm);
+  const startLock = () => {
+    interacted = false;
+    deadline = performance.now() + 1500;
+    ['touchstart', 'wheel', 'keydown', 'mousedown', 'pointerdown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
+    window.scrollTo(0, 0);
+    requestAnimationFrame(lockFrame);
+  };
+  startLock();
+  addEventListener('pageshow', startLock);
 
   const finePointer = matchMedia('(pointer: fine)').matches;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
