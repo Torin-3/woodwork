@@ -430,19 +430,32 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Always open at the top (the hero). Two iOS Safari behaviours were sending the page to the
-  // Work section on load: Safari restores the previous scroll position when a page is shown
-  // (reload / back-forward), and `scroll-behavior: smooth` makes that restoration ANIMATE — so
-  // it looked like an automatic click-through to #work. Fix: keep scrolling instant through
-  // load, reset to the top on every pageshow, then switch smooth scrolling on (for the nav
-  // links) only afterwards. Skipped when the URL points at a section, e.g. a link ending #work.
+  // Open at the hero, and hold it there. iOS Safari re-applies the previous scroll position
+  // (the Work section) on reloads and link opens — ignoring `scrollRestoration = 'manual'` and
+  // firing AFTER load — so a one-shot reset can't win. Instead: until the visitor actually
+  // interacts, treat any scroll away from the top that we didn't cause as restoration and snap
+  // it back. The moment they touch/scroll/click, release the guard and let them move freely
+  // (this is also when smooth scrolling turns on for the nav links). Pull-to-refresh from the
+  // top already stays put — which is exactly why only that path looked right. Honours #… links.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   const docEl = document.documentElement;
-  const toTop = () => { if (!location.hash) window.scrollTo(0, 0); };
-  const enableSmooth = () => { if (!matchMedia('(prefers-reduced-motion: reduce)').matches) docEl.classList.add('smooth'); };
-  toTop();
-  addEventListener('pageshow', () => { docEl.classList.remove('smooth'); toTop(); requestAnimationFrame(enableSmooth); });
-  requestAnimationFrame(enableSmooth);
+  const atTop = () => { if (!location.hash) window.scrollTo(0, 0); };
+  let interacted = false;
+  const guard = () => { if (!interacted && window.scrollY && !location.hash) atTop(); };
+  const release = () => {
+    if (interacted) return;
+    interacted = true;
+    removeEventListener('scroll', guard);
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) docEl.classList.add('smooth');
+  };
+  const arm = () => {
+    interacted = false;
+    atTop();
+    addEventListener('scroll', guard, { passive: true });
+    ['touchstart', 'wheel', 'keydown', 'mousedown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
+  };
+  arm();
+  addEventListener('pageshow', arm);
 
   const finePointer = matchMedia('(pointer: fine)').matches;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
