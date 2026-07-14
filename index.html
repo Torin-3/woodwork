@@ -126,18 +126,6 @@
     z-index: var(--z, 1);
   }
   .deck-card img { width: 100%; height: 100%; object-fit: cover; }
-  .deck-card .dc-title {
-    position: absolute; left: 0; right: 0; bottom: 0;
-    padding: 22px 10px 10px; font-size: .75rem; font-weight: 600; color: #fff; text-align: center;
-    background: linear-gradient(to top, rgba(17,17,20,.72), rgba(17,17,20,0));
-    opacity: 0; translate: 0 8px; transition: opacity .25s ease, translate .25s var(--ease-out);
-    pointer-events: none;
-  }
-  .deck-card:hover .dc-title { opacity: 1; translate: 0 0; }
-  .deck-card:focus-visible .dc-title { opacity: 1; translate: 0 0; }
-  @media (pointer: coarse) {
-    .deck-card .dc-title { opacity: 1; translate: 0 0; } /* no hover on touch: titles always on */
-  }
   /* :hover and :focus-visible kept as separate rules — grouping them would make
      old browsers that don't know :focus-visible drop the hover rule too. */
   .deck-card:hover {
@@ -472,9 +460,13 @@
     return h ? PIECES.findIndex(pc => slug(pc.title) === h) : -1;
   };
 
-  // (Scoped to RELOADS only: shared #section links open where they point, and
-  // back/forward navigation keeps the browser's own scroll restoration.
-  // A reload while viewing a piece keeps its #link and reopens it instead.)
+  // FINAL open-position rules:
+  //  - a #piece link (e.g. #knotty-bowl) always wins: no pinning, the lightbox opens instead
+  //  - a followed #section link (e.g. /#work) is honored; on RELOAD the section hash is stripped
+  //  - any open WITHOUT a hash pins to the hero for 1.5s or until first interaction, and the
+  //    same pin re-arms on bfcache restores (pageshow) — iOS Safari re-applies old scroll
+  //    positions on fresh opens and tab restores, and ignores scrollRestoration = 'manual'.
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   const navEntry = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
   const docEl = document.documentElement;
   let interacted = false;
@@ -483,21 +475,30 @@
     interacted = true;
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) docEl.classList.add('smooth');
   };
-  ['touchstart', 'wheel', 'keydown', 'mousedown', 'pointerdown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
-  if (navEntry.type === 'reload' && pieceFromHash() === -1) {
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    if (location.hash) { try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {} }
+  const startLock = () => {
+    interacted = false;
+    ['touchstart', 'wheel', 'keydown', 'mousedown', 'pointerdown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
     const deadline = performance.now() + 1500;
     const lockFrame = () => {
       if (interacted) return;
       if (window.scrollY !== 0) window.scrollTo(0, 0);
       if (performance.now() < deadline) requestAnimationFrame(lockFrame);
+      else release();
     };
     window.scrollTo(0, 0);
     requestAnimationFrame(lockFrame);
-  } else {
-    setTimeout(release, 400);
+  };
+  if (navEntry.type === 'reload' && location.hash && pieceFromHash() === -1) {
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
+  if (location.hash && pieceFromHash() === -1) {
+    setTimeout(release, 400); // followed #section link: let the browser land there
+  } else if (pieceFromHash() !== -1) {
+    setTimeout(release, 400); // piece link: the lightbox opens, no pinning
+  } else {
+    startLock();
+  }
+  addEventListener('pageshow', e => { if (e.persisted && !location.hash) startLock(); });
 
   const finePointer = matchMedia('(pointer: fine)').matches;
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -537,10 +538,6 @@
     if (pi > 2) im.loading = 'lazy';
     softFail(im);
     b.appendChild(im);
-    const t = document.createElement('span');
-    t.className = 'dc-title';
-    t.textContent = piece.title;
-    b.appendChild(t);
     b.addEventListener('click', () => openLightbox(pi, 0));
     deckEl.appendChild(b);
   });
