@@ -155,14 +155,14 @@
      (on wide screens) the side corridors — always with clear air around them. */
   .bubble-l { left: 2%; bottom: -46px; background: #5b3fd1; color: #fff; animation: bob-a 8s ease-in-out infinite; }
   .bubble-l::after { left: 16px; top: -4px; bottom: auto; } /* below the deck, so the tail points up */
-  .bubble-r { right: 8px; top: 4px; background: var(--lime); color: var(--ink); animation: bob-b 9.5s ease-in-out infinite; }
+  .bubble-r { right: -16px; top: 4px; background: var(--lime); color: var(--ink); animation: bob-b 9.5s ease-in-out infinite; }
   .bubble-r::after { right: 16px; }
-  .bubble-j { left: 8px; top: 0; background: #c23a2c; color: #fff; animation: bob-c 7.2s ease-in-out infinite; }
+  .bubble-j { left: -16px; top: 0; background: #c23a2c; color: #fff; animation: bob-c 7.2s ease-in-out infinite; }
   .bubble-j::after { left: 14px; }
   @media (min-width: 1100px) {
-    .bubble-j { left: auto; right: calc(100% + 30px); top: 22%; }
-    .bubble-r { left: calc(100% + 30px); right: auto; top: 30%; }
-    .bubble-l { left: -40px; bottom: -50px; }
+    .bubble-j { left: auto; right: calc(100% + 48px); top: 22%; }
+    .bubble-r { left: calc(100% + 48px); right: auto; top: 30%; }
+    .bubble-l { left: -64px; bottom: -56px; }
   }
   /* Gentle drift: individual translate/rotate properties so the entrance
      fade (which transitions `transform`) is never interrupted. */
@@ -170,7 +170,7 @@
   @keyframes bob-b { 50% { translate: -8px -6px; rotate: -2deg; } }
   @keyframes bob-c { 50% { translate: 5px 8px; rotate: -3deg; } }
 
-  .lede { font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); max-width: 52ch; margin-inline: auto; text-wrap: pretty; }
+  .lede { font-size: 1.0625rem; line-height: 1.55; color: var(--ink-soft); max-width: 52ch; margin-inline: auto; margin-top: clamp(8px, 2.6vh, 26px); text-wrap: pretty; }
   .hero-cta { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
   .btn {
     display: inline-block; padding: 13px 26px; border-radius: 999px;
