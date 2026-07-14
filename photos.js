@@ -41,7 +41,7 @@ const PIECES = [
     photos: ["3.1.jpg", "3.2.jpg", "3.3.jpg"],
   },
   {
-    title: "Candlestick holder",
+    title: "Candlestick Holder",
     note: "Contrasting wood grain in a simple design.",
     tag: "Homeware",
     photos: ["4.1.jpg", "4.2.jpg"],
