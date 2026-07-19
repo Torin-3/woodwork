@@ -727,12 +727,17 @@
     if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
   }
   ['load', 'error'].forEach(ev => lbImg.addEventListener(ev, () => lbImg.classList.remove('loading')));
+  // A photo that fails outright should blank out, not leave the previous piece's photo on screen.
+  lbImg.addEventListener('error', () => { lbImg.removeAttribute('srcset'); lbImg.src = BLANK; });
   function render(dir = 0) {
     const p = PIECES[cur.piece];
     lbImg.classList.add('loading');
     lbImg.srcset = srcsetFor(p.photos[cur.photo]);
     lbImg.sizes = '92vw';
     lbImg.src = imgSrc(p.photos[cur.photo]);
+    // Re-showing an already-loaded photo fires no `load` event (the URL didn't change),
+    // so clear the loading dim immediately when the image is already complete.
+    if (lbImg.complete && lbImg.naturalWidth > 0) lbImg.classList.remove('loading');
     lbImg.alt = `${p.title} — photo ${cur.photo + 1}`;
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
