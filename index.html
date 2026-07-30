@@ -160,13 +160,13 @@
   .bubble-r::after { right: 16px; }
   .bubble-j { left: -16px; top: 0; background: #c23a2c; color: #fff; animation: bob-c 7.2s ease-in-out infinite; }
   .bubble-j::after { left: 14px; }
-  .bubble-d { right: 2%; bottom: -46px; background: var(--amber); color: var(--ink); animation: bob-a 10s ease-in-out infinite; }
+  .bubble-d { right: 2%; bottom: -58px; background: var(--amber); color: var(--ink); animation: bob-a 10s ease-in-out infinite; } /* extra drop: the right-most card sits a little lower than the left */
   .bubble-d::after { right: 16px; top: -4px; bottom: auto; } /* sits below the deck, so the tail points up */
   @media (min-width: 1100px) {
     .bubble-j { left: auto; right: calc(100% + 48px); top: 22%; }
     .bubble-r { left: calc(100% + 48px); right: auto; top: 30%; }
     .bubble-l { left: -64px; bottom: -56px; }
-    .bubble-d { right: -64px; bottom: -56px; }
+    .bubble-d { right: -64px; bottom: -66px; }
   }
   /* Gentle drift: individual translate/rotate properties so the entrance
      fade (which transitions `transform`) is never interrupted. */
@@ -353,13 +353,13 @@
     .about-inner { grid-template-columns: 1fr; gap: 36px; }
     .blob { display: none; }
     .nav-links { gap: 16px; }
-    /* Four compact bubbles in one row pinned to the very top of the deck, kept clear of the
-       cards below (stacking them into a 2x2 crowded the cards). */
+    /* One row of bubbles anchored just above the cards (via bottom), so the deck's spare
+       height sits between the headline and the bubbles instead of below them. */
     .bubble { font-size: .625rem; padding: 4px 9px; }
-    .bubble-j { left: 3px; right: auto; top: 0; bottom: auto; }
-    .bubble-l { left: 26%; right: auto; top: 1px; bottom: auto; }
-    .bubble-d { left: auto; right: 26%; top: 0; bottom: auto; }
-    .bubble-r { left: auto; right: 3px; top: 1px; bottom: auto; }
+    .bubble-j { left: 3px; right: auto; top: auto; bottom: 159px; }
+    .bubble-l { left: 26%; right: auto; top: auto; bottom: 162px; }
+    .bubble-d { left: auto; right: 26%; top: auto; bottom: 159px; }
+    .bubble-r { left: auto; right: 3px; top: auto; bottom: 162px; }
     .bubble-l::after, .bubble-d::after { top: auto; bottom: -4px; } /* all tails point down at the cards */
     /* Draw the eye to the photos first: tighten the pill row under each collection
        card and shrink the piece-count badge so it sits lighter on the image. */
