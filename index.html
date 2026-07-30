@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Torin Ellis-Morton — Woodturning</title>
+<title>Torin Ellis-Morton, Woodturning</title>
 <meta name="description" content="Bowls, boxes and small curiosities turned on the lathe by Torin Ellis-Morton.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Torin Ellis-Morton — Woodturning">
+<meta property="og:title" content="Torin Ellis-Morton, Woodturning">
 <meta property="og:description" content="Bowls, boxes and small curiosities turned on the lathe.">
 <meta property="og:image" content="https://torin-3.github.io/woodwork/Decorative/3.1-960.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -89,6 +89,7 @@
   .nav-links a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
   .nav-links a.active { color: var(--ink); }
   .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+  .nav-links a.shop { color: var(--coral); font-weight: 700; } /* store link: stands out from the section links */
 
   /* ---------- Hero: centered headline over a fanned deck of piece cards ---------- */
   header {
@@ -182,6 +183,8 @@
   .btn-primary:hover { box-shadow: 0 8px 24px rgba(17,17,20,.25); }
   .btn-ghost { border: 1.5px solid #8f8f88; color: var(--ink); background: transparent; }
   .btn-ghost:hover { border-color: var(--ink); }
+  .btn-shop { background: var(--coral); color: #fff; }
+  .btn-shop:hover { box-shadow: 0 8px 24px rgba(255,92,77,.38); }
 
   /* ---------- Scrolling shelf (scroll-linked photo strip) ---------- */
   .strip-section { max-width: none; padding: 10px 0 90px; }
@@ -386,6 +389,7 @@
       <a href="#work">Work</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
+      <a class="shop" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener">Shop</a>
     </div>
   </div>
 </nav>
@@ -394,7 +398,7 @@
   <h1 class="split" id="hero-title" aria-label="Torin Ellis-Morton, Personal Portfolio.">
     <span aria-hidden="true"><span class="wc"><span class="w" style="--i:0">Torin</span></span> <span class="wc"><span class="w" style="--i:1">Ellis-Morton,</span></span> <span class="wc"><span class="w" style="--i:2">Personal</span></span> <span class="wc"><span class="w" style="--i:3"><span class="hl">Portfolio</span>.</span></span></span>
   </h1>
-  <div class="deck" id="deck" role="group" aria-label="The latest pieces — click one to see every angle">
+  <div class="deck" id="deck" role="group" aria-label="The latest pieces. Click one to see every angle">
     <span class="bubble bubble-l fade-up" style="--d:950ms" aria-hidden="true">bowls</span>
     <span class="bubble bubble-r fade-up" style="--d:1050ms" aria-hidden="true">homeware</span>
     <span class="bubble bubble-j fade-up" style="--d:1150ms" aria-hidden="true">jewellery</span>
@@ -442,8 +446,11 @@
 
 <section id="contact">
   <h2 class="reveal">Like something you see?</h2>
-  <p class="reveal" style="--d:280ms">Most pieces are one-offs, but I take commissions and I'm always happy to talk.</p>
-  <a class="btn btn-primary reveal" style="--d:440ms" href="mailto:TEMDesign@proton.me">TEMDesign@proton.me</a>
+  <p class="reveal" style="--d:280ms">Most pieces are one-offs, but you can see what I currently have available in my Etsy shop. I also take commissions, and I'm always happy to talk.</p>
+  <div class="hero-cta reveal" style="--d:440ms">
+    <a class="btn btn-shop" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener">Shop on Etsy</a>
+    <a class="btn btn-ghost" href="mailto:TEMDesign@proton.me">TEMDesign@proton.me</a>
+  </div>
 </section>
 
 <footer class="reveal">
@@ -743,7 +750,7 @@
     // Re-showing an already-loaded photo fires no `load` event (the URL didn't change),
     // so clear the loading dim immediately when the image is already complete.
     if (lbImg.complete && lbImg.naturalWidth > 0) lbImg.classList.remove('loading');
-    lbImg.alt = `${p.title} — photo ${cur.photo + 1}`;
+    lbImg.alt = `${p.title}, photo ${cur.photo + 1}`;
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
     lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
@@ -817,7 +824,7 @@
 
   // ---- Nav: highlight the section in view ----
   if ('IntersectionObserver' in window) {
-    const spyLinks = new Map([...document.querySelectorAll('.nav-links a')].map(a => [a.getAttribute('href').slice(1), a]));
+    const spyLinks = new Map([...document.querySelectorAll('.nav-links a[href^="#"]')].map(a => [a.getAttribute('href').slice(1), a]));
     const clearSpy = () => spyLinks.forEach(a => a.classList.remove('active'));
     const spy = new IntersectionObserver(es => {
       es.forEach(en => {
