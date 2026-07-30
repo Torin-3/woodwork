@@ -353,6 +353,11 @@
     .bubble-r { right: 4px; top: 2px; }
     .bubble-l { left: 34%; bottom: auto; top: 24px; }
     .bubble-l::after { top: auto; bottom: -4px; } /* tail points down at the cards again */
+    /* Draw the eye to the photos first: tighten the pill row under each collection
+       card and shrink the piece-count badge so it sits lighter on the image. */
+    .piece.collection .body { padding: 9px 14px 11px; }
+    .piece.collection .tag { font-size: .625rem; padding: 3px 9px; }
+    .piece .count { font-size: .5625rem; padding: 2px 7px; right: 8px; bottom: 8px; }
   }
   @media (max-height: 640px) {
     header { min-height: 0; padding: 44px 24px 64px; }
@@ -438,7 +443,7 @@
 <section id="contact">
   <h2 class="reveal">Like something you see?</h2>
   <p class="reveal" style="--d:280ms">Most pieces are one-offs, but I take commissions and I'm always happy to talk.</p>
-  <a class="btn btn-primary reveal" style="--d:440ms" href="mailto:test@test.com">test@test.com</a>
+  <a class="btn btn-primary reveal" style="--d:440ms" href="mailto:TEMDesign@proton.me">TEMDesign@proton.me</a>
 </section>
 
 <footer class="reveal">
@@ -757,15 +762,8 @@
 
   lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
   lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
-  // Swipe to change photos on touch screens.
-  let touchX = null;
-  lb.addEventListener('touchstart', e => { touchX = e.changedTouches[0].clientX; }, { passive: true });
-  lb.addEventListener('touchend', e => {
-    if (touchX === null) return;
-    const dx = e.changedTouches[0].clientX - touchX;
-    touchX = null;
-    if (Math.abs(dx) > 48) step(dx < 0 ? 1 : -1);
-  }, { passive: true });
+  // Photos change via the arrow buttons / keyboard only — deliberately no swipe, so that
+  // pinch-zooming a photo on a phone never accidentally flips to the next one.
   lbClose.addEventListener('click', closeLightbox);
   lb.addEventListener('click', e => { if (e.target === lb) closeLightbox(); });
   document.addEventListener('keydown', e => {
