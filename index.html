@@ -160,10 +160,13 @@
   .bubble-r::after { right: 16px; }
   .bubble-j { left: -16px; top: 0; background: #c23a2c; color: #fff; animation: bob-c 7.2s ease-in-out infinite; }
   .bubble-j::after { left: 14px; }
+  .bubble-d { right: 2%; bottom: -46px; background: var(--amber); color: var(--ink); animation: bob-a 10s ease-in-out infinite; }
+  .bubble-d::after { right: 16px; top: -4px; bottom: auto; } /* sits below the deck, so the tail points up */
   @media (min-width: 1100px) {
     .bubble-j { left: auto; right: calc(100% + 48px); top: 22%; }
     .bubble-r { left: calc(100% + 48px); right: auto; top: 30%; }
     .bubble-l { left: -64px; bottom: -56px; }
+    .bubble-d { right: -64px; bottom: -56px; }
   }
   /* Gentle drift: individual translate/rotate properties so the entrance
      fade (which transitions `transform`) is never interrupted. */
@@ -350,12 +353,14 @@
     .about-inner { grid-template-columns: 1fr; gap: 36px; }
     .blob { display: none; }
     .nav-links { gap: 16px; }
-    /* Compact bubbles tucked into the empty band above the deck cards */
-    .bubble { font-size: .6875rem; padding: 5px 11px; }
-    .bubble-j { left: 4px; top: 0; }
-    .bubble-r { right: 4px; top: 2px; }
-    .bubble-l { left: 34%; bottom: auto; top: 24px; }
-    .bubble-l::after { top: auto; bottom: -4px; } /* tail points down at the cards again */
+    /* Four compact bubbles in one row pinned to the very top of the deck, kept clear of the
+       cards below (stacking them into a 2x2 crowded the cards). */
+    .bubble { font-size: .625rem; padding: 4px 9px; }
+    .bubble-j { left: 3px; right: auto; top: 0; bottom: auto; }
+    .bubble-l { left: 26%; right: auto; top: 1px; bottom: auto; }
+    .bubble-d { left: auto; right: 26%; top: 0; bottom: auto; }
+    .bubble-r { left: auto; right: 3px; top: 1px; bottom: auto; }
+    .bubble-l::after, .bubble-d::after { top: auto; bottom: -4px; } /* all tails point down at the cards */
     /* Draw the eye to the photos first: tighten the pill row under each collection
        card and shrink the piece-count badge so it sits lighter on the image. */
     .piece.collection .body { padding: 9px 14px 11px; }
@@ -402,6 +407,7 @@
     <span class="bubble bubble-l fade-up" style="--d:950ms" aria-hidden="true">bowls</span>
     <span class="bubble bubble-r fade-up" style="--d:1050ms" aria-hidden="true">homeware</span>
     <span class="bubble bubble-j fade-up" style="--d:1150ms" aria-hidden="true">jewellery</span>
+    <span class="bubble bubble-d fade-up" style="--d:1250ms" aria-hidden="true">decoration</span>
   </div>
   <p class="lede fade-up" style="--d:550ms">I'm Torin. I turn everything from bowls to jewellery on my lathe, alongside various other woodworking projects in my workshop in NE Fife. All wood is sustainably sourced where possible.</p>
   <div class="hero-cta fade-up" style="--d:700ms">
