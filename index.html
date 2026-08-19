@@ -240,6 +240,9 @@
   }
 
   /* ---------- Sections ---------- */
+  /* Keep the sticky nav from covering a section heading when scrolled to via a link,
+     the skip link, or a collection switch. */
+  section, header { scroll-margin-top: calc(var(--navh) + 14px); }
   section { max-width: var(--max); margin: 0 auto; padding: 84px 24px; }
   .section-head { display: flex; align-items: center; gap: 16px; margin-bottom: 14px; }
   /* Section marker: a forest dash by default. */
@@ -810,6 +813,7 @@
   }
   // The Work heading and sub-copy change with the view, so entering a collection
   // feels like arriving somewhere rather than the grid silently swapping.
+  const workSection = document.getElementById('work');
   const workH2 = document.querySelector('#work .section-head h2');
   const workHead = document.querySelector('#work .section-head');
   const workSub = document.querySelector('#work .section-sub');
@@ -832,10 +836,14 @@
       PIECES.forEach((pc, pi) => { if (pc.tag === curCat) grid.appendChild(pieceCard(pc, pi, animate, di++)); });
     }
   }
-  function showCat(tag, push) {
+  function showCat(tag, push, scroll) {
     curCat = tag;
     renderGrid(false);
     if (push) { try { history.pushState(null, '', tag ? '#' + slug(tag) : location.pathname + location.search); } catch (e) {} }
+    // The grid swaps in place, so without this you keep whatever scroll position you had and
+    // land partway down the new list. Only on a deliberate switch — never when routing a
+    // deep link on load, where the open-at-top rules own the scroll position.
+    if (scroll !== false && push) workSection.scrollIntoView({ block: 'start' });
   }
   workBack.querySelector('button').addEventListener('click', () => showCat(null, true));
   renderGrid(true);
@@ -844,10 +852,7 @@
   document.querySelectorAll('.bubble[data-cat]').forEach(b => {
     const tag = b.getAttribute('data-cat');
     b.setAttribute('aria-label', `See the ${tag.toLowerCase()} collection`);
-    b.addEventListener('click', () => {
-      showCat(CATS.indexOf(tag) === -1 ? null : tag, true);
-      document.getElementById('work').scrollIntoView({ block: 'start' });
-    });
+    b.addEventListener('click', () => showCat(CATS.indexOf(tag) === -1 ? null : tag, true));
   });
 
   // ---- Stagger the About chips ----
