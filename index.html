@@ -57,6 +57,9 @@
 
   /* ---------- Focus & skip link ---------- */
   a:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  /* #work is focusable only so the skip link can move focus there; it isn't an interactive
+     control, so it must not paint the browser's default focus ring across the whole section. */
+  #work:focus, #work:focus-visible { outline: none; }
   #lightbox button:focus-visible { outline-color: #fff; }
   .skip-link {
     position: absolute; left: 16px; top: -56px; z-index: 600;
@@ -90,6 +93,7 @@
   }
   .nav-inner {
     display: flex; justify-content: space-between; align-items: center;
+    gap: 20px; /* guaranteed breathing room between the lockup and the links */
     padding: 20px 24px; /* full-bleed: logo and links snap to the screen edges */
   }
   .logo {
@@ -106,7 +110,9 @@
   }
   .nav-links a:hover { color: var(--ink); }
   .nav-links a:hover::after { transform: scaleX(1); transform-origin: left; }
-  .nav-links a:focus-visible::after { transform: scaleX(1); transform-origin: left; }
+  /* No underline on :focus-visible — a tapped link keeps focus, so it stayed underlined
+     alongside the scroll-spy's underline for the section actually in view. The global
+     focus outline already marks focus, so the underline means one thing only: "you are here". */
   .nav-links a.active { color: var(--ink); }
   .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
   .nav-links a.shop { color: var(--clay-ink); font-weight: 700; } /* store link: stands out from the section links (darkened for AA on cream) */
@@ -389,7 +395,14 @@
   @media (max-width: 820px) {
     .about-inner { grid-template-columns: 1fr; gap: 36px; }
     .blob { display: none; }
-    .nav-links { gap: 16px; }
+    /* The lockup plus four links very nearly fills a 375px bar, which crowded the wordmark.
+       Trim the chrome — tighter padding, a slightly smaller mark and links — so the two
+       groups keep real space between them instead of meeting in the middle. */
+    .nav-inner { padding: 13px 16px; gap: 14px; }
+    .logo { font-size: .875rem; gap: 7px; }
+    .logo svg { width: 22px; height: 22px; }
+    .nav-links { gap: 15px; }
+    .nav-links a { font-size: .8125rem; }
     /* One row of bubbles anchored just above the cards (via bottom), so the deck's spare
        height sits between the headline and the bubbles instead of below them. */
     .bubble { font-size: .625rem; padding: 4px 9px; }
@@ -515,6 +528,22 @@
 <script src="photos.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Fail visibly, not blankly. Everything below depends on PIECES from photos.js; if that file
+  // didn't load (404, bad upload, half-synced file), the old code threw on the first use and the
+  // page rendered as an empty cream screen, because the hero's entrance states are JS-gated.
+  // Now: drop the gating class so the page shows as plain HTML, and say what's missing.
+  if (typeof PIECES === 'undefined' || !Array.isArray(PIECES)) {
+    document.documentElement.classList.remove('js');
+    document.body.classList.add('loaded');
+    const warn = document.createElement('p');
+    warn.className = 'section-sub';
+    warn.style.cssText = 'max-width:60ch;margin:0 auto 44px;text-align:center';
+    warn.textContent = 'The gallery data (photos.js) could not be loaded, so the work isn’t showing. Everything else on this page still works.';
+    const work = document.getElementById('work');
+    if (work) work.appendChild(warn);
+    throw new Error('photos.js did not load: PIECES is undefined');
+  }
 
   // Open at the hero and hold it there. iOS Safari re-applies the previous scroll position
   // (the Work section) on reloads and link opens — it ignores `scrollRestoration = 'manual'`,
