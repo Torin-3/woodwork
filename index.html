@@ -257,6 +257,14 @@
   .section-sub { color: var(--ink-soft); margin-bottom: 44px; max-width: 60ch; text-wrap: pretty; }
 
   #work-back { margin: -22px 0 30px; }
+  /* The arrow was set at body size and got lost next to the label — give it its own scale,
+     weight and a nudge left on hover so it reads as the way back. */
+  #work-back .btn { display: inline-flex; align-items: center; gap: 10px; }
+  .back-arrow {
+    font-size: 1.375rem; font-weight: 800; line-height: 1;
+    color: var(--forest); transition: transform .25s var(--ease-out);
+  }
+  #work-back .btn:hover .back-arrow { transform: translateX(-3px); }
   /* ---------- Gallery ---------- */
   #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 34px 26px; }
   .piece {
@@ -511,7 +519,7 @@
   <div class="section-head reveal-left"><h2>Gallery</h2></div>
   <p class="section-sub reveal" style="--d:140ms">Click any piece to see more from that collection.</p>
   <noscript><p class="section-sub">The photo gallery needs JavaScript to load. If it isn't showing, email me and I'll happily send pictures of anything.</p></noscript>
-  <p id="work-back" hidden><button type="button" class="btn btn-ghost">← All collections</button></p>
+  <p id="work-back" hidden><button type="button" class="btn btn-ghost"><span class="back-arrow" aria-hidden="true">←</span>Back to gallery</button></p>
   <div id="gallery-grid"></div>
 </section>
 
