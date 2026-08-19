@@ -91,7 +91,7 @@ const PIECES = [
   },
   {
     title: "Ring Stand Set 1",
-    note: "Dual set with scortched details.",
+    note: "Dual set with scorched details.",
     tag: "Decorative",
     photos: ["5.4.jpg"],
   },
@@ -116,7 +116,7 @@ const PIECES = [
   },
   {
     title: "Elm Bowl",
-    note: "Small, angular elm bowl, finished with natrual oil",
+    note: "Small, angular elm bowl, finished with natural oil.",
     tag: "Bowls",
     photos: ["8.1.jpg", "8.2.jpg"],
   },
