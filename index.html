@@ -422,6 +422,30 @@
     header { min-height: 0; padding: 44px 24px 64px; }
   }
 
+  /* ---------- Touch: no lingering hover states ----------
+     A tap leaves :hover applied on touch devices until something else is tapped, so a tapped
+     nav link kept its underline while the scroll-spy underlined the section actually in view —
+     two underlines at once. Same stickiness left tapped cards lifted. Neutralise every
+     hover-only state where there is no real pointer; `.active` still marks the current section. */
+  @media (hover: none) {
+    .nav-links a:hover { color: var(--ink-soft); }
+    .nav-links a:hover::after { transform: scaleX(0); }
+    .nav-links a.active { color: var(--ink); }
+    .nav-links a.active::after { transform: scaleX(1); transform-origin: left; }
+    .nav-links a.shop:hover { color: var(--clay-ink); }
+    .btn:hover { transform: none; }
+    .btn-primary:hover, .btn-shop:hover { box-shadow: none; }
+    .btn-ghost:hover { border-color: var(--ghost); }
+    .bubble:hover { transform: none; box-shadow: none; }
+    .piece:hover { transform: none; box-shadow: none; }
+    .piece:hover .thumb img { transform: none; }
+    .piece:hover .count { transform: none; }
+    .deck-card:hover {
+      transform: translateX(calc(-50% + var(--x, 0px))) translateY(var(--y, 0px)) rotate(var(--r, 0deg));
+      box-shadow: 0 12px 32px rgba(17,17,20,.16);
+    }
+  }
+
   /* ---------- Reduced motion: turn it all off ---------- */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
