@@ -248,13 +248,11 @@
 
   #work-back { margin: -22px 0 30px; }
   /* ---------- Gallery ---------- */
-  #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 26px; perspective: 1200px; }
+  #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 34px 26px; }
   .piece {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    overflow: hidden; cursor: pointer; display: flex; flex-direction: column;
+    background: none; border: 0; border-radius: 0;
+    overflow: visible; cursor: pointer; display: flex; flex-direction: column;
     position: relative;
-    transition: transform .25s ease-out, box-shadow .3s ease;
-    will-change: transform; isolation: isolate;
   }
   /* The piece title is a real button stretched over the card, so screen readers
      keep the h3 headings and keyboards get a proper target. */
@@ -265,29 +263,30 @@
   .piece h3 button::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; border-radius: var(--radius); }
   .piece h3 button:focus-visible { outline: 0; }
   .piece h3 button:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
-  .piece:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(17,17,20,.1); }
   .piece .thumb {
     aspect-ratio: 4/3; overflow: hidden; position: relative;
-    border-radius: var(--radius) var(--radius) 0 0;
-    transform: translateZ(0); /* own compositor layer so the rounded-corner mask never lags the moving card */
+    border-radius: var(--radius); /* all four corners: the photo is the object, not a card top */
+    transform: translateZ(0); /* own compositor layer so the rounded-corner mask stays crisp */
   }
   .piece .thumb img { width: 100%; height: 100%; object-fit: cover; backface-visibility: hidden; transition: transform .6s var(--ease-out); }
-  .piece:hover .thumb img { transform: scale(1.06); }
+  .piece:hover .thumb img { transform: scale(1.04); }
   .thumb.noimg img { display: none; }
   .thumb.noimg::after {
     content: "photo on its way"; position: absolute; top: 0; right: 0; bottom: 0; left: 0;
     display: grid; place-items: center; color: var(--ink-soft);
     font-family: var(--disp); font-style: italic; font-size: .875rem;
   }
-  .piece .count {
-    position: absolute; right: 12px; bottom: 12px;
-    background: rgba(17,17,20,.72); color: #fff; font-size: .75rem; font-weight: 600;
-    padding: 4px 11px; border-radius: 999px;
-    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
-    transition: transform .3s var(--ease-out);
+  /* Title row sits under a forest rule; the count is text on that line, not a pill on the photo. */
+  .piece .body {
+    padding: 9px 0 0; margin-top: 11px;
+    border-top: 2px solid var(--forest);
+    display: flex; flex-direction: row; justify-content: space-between;
+    align-items: baseline; gap: 14px;
+    transition: border-color .3s var(--ease-out);
   }
-  .piece:hover .count { transform: translateY(-3px); }
-  .piece .body { padding: 20px 22px 24px; display: flex; flex-direction: column; gap: 8px; }
+  .piece:hover .body { border-top-color: var(--clay); }
+  .piece .ct { color: var(--ink-soft); font-size: .8125rem; white-space: nowrap; }
+  .piece .note { color: var(--ink-soft); font-size: .9375rem; margin-top: 7px; text-wrap: pretty; }
   .piece .tag {
     align-self: flex-start; font-size: .75rem; font-weight: 700;
     letter-spacing: .06em; text-transform: uppercase; padding: 4px 11px; border-radius: 999px;
@@ -298,37 +297,19 @@
   .tag-c1 { background: #E5E7D0; color: #565830; }
   .tag-c2 { background: #E0E7DD; color: #2C4636; }
   .tag-c3 { background: #EFE4C8; color: #836018; }
-  .piece h3 { font-family: var(--disp); font-size: 1.25rem; line-height: 1.35; letter-spacing: 0; text-wrap: balance; }
-  .piece p { color: var(--ink-soft); font-size: 1rem; text-wrap: pretty; }
+  .piece h3 { font-family: var(--disp); font-size: 1.125rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.015em; text-wrap: balance; }
 
   /* ---------- Collection overview: a printed gallery index, not a card ----------
      No panel, border or shadow — the photo sits on the page, a forest rule under it, then the
      collection name in display type. The old version was a photo above a near-empty white strip
      holding one small pill, which read as an unfinished card. */
-  #gallery-grid.cats { grid-template-columns: repeat(2, 1fr); gap: 30px 26px; }
-  .piece.collection {
-    background: none; border: 0; border-radius: 0; overflow: visible;
-    isolation: auto; will-change: auto;
-  }
-  .piece.collection .thumb {
-    aspect-ratio: 4/3; height: auto;
-    border-radius: var(--radius); /* all four corners now: the photo is the object */
-  }
-  .piece.collection .body {
-    padding: 9px 0 0; margin-top: 11px;
-    border-top: 2px solid var(--forest);
-    flex-direction: row; justify-content: space-between; align-items: baseline; gap: 14px;
-  }
+  /* Piece cards already carry the index treatment, so a collection only differs in scale:
+     a slightly wider column and a larger name. */
+  #gallery-grid.cats { grid-template-columns: repeat(2, 1fr); gap: 34px 26px; }
   .piece.collection h3 {
-    font-size: clamp(1.25rem, 2.6vw, 1.75rem); font-weight: 800;
+    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
     letter-spacing: -0.02em; line-height: 1.05;
   }
-  .piece.collection .ct { color: var(--ink-soft); font-size: .8125rem; white-space: nowrap; }
-  /* Lifting a bordered card made sense; lifting a bare photo doesn't. Hover just eases the
-     image in its frame, and the rule takes the accent. */
-  .piece.collection:hover { transform: none; box-shadow: none; }
-  .piece.collection:hover .body { border-top-color: var(--clay); }
-  .piece.collection .body { transition: border-color .3s var(--ease-out); }
   .card-open {
     position: absolute; top: 0; right: 0; bottom: 0; left: 0;
     background: none; border: 0; padding: 0; cursor: pointer; border-radius: var(--radius);
@@ -435,7 +416,7 @@
     .bubble-l::after, .bubble-d::after { top: auto; bottom: -4px; } /* all tails point down at the cards */
     /* Collections go single-column on phones: two-up left ~152px covers with tiny labels. */
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 26px; }
-    .piece .count { font-size: .625rem; padding: 3px 8px; right: 8px; bottom: 8px; }
+    .piece .ct { font-size: .75rem; }
   }
   @media (max-height: 640px) {
     header { min-height: 0; padding: 44px 24px 64px; }
@@ -456,9 +437,8 @@
     .btn-primary:hover, .btn-shop:hover { box-shadow: none; }
     .btn-ghost:hover { border-color: var(--ghost); }
     .bubble:hover { transform: none; box-shadow: none; }
-    .piece:hover { transform: none; box-shadow: none; }
     .piece:hover .thumb img { transform: none; }
-    .piece:hover .count { transform: none; }
+    .piece:hover .body { border-top-color: var(--forest); }
     .deck-card:hover {
       transform: translateX(calc(-50% + var(--x, 0px))) translateY(var(--y, 0px)) rotate(var(--r, 0deg));
       box-shadow: 0 12px 32px rgba(17,17,20,.16);
@@ -779,16 +759,17 @@
   }
   function pieceCard(piece, pi, animate, delayIdx) {
     const card = baseCard(animate, delayIdx);
+    // Same gallery-index treatment as the collection cards: photo, forest rule, title row.
+    // No tag pill — every piece here already sits inside its named collection.
     card.innerHTML = `
       <div class="thumb">
         <img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 700px) 92vw, (max-width: 1200px) 46vw, 360px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy">
-        ${piece.photos.length > 1 ? `<span class="count">${piece.photos.length} photos</span>` : ''}
       </div>
       <div class="body">
-        <span class="tag tag-c${tagColors[piece.tag]}">${esc(piece.tag)}</span>
         <h3><button type="button">${esc(piece.title)}</button></h3>
-        <p>${esc(piece.note)}</p>
-      </div>`;
+        ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
+      </div>
+      <p class="note">${esc(piece.note)}</p>`;
     return wireCard(card, () => openLightbox(pi, 0));
   }
   function catCard(tag, animate, delayIdx) {
@@ -1035,21 +1016,9 @@
     if (ct !== curCat) { curCat = ct; renderGrid(false); }
   });
 
-  // ---- 3D tilt on gallery cards ----
-  if (finePointer && !reduceMotion) {
-    grid.addEventListener('mousemove', e => {
-      const card = e.target.closest('.piece');
-      if (!card || card.classList.contains('reveal')) return;
-      const r = card.getBoundingClientRect();
-      const rx = ((e.clientY - r.top) / r.height - .5) * -6;
-      const ry = ((e.clientX - r.left) / r.width - .5) * 6;
-      card.style.transform = `perspective(900px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
-    });
-    grid.addEventListener('mouseout', e => {
-      const card = e.target.closest('.piece');
-      if (card && !card.contains(e.relatedTarget)) card.style.transform = '';
-    });
-  }
+  // The 3D mouse-tilt was removed with the card panels: tilting a bordered card reads as
+  // picking it up, but tilting a bare photo-and-caption just skews the page. Hover now eases
+  // the image in its frame and turns the rule clay, which suits the index layout.
 </script>
 
 </body>
