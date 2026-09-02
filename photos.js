@@ -48,8 +48,8 @@ const PIECES = [
     photos: ["2.1.jpg", "2.2.jpg"],
   },
   {
-    title: "Spalted Mushroom",
-    note: "Turned from a spalted branch, keeping the natural bark edge on the cap.",
+    title: "Spalted Beech Mushroom",
+    note: "Turned from a spalted beech branch, keeping the natural bark edge on the cap.",
     tag: "Decorative",
     photos: ["3.1.jpg"],
   },
@@ -61,7 +61,7 @@ const PIECES = [
   },
   {
     title: "Live Edge Mushroom 2",
-    note: "Live edge capped mushroom with a burnished wax finish.",
+    note: "Taller stem, with the bark left running right around the cap.",
     tag: "Decorative",
     photos: ["3.3.jpg"],
   },
@@ -79,7 +79,7 @@ const PIECES = [
   },
   {
     title: "Ring Stand 2",
-    note: "Slender cone with scorched line details.",
+    note: "The same cone in a paler blank, with a wider foot.",
     tag: "Decorative",
     photos: ["5.2.jpg"],
   },
