@@ -84,8 +84,8 @@ const PIECES = [
     photos: ["5.2.jpg"],
   },
   {
-    title: "Ring Stand 3",
-    note: "Wide base stand with spalted section.",
+    title: "Spalted Beech Ring Stand",
+    note: "Wide base stand with a spalted beech section.",
     tag: "Decorative",
     photos: ["5.3.jpg"],
   },
