@@ -255,4 +255,22 @@ const PIECES = [
     tag: "Homeware",
     photos: ["30.1.jpg", "30.2.jpg", "30.3.jpg"],
   },
+  {
+    title: "Rosewood Bowl",
+    note: "Shallow bowl turned from Indonesian rosewood, with a wide rim and dark banded grain.",
+    tag: "Bowls",
+    photos: ["31.1.jpg", "31.2.jpg"],
+  },
+  {
+    title: "Straight Sided Ash Bowl",
+    note: "Deep bowl with straight sides and a flat rim, turned from pale ash.",
+    tag: "Bowls",
+    photos: ["32.1.jpg", "32.2.jpg"],
+  },
+  {
+    title: "Oak Candle Holder",
+    note: "Rounded oak base with a brass insert for a dinner candle.",
+    tag: "Homeware",
+    photos: ["33.1.jpg", "33.2.jpg"],
+  },
 ];
