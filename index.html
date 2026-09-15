@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEMDesign</title>
-<meta name="description" content="Bowls, boxes and small curiosities turned on the lathe by Torin Ellis-Morton.">
+<title>TEMDesign, hand-turned wooden bowls, homeware and jewellery in Fife, Scotland</title>
+<meta name="description" content="Hand-turned wooden bowls, homeware, jewellery and decorative pieces, made on the lathe in a workshop in Fife, Scotland. Most pieces are one-offs. Wood is sustainably sourced where possible.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="TEMDesign">
-<meta property="og:description" content="Bowls, boxes and small curiosities turned on the lathe.">
+<meta property="og:title" content="TEMDesign, hand-turned wooden bowls, homeware and jewellery in Fife, Scotland">
+<meta property="og:description" content="Hand-turned bowls, homeware, jewellery and decorative pieces, made on the lathe in Fife, Scotland.">
 <meta property="og:image" content="https://torin-3.github.io/woodwork/Bowls/14.1-960.jpg">
 <meta property="og:image:width" content="960">
 <meta property="og:image:height" content="640">
@@ -42,11 +42,25 @@
     --clay: #E76A3C;
     /* Darkened clay for CLAY-AS-TEXT on cream (the bright clay only hits 2.84:1). */
     --clay-ink: #AF502D;
-    --mark: #33503E;      /* logo/ring colour */
     --hl: #93B098;        /* hero headline highlight — 2.08:1 on cream so the band actually reads */
     --btn-bg: #33503E;
     --btn-fg: #F4F0EA;
     --nav-bg: rgba(244, 240, 234, .86);
+
+    /* Collection colours. Each collection has a bubble (hero) and a tag pill
+       (gallery cards) in the same earth tone. Order matches first appearance
+       in photos.js: c0 Homeware, c1 Decorative, c2 Bowls, c3 Jewellery.
+       Every pill pair is AA-checked; the ochre and terracotta sit closest to
+       the 4.5:1 line, so don't lighten those inks or darken those grounds. */
+    --bub-bowls: #33503E;      --bub-bowls-ink: #F4F0EA;
+    --bub-home: #B16039;       --bub-home-ink: #FFFFFF;
+    --bub-jewel: #B08A2C;      --bub-jewel-ink: #241A06;
+    --bub-decor: #6C6E3A;      --bub-decor-ink: #FFFFFF;
+
+    --tag-home: #F0DED2;       --tag-home-ink: #9A4E28;   /* 4.60:1 */
+    --tag-decor: #E5E7D0;      --tag-decor-ink: #565830;  /* 5.88:1 */
+    --tag-bowls: #E0E7DD;      --tag-bowls-ink: #2C4636;  /* 8.17:1 */
+    --tag-jewel: #EFE4C8;      --tag-jewel-ink: #836018;  /* 4.55:1 */
     --radius: 8px;
     --max: 1120px;
     --navh: 68px;
@@ -197,13 +211,13 @@
      (on wide screens) the side corridors — always with clear air around them. */
   /* One bubble per collection, in its collection's earth tone:
      bowls = forest, homeware = terracotta, jewellery = ochre, decoration = olive. */
-  .bubble-l { left: 2%; bottom: -46px; background: var(--forest); color: #F4F0EA; animation: bob-a 8s ease-in-out infinite; }
+  .bubble-l { left: 2%; bottom: -46px; background: var(--bub-bowls); color: var(--bub-bowls-ink); animation: bob-a 8s ease-in-out infinite; }
   .bubble-l::after { left: 16px; top: -4px; bottom: auto; } /* below the deck, so the tail points up */
-  .bubble-r { right: -16px; top: 4px; background: #B16039; color: #fff; animation: bob-b 9.5s ease-in-out infinite; }
+  .bubble-r { right: -16px; top: 4px; background: var(--bub-home); color: var(--bub-home-ink); animation: bob-b 9.5s ease-in-out infinite; }
   .bubble-r::after { right: 16px; }
-  .bubble-j { left: -16px; top: 0; background: #B08A2C; color: #241A06; animation: bob-c 7.2s ease-in-out infinite; }
+  .bubble-j { left: -16px; top: 0; background: var(--bub-jewel); color: var(--bub-jewel-ink); animation: bob-c 7.2s ease-in-out infinite; }
   .bubble-j::after { left: 14px; }
-  .bubble-d { right: 2%; bottom: -58px; background: #6C6E3A; color: #fff; animation: bob-a 10s ease-in-out infinite; } /* extra drop: the right-most card sits a little lower than the left */
+  .bubble-d { right: 2%; bottom: -58px; background: var(--bub-decor); color: var(--bub-decor-ink); animation: bob-a 10s ease-in-out infinite; } /* extra drop: the right-most card sits a little lower than the left */
   .bubble-d::after { right: 16px; top: -4px; bottom: auto; } /* sits below the deck, so the tail points up */
   @media (min-width: 1100px) {
     .bubble-j { left: auto; right: calc(100% + 48px); top: 22%; }
@@ -326,10 +340,10 @@
   }
   /* Collection tints (assignment order follows first appearance in photos.js):
      c0 Homeware = terracotta, c1 Decorative = olive, c2 Bowls = forest, c3 Jewellery = ochre. */
-  .tag-c0 { background: #F0DED2; color: #9A4E28; }
-  .tag-c1 { background: #E5E7D0; color: #565830; }
-  .tag-c2 { background: #E0E7DD; color: #2C4636; }
-  .tag-c3 { background: #EFE4C8; color: #836018; }
+  .tag-c0 { background: var(--tag-home);  color: var(--tag-home-ink); }
+  .tag-c1 { background: var(--tag-decor); color: var(--tag-decor-ink); }
+  .tag-c2 { background: var(--tag-bowls); color: var(--tag-bowls-ink); }
+  .tag-c3 { background: var(--tag-jewel); color: var(--tag-jewel-ink); }
   .piece h3 { font-family: var(--disp); font-size: 1.125rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.015em; text-wrap: balance; }
 
   /* ---------- Collection overview: a printed gallery index, not a card ----------
@@ -575,10 +589,10 @@
 
 <!-- Lightbox -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <button id="lb-close" aria-label="Close photo viewer">✕</button>
-  <button id="lb-prev" class="lb-btn" aria-label="Previous photo">‹</button>
+  <button type="button" id="lb-close" aria-label="Close photo viewer">✕</button>
+  <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo">‹</button>
   <img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt="">
-  <button id="lb-next" class="lb-btn" aria-label="Next photo">›</button>
+  <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo">›</button>
   <div id="lb-caption"><strong></strong><span></span></div>
   <div id="lb-counter" aria-live="polite"></div>
 </div>

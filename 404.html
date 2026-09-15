@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found — TEMDesign</title>
+<meta name="description" content="That page could not be found. Browse the full gallery of hand-turned wooden bowls, homeware and jewellery by TEMDesign.">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta name="theme-color" content="#93B098">
+<link rel="icon" type="image/png" sizes="32x32" href="/woodwork/logo/favicon-32.png">
+<link rel="icon" type="image/png" sizes="500x500" href="/woodwork/logo/favicon-500.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/woodwork/logo/favicon-180.png">
+<style>
+  /* Same tokens as the site, inlined — a 404 must not depend on anything else loading. */
+  :root {
+    --ink: #211E19;
+    --ink-soft: #6B6357;
+    --paper: #F4F0EA;
+    --forest: #33503E;
+    --btn-fg: #F4F0EA;
+    --ghost: #908A79;
+    --radius: 8px;
+    --ease-out: cubic-bezier(.22, 1, .36, 1);
+    --disp: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  }
+  @font-face {
+    font-family: "Bricolage Grotesque"; font-style: normal; font-weight: 800;
+    font-display: swap; src: url("/woodwork/fonts/bricolage-800.woff2") format("woff2");
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    background: var(--paper); color: var(--ink); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh; min-height: 100svh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 32px 24px; text-align: center;
+  }
+  main { max-width: 46ch; }
+  img.mark { width: 64px; height: 64px; margin: 0 auto 28px; display: block; }
+  h1 {
+    font-family: var(--disp); font-weight: 800;
+    font-size: clamp(1.75rem, 5vw, 2.75rem); line-height: 1.1;
+    letter-spacing: -0.02em; margin-bottom: 14px; text-wrap: balance;
+  }
+  p { color: var(--ink-soft); margin-bottom: 10px; text-wrap: pretty; }
+  p.small { font-size: .9375rem; margin-bottom: 32px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+  .btn {
+    display: inline-block; padding: 13px 26px; border-radius: 999px;
+    font-family: var(--disp); font-weight: 600; font-size: .9375rem;
+    text-decoration: none; border: none;
+    transition: transform .25s var(--ease-out), box-shadow .25s, border-color .2s;
+  }
+  .btn-primary { background: var(--forest); color: var(--btn-fg); }
+  .btn-ghost { border: 1.5px solid var(--ghost); color: var(--ink); }
+  .btn:hover { transform: translateY(-2px); }
+  .btn-primary:hover { box-shadow: 0 8px 24px rgba(51, 80, 62, .3); }
+  .btn-ghost:hover { border-color: var(--ink); }
+  a:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  @media (hover: none) {
+    .btn:hover { transform: none; box-shadow: none; }
+    .btn-ghost:hover { border-color: var(--ghost); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <img class="mark" src="/woodwork/logo/logo-128.png" width="128" height="128" alt="">
+  <h1>This page has moved</h1>
+  <p class="small">Have a look through the gallery instead.</p>
+  <div class="cta">
+    <a class="btn btn-primary" href="/woodwork/#work">Browse the gallery</a>
+    <a class="btn btn-ghost" href="/woodwork/">Back to home</a>
+  </div>
+</main>
+</body>
+</html>
