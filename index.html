@@ -298,6 +298,10 @@
     transform: translateZ(0); /* own compositor layer so the rounded-corner mask stays crisp */
   }
   .piece .thumb img { width: 100%; height: 100%; object-fit: cover; backface-visibility: hidden; transition: transform .6s var(--ease-out); }
+  /* Per-piece thumbnail framing, set in photos.js. `focus` shifts the crop when the
+     subject sits off-centre; `fit: "contain"` shows a tall photo whole instead of
+     cropping it to the 4:3 box (the card background fills the gap). */
+  .piece .thumb img.fit-contain { object-fit: contain; background: var(--paper-warm); }
   .piece:hover .thumb img { transform: scale(1.04); }
   .thumb.noimg img { display: none; }
   .thumb.noimg::after {
@@ -794,7 +798,7 @@
     // No tag pill — every piece here already sits inside its named collection.
     card.innerHTML = `
       <div class="thumb">
-        <img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 700px) 92vw, (max-width: 1200px) 46vw, 360px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy">
+        <img class="${piece.fit === 'contain' ? 'fit-contain' : ''}" style="${piece.focus ? 'object-position:' + esc(piece.focus) : ''}" src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 700px) 92vw, (max-width: 1200px) 46vw, 360px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy">
       </div>
       <div class="body">
         <h3><button type="button">${esc(piece.title)}</button></h3>

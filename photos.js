@@ -39,6 +39,7 @@ const PIECES = [
     title: "Checkerboard Peg Rack",
     note: "Laminated plywood checkerboard set in a pine frame, with three turned shaker pegs.",
     tag: "Homeware",
+    focus: "4% 50%",
     photos: ["1.1.jpg"],
   },
   {
@@ -112,6 +113,7 @@ const PIECES = [
     title: "Log Slice Coasters",
     note: "Live edge branch slices, hiding a steel bottle opener.",
     tag: "Homeware",
+    focus: "0% 50%",
     photos: ["7.1.jpg"],
   },
   {
@@ -205,6 +207,7 @@ const PIECES = [
     title: "Oak Serving Board",
     note: "Serving board with a contrasting teak stripe.",
     tag: "Homeware",
+    fit: "contain",
     photos: ["22.1.jpg"],
   },
   {
