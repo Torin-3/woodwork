@@ -127,13 +127,13 @@ const PIECES = [
     photos: ["9.1.jpg", "9.2.jpg"],
   },
   {
-    title: "Sycamore Bowl",
+    title: "Ash Bowl",
     note: "Large, deep bowl with thick walls.",
     tag: "Bowls",
     photos: ["10.1.jpg", "10.2.jpg"],
   },
   {
-    title: "Ash Bowl",
+    title: "Sycamore Bowl",
     note: "Straight-sided, deep bowl, with a flat base.",
     tag: "Bowls",
     photos: ["11.1.jpg", "11.2.jpg"],
