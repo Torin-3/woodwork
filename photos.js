@@ -44,13 +44,13 @@ const PIECES = [
   },
   {
     title: "Twin Tealight Holder",
-    note: "Two tealights on top, a matchbox drawer below.",
+    note: "Two tealights set in pine, a matchbox drawer below.",
     tag: "Homeware",
     photos: ["2.1.jpg"],
   },
   {
     title: "Tealight Holder",
-    note: "Single tealight set into a cube, with a matchbox drawer running through the middle.",
+    note: "Single tealight set into an oak cube, with a matchbox drawer running through the middle.",
     tag: "Homeware",
     photos: ["2.2.jpg"],
   },
