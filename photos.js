@@ -43,10 +43,16 @@ const PIECES = [
     photos: ["1.1.jpg"],
   },
   {
-    title: "Tealight & Match Block",
+    title: "Twin Tealight Holder",
     note: "Two tealights on top, a matchbox drawer below.",
     tag: "Homeware",
-    photos: ["2.1.jpg", "2.2.jpg"],
+    photos: ["2.1.jpg"],
+  },
+  {
+    title: "Tealight Holder",
+    note: "Single tealight set into a cube, with a matchbox drawer running through the middle.",
+    tag: "Homeware",
+    photos: ["2.2.jpg"],
   },
   {
     title: "Spalted Beech Mushroom",
@@ -207,7 +213,6 @@ const PIECES = [
     title: "Oak Serving Board",
     note: "Serving board with a contrasting teak stripe.",
     tag: "Homeware",
-    fit: "contain",
     photos: ["22.1.jpg"],
   },
   {
