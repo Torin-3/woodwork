@@ -19,7 +19,8 @@
 <meta name="p:domain_verify" content="83834553f194f9127ad4e61206f0baca"/>
 <meta name="theme-color" content="#93B098">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
-<link rel="icon" type="image/png" sizes="500x500" href="logo/favicon-500.png">
+<link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="logo/favicon-512.png">
 <link rel="apple-touch-icon" sizes="180x180" href="logo/favicon-180.png">
 <script>if ('noModule' in document.createElement('script') && 'IntersectionObserver' in window) document.documentElement.classList.add('js');</script>
 <style>
@@ -420,6 +421,7 @@
   #about { background: var(--paper-warm); max-width: none; }
   .about-inner { max-width: var(--max); margin: 0 auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 64px; align-items: start; }
   .about-inner p { color: var(--ink-soft); margin-bottom: 18px; font-size: 1rem; text-wrap: pretty; }
+  .about-inner p:last-child { margin-bottom: 0; } /* no trailing margin adding to the section's foot */
   .stack { display: flex; flex-wrap: wrap; gap: 10px; }
   .chip { font-size: .875rem; font-weight: 500; padding: 8px 16px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; }
 
@@ -453,13 +455,33 @@
     .logo img { width: 24px; height: 24px; }
     .nav-links { gap: 15px; }
     .nav-links a { font-size: .8125rem; }
-    /* One row of bubbles anchored just above the cards (via bottom), so the deck's spare
-       height sits between the headline and the bubbles instead of below them. */
-    .bubble { font-size: .625rem; padding: 4px 9px; }
-    .bubble-j { left: 3px; right: auto; top: auto; bottom: 159px; }
-    .bubble-l { left: 26%; right: auto; top: auto; bottom: 162px; }
-    .bubble-d { left: auto; right: 26%; top: auto; bottom: 159px; }
-    .bubble-r { left: auto; right: 3px; top: auto; bottom: 162px; }
+    /* Laid out as a real row rather than four floating labels: on phones the deck cards are
+       inert, so these ARE the hero's only navigation and they should read as a set of controls.
+       Flex keeps them from overlapping (at 375px "decoration" and "homeware" used to collide
+       by ~4px), and the drift + speech-tails are dropped here — a tail pointing at nothing and
+       four independently bobbing pills made a nav row look like an accident.
+       The cards inside stay absolutely positioned, so the row is pinned to the top of the
+       deck box and the cards keep the rest of its height. */
+    .deck {
+      display: flex; justify-content: center; align-items: flex-start;
+      gap: 6px; flex-wrap: nowrap;
+      /* Sized to the pill row plus the cards beneath it. The desktop height clamp left ~99px of
+         dead air between the two (the gaps either side are ~25px), which read as a break in the
+         hero rather than as spacing. Card height is the width clamp × 4/3 (their aspect-ratio),
+         plus the 20px of vertical jitter layoutDeck() can add. */
+      height: auto;
+      padding-bottom: calc(clamp(100px, 14.5vw, 172px) * 4 / 3 + 20px + 26px);
+    }
+    .bubble {
+      font-size: .625rem; padding: 5px 9px; min-height: 26px; /* 26px ≥ WCAG 2.5.8's 24px */
+      display: inline-flex; align-items: center; justify-content: center;
+      animation: none; /* no bob: they line up, so they should stay lined up */
+    }
+    .bubble::after { display: none; } /* the tail has nothing to point at in a row */
+    .bubble-j, .bubble-l, .bubble-d, .bubble-r {
+      position: relative; left: auto; right: auto; top: auto; bottom: auto;
+      flex: 0 1 auto; min-width: 0;
+    }
     .bubble-l::after, .bubble-d::after { top: auto; bottom: -4px; } /* all tails point down at the cards */
     /* Collections go single-column on phones: two-up left ~152px covers with tiny labels. */
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 26px; }
@@ -467,6 +489,19 @@
   }
   @media (max-height: 640px) {
     header { min-height: 0; padding: 44px 24px 64px; }
+  }
+
+  /* Very narrow phones (320px: iPhone SE 1st gen, Android small). The lockup plus four links
+     needs ~347px, so "Shop" was pushed off the right edge and cut in half. Drop the wordmark
+     to the mark alone and tighten the link row: the nav then fits with room to spare, and the
+     logo still links home. */
+  @media (max-width: 360px) {
+    .logo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .nav-inner { padding: 13px 12px; gap: 10px; }
+    .nav-links { gap: 12px; }
+    .nav-links a { font-size: .75rem; }
+    .bubble { font-size: .5625rem; padding: 5px 7px; }
+    .deck { gap: 4px; }
   }
 
   /* ---------- Touch: no lingering hover states ----------
@@ -525,7 +560,7 @@
   <h1 class="split" id="hero-title" aria-label="TEM Portfolio">
     <span aria-hidden="true"><span class="wc"><span class="w" style="--i:0">TEM</span></span> <span class="wc"><span class="w" style="--i:1"><span class="hl">Portfolio</span></span></span></span>
   </h1>
-  <div class="deck" id="deck" role="group" aria-label="The latest pieces. Click one to see every angle">
+  <div class="deck" id="deck" role="group" aria-label="Browse the four collections">
     <button type="button" class="bubble bubble-l fade-up" style="--d:950ms" data-cat="Bowls">bowls</button>
     <button type="button" class="bubble bubble-r fade-up" style="--d:1050ms" data-cat="Homeware">homeware</button>
     <button type="button" class="bubble bubble-j fade-up" style="--d:1150ms" data-cat="Jewellery">jewellery</button>
@@ -726,17 +761,29 @@
     if (pi > 2) im.loading = 'lazy';
     softFail(im);
     b.appendChild(im);
-    // Touch/narrow screens: the fanned cards only expose ~32px each, far below a usable tap
-    // target, so they're inert there and the bubbles carry navigation instead.
-    if (finePointer && innerWidth > 820) {
-      b.addEventListener('click', () => openLightbox(pi, 0));
-    } else {
-      b.disabled = true;
-      b.tabIndex = -1;
-      b.setAttribute('aria-hidden', 'true');
-    }
+    b.addEventListener('click', () => { if (!b.disabled) openLightbox(pi, 0); });
     deckEl.appendChild(b);
   });
+
+  // Touch/narrow screens: the fanned cards only expose ~32px each, far below a usable tap
+  // target, so they're inert there and the bubbles carry navigation instead. This has to be
+  // re-evaluated whenever the viewport changes — deciding it once at build time left the cards
+  // permanently dead after a phone was rotated to landscape or a tablet resized past 820px.
+  function syncDeckInteractivity() {
+    const live = matchMedia('(pointer: fine)').matches && innerWidth > 820;
+    deckEl.querySelectorAll('.deck-card').forEach(b => {
+      b.disabled = !live;
+      b.tabIndex = live ? 0 : -1;
+      if (live) b.removeAttribute('aria-hidden');
+      else b.setAttribute('aria-hidden', 'true');
+    });
+    // The group is only "the latest pieces" when those pieces are actually reachable; otherwise
+    // it holds nothing but the four collection bubbles, so label it for what it really contains.
+    deckEl.setAttribute('aria-label', live
+      ? 'The latest pieces. Click one to see every angle'
+      : 'Browse the four collections');
+  }
+  syncDeckInteractivity();
 
   function layoutDeck() {
     const cards = [...deckEl.querySelectorAll('.deck-card')];
@@ -760,7 +807,7 @@
     });
   }
   layoutDeck();
-  addEventListener('resize', () => { setNavH(); layoutDeck(); }, { passive: true });
+  addEventListener('resize', () => { setNavH(); layoutDeck(); syncDeckInteractivity(); }, { passive: true });
 
   // ---- Scrolling shelf under the hero ----
   const stripEl = document.getElementById('strip');
@@ -1030,7 +1077,16 @@
   // target inside a requestAnimationFrame loop (interpolated at 60fps) rather than jumped on
   // each scroll event. The track width is measured once (on load/resize), not every frame, to
   // avoid layout thrash, and translate3d keeps it on its own GPU layer.
+  //
+  // Keyboard: while the shelf is transform-driven it is clipped (`overflow: hidden`) and its
+  // position is owned by the rAF loop, so a focused card can sit far outside the visible window
+  // with no way to scroll it back — focus would simply vanish. The shelf is a decorative
+  // repeat of work that is fully reachable in the gallery below, so it leaves the tab order
+  // here and keeps it in the reduced-motion/no-JS path, where the strip is a real scroller.
   if (!reduceMotion) {
+    stripTrack.querySelectorAll('.strip-card').forEach(b => { b.tabIndex = -1; });
+    stripEl.setAttribute('aria-hidden', 'true');
+
     let shift = 0, target = 0, cur = 0, raf = 0;
     const aim = () => {
       const r = stripEl.getBoundingClientRect();
