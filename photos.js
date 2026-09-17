@@ -163,7 +163,6 @@ const PIECES = [
     title: "Oak Bowl",
     note: "Bowl with a clean taper down to a narrow foot.",
     tag: "Bowls",
-    cover: true,
     photos: ["14.1.jpg", "14.2.jpg"],
   },
   {
@@ -267,6 +266,7 @@ const PIECES = [
     title: "Rosewood Bowl",
     note: "Shallow bowl turned from Indonesian rosewood, with a wide rim and dark banded grain.",
     tag: "Bowls",
+    cover: true,
     photos: ["31.1.jpg", "31.2.jpg"],
   },
   {
