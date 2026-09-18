@@ -325,6 +325,39 @@
     .nav-links a.shop { padding: .4rem .6rem; }
   }
 
+  /* ---------- Portrait phones: the desktop hero, re-proportioned for a tall screen ----------
+     Same photo (its backdrop extended — see the <source>), drawn exactly 100vw wide, so the bowl is a
+     fixed fraction of the screen: centred, 88% of the width, a 6% gap each side. Same overlaps as
+     desktop: TEM's lower .17em over the rim, DESIGN's top .43em across the foot. The words take the
+     positions the desktop hero uses on narrow windows — TEM at the left margin, DESIGN at the right —
+     because at this size DESIGN would run off the screen if it started at the bowl's centre.
+     Lede and links sit on the photo at the bottom. Numbers from hero-bbox.json "phone". */
+  @media (max-width: 700px) and (orientation: portrait) {
+    /* Rows: space / the bowl slot / space / chrome. The headline lives INSIDE .plate in the markup
+       (desktop positions it in the photo's coordinates), so the words are pinned to the slot's edges
+       rather than given grid rows; the slot's margins reserve room for the parts that stick out. */
+    header { display: grid; grid-template-rows: 1fr auto 1fr auto; align-content: stretch; }
+    /* .plate is a slot exactly the bowl's height. The tall photo hangs from it, placed so the bowl in
+       the photo lands in the slot; the header clips whatever reaches past its own edges. */
+    .plate { grid-row: 2; display: block; position: relative; width: 100%; height: 31.149vw;
+             margin: calc(20vw * .61) 0 calc(20vw * .35);   /* TEM's .61em above the rim, DESIGN's .35em below the foot */
+             left: auto; top: auto; translate: none; overflow: visible; container-type: normal; }
+    .plate .photo { position: absolute; left: 0; top: -130.016vw; width: 100vw; height: 341.181vw;
+                    max-width: none; max-height: none; padding: 0; object-fit: fill; }
+    /* The words hang off the slot's edges: TEM's lower .17em over the rim, DESIGN's top .43em across
+       the foot — the same overlaps as desktop, measured in the words' own ems. */
+    .tier { position: absolute; font-size: 20vw; line-height: .78; margin: 0; padding: 0; }   /* 20vw = the desktop type:bowl ratio */
+    .t1 { left: var(--pad); right: auto; top: auto; bottom: calc(100% - .17em); --from: -28vw 0; }
+    .t2 { right: var(--pad); left: auto; bottom: auto; top: calc(100% - .43em); --from: 28vw 0; }
+    .hero-chrome { grid-row: 4; position: relative; background: none; flex-direction: column;
+                   align-items: center; text-align: center; gap: 1.1rem; padding: 0 var(--pad) 4.5vh; }
+    .lede { max-width: 34ch; font-size: .95rem; --from: -48px 0; }
+    /* The three links as a triangle: the two section links side by side, Etsy centred beneath. */
+    .cta { display: grid; grid-template-columns: auto auto; justify-content: center; justify-items: center;
+           gap: .8rem 2rem; white-space: nowrap; font-size: clamp(.9rem, 1.05vw, 1.1rem); --from: 48px 0; }
+    .cta a.etsy { grid-column: 1 / -1; order: 3; }
+  }
+
   /* ---------- Reduced motion: nothing moves, nothing is hidden ---------- */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -352,9 +385,10 @@
 <header id="hero">
   <div class="plate">
     <picture>
-      <!-- Phones get a crop of the same photo, tight to the bowl with its backdrop recoloured to the
-           page ground, so it sits on the page instead of showing as a pale rectangle. -->
-      <source media="(max-width: 700px) and (orientation: portrait)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w" sizes="100vw">
+      <!-- Portrait phones get the same photo with its own backdrop extended up and down
+           (docs/superpowers/scripts/make_hero.py), so it can fill a tall screen without cutting
+           the bowl's sides off. -->
+      <source media="(max-width: 700px) and (orientation: portrait)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1236" height="4217">
       <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     </picture>
     <h1 aria-label="TEM Design"><span class="tier t1 in" aria-hidden="true">TEM</span><span class="tier t2 in" aria-hidden="true">Design</span></h1>
