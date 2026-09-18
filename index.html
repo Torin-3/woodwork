@@ -86,6 +86,9 @@
   @container hero (max-aspect-ratio: 3/2) {
     .t1 { right: auto; left: calc((100cqw - 100vw) / 2 + 5vw); }
     .t2 { left: auto; right: calc((100cqw - 100vw) / 2 + 4vw); }
+    /* On a narrow-but-not-phone screen (iPad portrait) the plate is much wider than the viewport and
+       the words would hang off both edges, so cap them to what the screen can actually show. */
+    .tier { font-size: min(15.5cqw, (100vw - 2 * var(--pad)) / 4.6); }
   }
   .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; padding: 0 var(--pad) 4vh; }
   .lede { max-width: 32ch; font-size: clamp(1rem, 1.3vw, 1.3rem); line-height: 1.3; letter-spacing: -.01em; }
@@ -102,6 +105,11 @@
      from opposite sides so they meet over the bowl. Nothing fades. */
   .js .in { translate: var(--from, 0 48px); transition: translate .9s var(--ease); transition-delay: var(--d, 0ms); }
   .js .loaded header .in, .js .in.visible { translate: 0 0; }
+  /* A grid item translated sideways WIDENS the page (it overflowed every portrait phone), so cards
+     keep their own box still and slide an inner wrapper that their overflow clips. */
+  .js .piece.in { translate: none; overflow: hidden; }
+  .js .piece.in > .slide { translate: var(--from, 0 48px); transition: translate .9s var(--ease); transition-delay: var(--d, 0ms); }
+  .js .piece.in.visible > .slide { translate: 0 0; }
   .lede { --from: -48px 0; --d: 420ms; }
   .cta { --from: 48px 0; --d: 520ms; }
   .section-head { --from: -48px 0; }
@@ -124,7 +132,7 @@
   #work { padding: 14vh var(--pad) 12vh; }
   #work-back { margin: -3vh 0 5vh; }
   #work-back button { font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
-  #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 9vh 3vw; }
+  #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
   #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 10vh 3vw; }
   .piece { position: relative; display: block; --c: var(--ink); --cink: var(--ground); }
   .piece .thumb img { width: 100%; height: auto; }  /* the photograph whole, at its own 3:2 */
@@ -138,6 +146,7 @@
   .piece.collection h3 { font-size: clamp(1.8rem, 3.4vw, 3.6rem); letter-spacing: -.035em; line-height: .95; text-transform: uppercase; }
   /* The title is a real button stretched over the card: headings stay in the outline, keyboards get a target. */
   .piece h3 button { text-align: inherit; letter-spacing: inherit; text-transform: inherit; }
+  .piece .slide { display: block; }
   .piece h3 button::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
   .piece h3 button:focus-visible { outline: 0; }
   .piece h3 button:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
@@ -208,22 +217,77 @@
   }
 
   /* ---------- Phone / tablet ---------- */
-  @media (max-width: 820px) {
+  @media (max-width: 700px), (max-height: 520px) and (max-width: 1100px) {
     :root { --pad: 5vw; }
     .nav-inner { padding: 12px var(--pad); gap: 14px; }
     .logo img { width: 24px; height: 24px; }
-    .nav-links { gap: 1rem; font-size: .85rem; }
-    .nav-links a.shop { padding: .45rem .7rem; }
-    .tier { font-size: 25vw; } /* placement comes from the aspect-ratio container query above */
-    .hero-chrome { flex-direction: column; align-items: flex-start; gap: 1.2rem; padding-bottom: 5vh; }
+    .nav-links { gap: .85rem; font-size: .8rem; }
+    .nav-links a.shop { padding: .45rem .65rem; }
+    .logo { font-size: .875rem; gap: 7px; }
+    /* Phones: the desktop hero positions the words in the PLATE's coordinates, and the plate is far
+       wider than a phone screen — that pushed the words off both edges and over the lede. Here the
+       hero is a simple stack instead: headline, then the photo, then the chrome. The plate keeps
+       cover-filling its row, so the bowl still reads, but nothing is positioned against it. */
+    header { display: grid; grid-template-rows: auto 1fr auto; container-type: normal; }
+    .plate { position: relative; grid-row: 2; left: auto; top: auto; translate: none;
+             width: 100%; height: 100%; container-type: normal; overflow: hidden; }
+    .plate .photo { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; }
+    h1 { display: block; grid-row: 1; z-index: 3; padding: 3.5vh var(--pad) 1.5vh; }
+    /* "DESIGN" is the long word: 6 characters at ~0.62em each plus the indent must fit the screen,
+       so the size is capped by width as well as height. Nothing is ever clipped or wrapped. */
+    .tier { position: static; display: block; white-space: nowrap;
+            font-size: min(19vw, 12vh, (100vw - 2 * var(--pad)) / 4.6); line-height: .84; }
+    .t2 { margin-left: .9em; }            /* the second word steps in, echoing the desktop offset */
+    .hero-chrome { position: relative; grid-row: 3; flex-direction: column; align-items: flex-start;
+                   gap: 1.1rem; padding: 2.5vh var(--pad) 4vh; background: var(--ground); }
     .lede { max-width: none; font-size: .95rem; }
     .cta { flex-wrap: wrap; gap: .9rem 1.4rem; white-space: normal; }
+    /* Entrances are VERTICAL on small screens. Sideways travel widens the page on a narrow
+       viewport (a translated block still counts toward scrollWidth), so every --from is overridden
+       here rather than relying on each parent to clip it. */
+    .t1, .t2 { --from: 0 -36px; }
+    .lede, .cta, .section-head, .piece, .piece > .slide,
+    #gallery-grid.cats .piece:nth-child(odd), #gallery-grid.cats .piece:nth-child(even),
+    #gallery-grid:not(.cats) .piece:nth-child(3n+1), #gallery-grid:not(.cats) .piece:nth-child(3n+2),
+    #gallery-grid:not(.cats) .piece:nth-child(3n),
+    .about-inner > div:first-child, .about-inner > div:last-child, #contact .in { --from: 0 32px; }
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 8vh 0; }
     #gallery-grid { gap: 7vh 0; }
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
     .lb-stage { gap: 1vw; }
     .lb-btn { font-size: 2rem; padding: .4em .2em; }
-    .lb-cap { grid-template-columns: 1fr; }
+    .lb-cap { grid-template-columns: 1fr auto; gap: 1rem; }
+    #lb-caption span { font-size: .85rem; margin-top: .35rem; }
+    #lb-img { max-height: 56vh; }
+  }
+  /* Landscape phones: ~360-430px of height for everything. */
+  @media (max-width: 920px) and (max-height: 520px) {
+    h1 { padding: 2vh var(--pad) 1vh; }
+    .tier { font-size: min(9.5vw, 13vh); }
+    .t2 { margin-left: .9em; }
+    .hero-chrome { flex-direction: row; align-items: flex-end; justify-content: space-between;
+                   gap: 1.5rem; padding: 1.5vh var(--pad) 2.5vh; }
+    .lede { max-width: 46ch; font-size: .8rem; }
+    .cta { font-size: .76rem; gap: .5rem .9rem; }
+    /* The lightbox has ~390px of height here: shrink its chrome so the photo keeps the middle. */
+    #lightbox { padding: .6rem var(--pad) .7rem; }
+    .lb-top img { width: 20px; height: 20px; }
+    #lb-close { font-size: .95rem; padding: .35rem .6rem; }
+    #lb-img { max-height: 62vh; }
+    .lb-cap { padding-top: .5rem; border-top-width: 3px; }
+    #lb-caption strong { font-size: 1.05rem; }
+    #lb-caption span { font-size: .78rem; margin-top: .2rem; }
+    #lb-counter { font-size: .78rem; padding: .35em .6em; }
+    .lb-btn { font-size: 1.6rem; }
+  }
+  /* Sideways entrances need spare width to travel through; below ~900px they push content past the
+     edge mid-animation. Everything except the hero words (clipped by the hero) travels vertically. */
+  @media (max-width: 900px) {
+    .lede, .cta, .section-head, .piece, .piece > .slide,
+    #gallery-grid.cats .piece:nth-child(odd), #gallery-grid.cats .piece:nth-child(even),
+    #gallery-grid:not(.cats) .piece:nth-child(3n+1), #gallery-grid:not(.cats) .piece:nth-child(3n+2),
+    #gallery-grid:not(.cats) .piece:nth-child(3n),
+    .about-inner > div:first-child, .about-inner > div:last-child, #contact .in { --from: 0 32px; }
   }
   @media (max-width: 360px) {
     /* The lockup plus four links needs ~336px; hide the wordmark (the link keeps its aria-label) */
@@ -258,7 +322,7 @@
 
 <header id="hero">
   <div class="plate">
-    <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
+    <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     <h1 aria-label="TEM Design"><span class="tier t1 in" aria-hidden="true">TEM</span><span class="tier t2 in" aria-hidden="true">Design</span></h1>
   </div>
   <div class="hero-chrome">
@@ -454,12 +518,14 @@
   function pieceCard(piece, pi, animate, delayIdx) {
     const card = baseCard(animate, delayIdx);
     card.innerHTML = `
-      <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy"></div>
-      <div class="bar">
-        <h3><button type="button">${esc(piece.title)}</button></h3>
-        ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
-      </div>
-      <p class="note">${esc(piece.note)}</p>`;
+      <div class="slide">
+        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy"></div>
+        <div class="bar">
+          <h3><button type="button">${esc(piece.title)}</button></h3>
+          ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
+        </div>
+        <p class="note">${esc(piece.note)}</p>
+      </div>`;
     // With a real pointer, hovering a piece that has a second angle swaps to it — instantly, no
     // transition — and swaps back on leave. Touch devices never see this.
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -477,10 +543,12 @@
     const card = baseCard(animate, delayIdx);
     card.classList.add('collection', tagClass(tag));
     card.innerHTML = `
-      <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
-      <div class="bar">
-        <h3><button type="button" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</button></h3>
-        <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
+      <div class="slide">
+        <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
+        <div class="bar">
+          <h3><button type="button" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</button></h3>
+          <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
+        </div>
       </div>`;
     return wireCard(card, () => showCat(tag, true));
   }
