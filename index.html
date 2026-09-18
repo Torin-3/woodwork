@@ -226,22 +226,36 @@
     .logo { font-size: .875rem; gap: 7px; }
     /* Phones: the desktop hero positions the words in the PLATE's coordinates, and the plate is far
        wider than a phone screen — that pushed the words off both edges and over the lede. Here the
-       hero is a simple stack instead: headline, then the photo, then the chrome. The plate keeps
-       cover-filling its row, so the bowl still reads, but nothing is positioned against it. */
-    header { display: grid; grid-template-rows: auto 1fr auto; container-type: normal; }
+       hero is a stack: TEM, the photo, DESIGN, then the chrome. The words sit tight to the photo so
+       the desktop relationship survives — TEM resting on the rim, DESIGN meeting the foot. */
+    header { display: grid; grid-template-rows: auto minmax(0, auto) auto 1fr; container-type: normal;
+             align-content: start; }
+    /* `contain`, not `cover`: cover cropped the bowl's sides off the screen and threw it off centre.
+       Contained (with a little side padding) the whole bowl fits, centred, with air either side. */
     .plate { position: relative; grid-row: 2; left: auto; top: auto; translate: none;
-             width: 100%; height: 100%; container-type: normal; overflow: hidden; }
-    .plate .photo { position: absolute; width: 100%; height: 100%; object-fit: cover; object-position: 50% 58%; }
-    h1 { display: block; grid-row: 1; z-index: 3; padding: 3.5vh var(--pad) 1.5vh; }
+             width: 100%; height: 100%; container-type: normal; overflow: visible; }
+    /* The bowl's centre is at 46% of the frame, not 50% (hero-bbox.json), so the contained photo is
+       nudged right by that 4% to put the BOWL in the middle of the screen, not the photo. */
+    /* The phone crop is already tight to the bowl and already centred, so it just sits in its row
+       at full width with a small gap each side — no cover-cropping, no letterbox rectangle. */
+    .plate { display: grid; place-items: center; }
+    .plate .photo { position: static; width: 100%; height: auto; max-height: 100%;
+                    object-fit: contain; padding: 0 4vw; }
     /* "DESIGN" is the long word: 6 characters at ~0.62em each plus the indent must fit the screen,
        so the size is capped by width as well as height. Nothing is ever clipped or wrapped. */
-    .tier { position: static; display: block; white-space: nowrap;
-            font-size: min(19vw, 12vh, (100vw - 2 * var(--pad)) / 4.6); line-height: .84; }
-    .t2 { margin-left: .9em; }            /* the second word steps in, echoing the desktop offset */
-    .hero-chrome { position: relative; grid-row: 3; flex-direction: column; align-items: flex-start;
-                   gap: 1.1rem; padding: 2.5vh var(--pad) 4vh; background: var(--ground); }
-    .lede { max-width: none; font-size: .95rem; }
-    .cta { flex-wrap: wrap; gap: .9rem 1.4rem; white-space: normal; }
+    h1 { display: contents; }
+    .tier { position: static; display: block; white-space: nowrap; z-index: 3;
+            font-size: min(19vw, 11vh, (100vw - 2 * var(--pad)) / 4.6); line-height: .84; }
+    .t1 { grid-row: 1; padding: 2.5vh var(--pad) 0; margin-bottom: -.02em; }
+    .t2 { grid-row: 3; padding: 0 var(--pad); margin-top: -.02em; margin-left: .9em; }
+    .hero-chrome { position: relative; grid-row: 4; flex-direction: column; align-items: center;
+                   justify-content: center; text-align: center; gap: 1.1rem;
+                   padding: 3vh var(--pad) 4vh; background: var(--ground); }
+    .lede { max-width: 34ch; font-size: .95rem; }
+    /* The three links as a triangle: the two section links side by side, Etsy centred beneath. */
+    .cta { display: grid; grid-template-columns: auto auto; justify-content: center;
+           justify-items: center; gap: .8rem 2rem; white-space: nowrap; }
+    .cta a.etsy { grid-column: 1 / -1; order: 3; }
     /* Entrances are VERTICAL on small screens. Sideways travel widens the page on a narrow
        viewport (a translated block still counts toward scrollWidth), so every --from is overridden
        here rather than relying on each parent to clip it. */
@@ -261,14 +275,29 @@
     #lb-img { max-height: 56vh; }
   }
   /* Landscape phones: ~360-430px of height for everything. */
-  @media (max-width: 920px) and (max-height: 520px) {
+  @media (max-width: 1100px) and (max-height: 520px) {
     h1 { padding: 2vh var(--pad) 1vh; }
     .tier { font-size: min(9.5vw, 13vh); }
     .t2 { margin-left: .9em; }
     .hero-chrome { flex-direction: row; align-items: flex-end; justify-content: space-between;
-                   gap: 1.5rem; padding: 1.5vh var(--pad) 2.5vh; }
+                   text-align: left; gap: 1.5rem; padding: 1.5vh var(--pad) 2.5vh; }
     .lede { max-width: 46ch; font-size: .8rem; }
-    .cta { font-size: .76rem; gap: .5rem .9rem; }
+    /* Landscape has no spare height for the triangle: one row instead. */
+    .cta { display: flex; font-size: .76rem; gap: .5rem .9rem; }
+    .cta a.etsy { grid-column: auto; order: 0; }
+    .t1 { padding-top: 1.5vh; }
+    /* Landscape phones have ~390px of height — four stacked rows do not fit, and DESIGN ended up
+       over the bowl or pushed off. So landscape goes back to the OVERLAY: the photo fills the hero
+       and the words sit on it, TEM top-left and DESIGN bottom-right, as on desktop. */
+    header { display: block; position: relative; }
+    .plate { display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+    .plate .photo { position: absolute; width: 100%; height: 100%; padding: 0;
+                    object-fit: cover; object-position: calc(var(--bcx) * 1%) 50%; }
+    .tier { position: absolute; z-index: 3; font-size: min(13vw, 22vh); }
+    .t1 { top: 6vh; left: var(--pad); right: auto; bottom: auto; padding: 0; margin: 0; }
+    .t2 { top: auto; bottom: 14vh; right: var(--pad); left: auto; padding: 0; margin: 0; }
+    .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
+                   background: none; padding: 1.5vh var(--pad) 2.5vh; }
     /* The lightbox has ~390px of height here: shrink its chrome so the photo keeps the middle. */
     #lightbox { padding: .6rem var(--pad) .7rem; }
     .lb-top img { width: 20px; height: 20px; }
@@ -322,7 +351,12 @@
 
 <header id="hero">
   <div class="plate">
-    <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
+    <picture>
+      <!-- Phones get a crop of the same photo, tight to the bowl with its backdrop recoloured to the
+           page ground, so it sits on the page instead of showing as a pale rectangle. -->
+      <source media="(max-width: 700px) and (orientation: portrait)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w" sizes="100vw">
+      <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
+    </picture>
     <h1 aria-label="TEM Design"><span class="tier t1 in" aria-hidden="true">TEM</span><span class="tier t2 in" aria-hidden="true">Design</span></h1>
   </div>
   <div class="hero-chrome">
