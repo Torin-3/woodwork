@@ -596,13 +596,21 @@
   // A piece can pin its link with an optional `slug` in photos.js, so renaming it never breaks old pins.
   const slug = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   const pieceSlug = pc => pc.slug ? slug(pc.slug) : slug(pc.title);
+  // decodeURIComponent THROWS on a broken %-escape ("#%", or a link an email client or a messaging
+  // app has truncated mid-escape). Uncaught, that killed the whole script on load and left the page
+  // with an empty gallery. A hash that won't decode is used as typed, matches nothing, and lands on
+  // the same "this page has moved" message as any other dead link.
+  const hashText = () => {
+    const h = location.hash.slice(1);
+    try { return decodeURIComponent(h); } catch (e) { return h; }
+  };
   const pieceFromHash = () => {
-    const h = decodeURIComponent(location.hash.slice(1));
+    const h = hashText();
     return h ? PIECES.findIndex(pc => pieceSlug(pc) === h) : -1;
   };
   const CATS = [...new Set(PIECES.map(pc => pc.tag))];
   const catFromHash = () => {
-    const h = decodeURIComponent(location.hash.slice(1));
+    const h = hashText();
     return CATS.find(t => slug(t) === h) || null;
   };
 
@@ -997,7 +1005,7 @@
     openLightbox(linkedPiece, 0);
   } else {
     const linkedCat = catFromHash();
-    const h = decodeURIComponent(location.hash.slice(1));
+    const h = hashText();
     if (linkedCat) {
       curCat = linkedCat; renderGrid(false);
       workSection.scrollIntoView({ block: 'start' });   // a collection has no element of its own to land on
@@ -1013,7 +1021,7 @@
       return;
     }
     if (lb.classList.contains('open')) closeLightbox(true);
-    const ct = catFromHash(), h = decodeURIComponent(location.hash.slice(1));
+    const ct = catFromHash(), h = hashText();
     if (!ct && h && !document.getElementById(h)) { showMoved(); return; }   // edited to a dead link
     if (ct !== curCat) {
       curCat = ct; renderGrid(false);
