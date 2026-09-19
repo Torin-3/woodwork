@@ -206,31 +206,44 @@
   /* ---------- Footer ---------- */
   footer { padding: 4rem var(--pad) 3rem; font-size: .9rem; border-top: 4px solid var(--ink); }
 
-  /* ---------- Lightbox: black ground, the photo whole, slides up ---------- */
-  #lightbox { --lbh: 66vh;   /* the photo's height budget; the frame is that at 3:2, so the arrows hug it */
+  /* ---------- Photo viewer: the gallery card at full size, on ink, slides up ----------
+     Redesigned 20 Sept (Torin: "underdesigned and cluttered"). It used to invent its own furniture:
+     a full-width rule across the screen, arrows floating at the screen edges, and a bottom bar with
+     the caption, the collection link and a lichen counter chip on three different alignments. Now it
+     reuses the gallery card's system — photo, controls, 4px rule, title, note — and EVERYTHING under
+     the photo is a column exactly the photo's width (`--lbw`), so type is bound to the object the
+     way the hero's words are bound to the bowl. */
+  #lightbox { --lbh: 66vh;                              /* the photo's height budget */
+              --lbw: min(100%, calc(var(--lbh) * 1.5));  /* every photo is 3:2, so this IS the photo's width */
               position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
               display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .55s var(--ease), visibility 0s linear .55s; }
   #lightbox.open { translate: 0 0; visibility: visible; transition: translate .55s var(--ease); }
-  .lb-top { display: flex; justify-content: space-between; align-items: center; }
-  .lb-top img { width: 28px; height: 28px; }
+  .lb-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  /* The mark was a decorative orphan: not a link, no wordmark, and on a pin arrival it was the only
+     branding on screen. It is now the nav's lockup and it takes you into the site. */
+  #lb-home { color: var(--ground); }
+  #lb-home img { width: 28px; height: 28px; }
   #lb-close { font-size: 1.2rem; background: var(--ground); color: var(--ink); padding: .5rem .9rem; }
-  /* Flex, not grid: the three items pack to the middle together. As a 1fr grid track the frame filled
-     the row and left the arrows ~220px out at the screen edges, a control detached from its subject. */
-  .lb-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 2vw; min-height: 0; }
-  .lb-frame { position: relative; min-width: 0; flex: 0 1 auto; width: min(100%, calc(var(--lbh) * 1.5)); }
-  #lb-img { max-width: 100%; max-height: var(--lbh); width: auto; height: auto; margin: 0 auto; }
+  /* align-items: end — the photo and everything under it read as ONE block, with the spare height
+     gathered above it. Centred, an iPad left the photo floating 170px above its own caption. */
+  .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; }
+  .lb-frame { position: relative; min-width: 0; flex: 0 1 auto; width: var(--lbw); }
+  #lb-img { max-width: 100%; max-height: var(--lbh); width: auto; height: auto; margin: 0 auto; display: block; }
   #lightbox.noimg #lb-img { visibility: hidden; }
   #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-  .lb-btn { font-weight: 700; font-size: clamp(2rem, 4vw, 4rem); line-height: 1; padding: .4em .3em; user-select: none; }
-  .lb-btn:hover { background: var(--lichen); color: var(--ink); }
-  #lightbox.single .lb-btn { display: none; }
-  /* Caption row: title + note | where this piece lives (+ Buy on Etsy if listed) | photo counter. */
-  .lb-cap { display: grid; grid-template-columns: 1fr auto auto; grid-template-areas: "cap act count"; gap: 1rem 2rem;
-            align-items: baseline; border-top: 4px solid var(--ground); padding-top: 1rem; }
-  #lightbox.single .lb-cap { grid-template-columns: 1fr auto; grid-template-areas: "cap act"; }
+  /* The foot: the photo's own width, so the rule, the type and the controls all line up with it. */
+  .lb-foot { width: var(--lbw); margin: 0 auto; min-width: 0; }
+  .lb-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.1rem 0 1rem; }
+  .lb-btn { font-weight: 700; font-size: 1.5rem; line-height: 1; min-width: 3.4rem; min-height: 2.9rem;
+            padding: .25em .7em; border: 3px solid var(--ground); user-select: none; }
+  .lb-btn:hover { background: var(--ground); color: var(--ink); }
+  #lightbox.single .lb-controls { display: none; }
+  /* Under the rule, exactly as a card reads: the title, then the note. The action row sits at the
+     photo's right edge, level with the last line of the note. */
+  .lb-cap { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cap act"; gap: 1rem 2rem;
+            align-items: end; border-top: 4px solid var(--ground); padding-top: 1rem; }
   #lb-caption { grid-area: cap; min-width: 0; }
-  #lb-counter { grid-area: count; }
   /* The piece's collection (closes back to its grid), and Buy on Etsy when the piece is listed
      (lichen, like every Etsy button). Same flat blocks and underlined links as the rest of the site. */
   .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: .8rem 1.8rem; font-weight: 700;
@@ -241,9 +254,16 @@
   #lb-act:hover { background: var(--xanth); }
   #lb-act.buy { background: var(--lichen); }
   #lb-act.buy:hover { background: var(--ground); }
-  #lb-caption strong { display: block; font-size: clamp(1.4rem, 2.4vw, 2.6rem); letter-spacing: -.03em; line-height: 1; }
-  #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: .6rem; max-width: 60ch; }
-  #lb-counter { font-size: .95rem; letter-spacing: .06em; background: var(--lichen); color: var(--ink); padding: .5em .8em; white-space: nowrap; }
+  #lb-caption strong { display: block; font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -.035em; line-height: .95; }
+  #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: .7rem; max-width: 60ch; }
+  /* The counter is a GROUND tab, not a collection colour. The viewer follows the Contact slab's
+     rule — on ink, ground is the structural colour and lichen means exactly one thing: buy. A
+     collection-coloured tab put a lichen counter next to the lichen Buy on Etsy block on the one
+     screen that sells something, and left kelp and slate barely visible on near-black. The
+     collection is named in words underneath ("← Bowls"), which is what a visitor actually reads. */
+  #lb-counter { font-size: .95rem; font-weight: 700; letter-spacing: .06em;
+                background: var(--ground); color: var(--ink);
+                padding: .5em .8em; white-space: nowrap; }
   #lb-counter:empty { display: none; }
   @keyframes lb-step-next { from { translate: 46px 0; } }
   @keyframes lb-step-prev { from { translate: -46px 0; } }
@@ -335,8 +355,6 @@
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 8vh 0; }
     #gallery-grid { gap: 7vh 0; }
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
-    .lb-stage { gap: 1vw; }
-    .lb-btn { font-size: 2rem; padding: .4em .2em; }
     .lb-cap { gap: .8rem 1rem; }
     #lb-caption span { font-size: .85rem; margin-top: .35rem; }
     #lightbox { --lbh: 56vh; }
@@ -366,14 +384,16 @@
     .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
                    background: none; padding: 1.5vh var(--pad) 2.5vh; }
     /* The lightbox has ~390px of height here: shrink its chrome so the photo keeps the middle. */
-    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 62vh; }
-    .lb-top img { width: 20px; height: 20px; }
+    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 54vh; }
+    #lb-home img { width: 20px; height: 20px; }
+    .logo { font-size: .8rem; }
     #lb-close { font-size: .95rem; padding: .35rem .6rem; }
+    .lb-controls { margin: .5rem 0 .45rem; }
     .lb-cap { padding-top: .5rem; border-top-width: 3px; }
-    #lb-caption strong { font-size: 1.05rem; }
+    #lb-caption strong { font-size: 1.3rem; }
     #lb-caption span { font-size: .78rem; margin-top: .2rem; }
-    #lb-counter { font-size: .78rem; padding: .35em .6em; }
-    .lb-btn { font-size: 1.6rem; }
+    #lb-counter { font-size: .72rem; padding: .3em .55em; }
+    .lb-btn { font-size: 1.1rem; min-height: 2.2rem; min-width: 2.8rem; border-width: 2px; padding: .15em .5em; }
     .lb-actions { font-size: .76rem; gap: .5rem 1rem; }
   }
   /* Contact on phones: the text as it was, the two buttons centred on the screen beneath it, one above
@@ -394,21 +414,17 @@
      edge, the arrows are 44px+ blocks under it, and the caption with its action row sits at the
      bottom of the screen, in thumb reach. Single- and multi-photo pieces now show at the same size. */
   @media (max-width: 700px) {
-    /* A 3:2 photo at 100vw is 260px tall on an 844px screen, so there is ~280px spare. Centring the
-       stage split that into two 139px voids, one above the photo and one between the arrows and the
-       caption — three bands where there should be one group. The spare now sits in a single field
-       above the photo, and photo -> arrows -> caption -> actions read as one block in thumb reach. */
-    .lb-stage { display: grid; grid-template-columns: 1fr 1fr; grid-template-areas: "frame frame" "prev next"; align-content: end; gap: 1.1rem 0; }
-    #lightbox.single .lb-stage { grid-template-areas: "frame frame"; }
-    .lb-frame { grid-area: frame; width: auto; margin: 0 calc(-1 * var(--pad)); }
+    /* The photo runs edge to edge; everything under it keeps the padded column. A 3:2 photo at 100vw
+       is 260px tall on an 844px screen, so the spare height sits in one field above the photo rather
+       than being split either side of it — and the whole block is bottom-weighted, in thumb reach. */
     #lightbox { --lbh: 58vh; }
+    .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
     #lb-img { width: 100%; max-height: var(--lbh); object-fit: contain; }
-    #lb-prev { grid-area: prev; justify-self: start; }
-    #lb-next { grid-area: next; justify-self: end; }
-    .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; border: 3px solid var(--ground); }
-    .lb-cap { grid-template-columns: 1fr auto; grid-template-areas: "cap count" "act act"; }
-    #lightbox.single .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; }
-    .lb-actions { justify-content: space-between; align-items: center; margin-top: .4rem; }
+    .lb-foot { width: auto; }
+    .lb-controls { margin: .9rem 0 .85rem; }
+    .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; }
+    .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
+    .lb-actions { justify-content: space-between; align-items: center; }
     #lb-act { padding: .85em 1.1em; }   /* the viewer's main action: a full 44px+ thumb target */
   }
   /* Sideways entrances need spare width to travel through; below ~900px they push content past the
@@ -554,22 +570,29 @@
 </footer>
 
 <!-- Lightbox -->
+<!-- The open photo IS a gallery card at full size: the photo, its controls, the 4px rule, the
+     title, the note. Everything under the photo is a column exactly the photo's width. -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <div class="lb-top">
-    <img src="logo/logo-128.png" width="128" height="128" alt="">
+    <a class="logo" id="lb-home" href="#" aria-label="TEM Design home"><img src="logo/logo-128.png" width="128" height="128" alt=""><span>TEMDesign</span></a>
     <button type="button" id="lb-close" aria-label="Close photo viewer">✕</button>
   </div>
   <div class="lb-stage">
-    <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo">←</button>
     <div class="lb-frame"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></div>
-    <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo">→</button>
   </div>
-  <div class="lb-cap">
-    <div id="lb-caption"><strong></strong><span></span></div>
-    <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy for a piece
-         that is listed. A piece that isn't for sale shows no action block (Torin, 19 Sept). -->
-    <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
-    <div id="lb-counter"></div>
+  <div class="lb-foot">
+    <!-- The step controls and the counter they drive, as one cluster the width of the photo. -->
+    <div class="lb-controls">
+      <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo">←</button>
+      <div id="lb-counter"></div>
+      <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo">→</button>
+    </div>
+    <div class="lb-cap">
+      <div id="lb-caption"><strong></strong><span></span></div>
+      <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy for a piece
+           that is listed. A piece that isn't for sale shows no action block (Torin, 19 Sept). -->
+      <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
+    </div>
     <p id="lb-live" class="vh" aria-live="polite"></p>
   </div>
 </div>
@@ -791,6 +814,7 @@
   const lbColl = document.getElementById('lb-coll');
   const lbAct = document.getElementById('lb-act');
   const lbLive = document.getElementById('lb-live');
+  const lbHome = document.getElementById('lb-home');
   const BASE_TITLE = document.title;
   let cur = { piece: 0, photo: 0 };
   let openedPiece = 0;   // the piece the viewer was opened on, before any stepping
@@ -918,6 +942,13 @@
     closeLightbox(false, workH2);
     workSection.scrollIntoView({ block: 'start' });
   });
+  // The lockup: close the piece and go to the top of the site. On a pin arrival this is the only
+  // branding on screen, and it was an inert image — no way in at all.
+  lbHome.addEventListener('click', e => {
+    e.preventDefault();
+    closeLightbox(false, document.querySelector('nav .logo'));   // a focus target means no scroll fight
+    scrollTo({ top: 0 });
+  });
   // With a mouse, a click on the black ground around the photo closes it too. Not on touch, where a
   // near-miss on an arrow would throw the visitor out of the viewer.
   if (matchMedia('(pointer: fine)').matches) {
@@ -931,7 +962,7 @@
     if (e.key === 'ArrowRight') step(1);
     if (e.key === 'Tab') {
       // Keep focus inside the dialog.
-      const focusables = [lbClose, lbPrev, lbNext, lbColl, lbAct].filter(b => b.offsetParent !== null);
+      const focusables = [lbHome, lbClose, lbPrev, lbNext, lbColl, lbAct].filter(b => b.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
