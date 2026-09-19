@@ -52,6 +52,7 @@
   #lightbox :focus-visible, #contact :focus-visible { outline-color: var(--ground); }   /* ink ring on an ink ground is invisible */
   .skip-link { position: absolute; left: 16px; top: -56px; z-index: 600; background: var(--ink); color: var(--ground); padding: 10px 18px; font-weight: 700; font-size: .875rem; transition: top .2s; }
   .skip-link:focus { top: 0; }
+  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   /* ---------- Nav: sticky, solid, ruled. The mark alone at left. ---------- */
   nav { position: sticky; top: 0; z-index: 100; background: var(--ground); border-bottom: 2px solid var(--ink); }
@@ -152,13 +153,16 @@
   .piece.collection:hover .bar { border-top-color: var(--c); }
   .piece h3 { font-size: clamp(1.15rem, 1.5vw, 1.6rem); letter-spacing: -.02em; line-height: 1.05; }
   .piece.collection h3 { font-size: clamp(1.8rem, 3.4vw, 3.6rem); letter-spacing: -.035em; line-height: .95; text-transform: uppercase; }
-  /* The title is a real button stretched over the card: headings stay in the outline, keyboards get a target. */
-  .piece h3 button { text-align: inherit; letter-spacing: inherit; text-transform: inherit; }
+  /* The title is a real LINK stretched over the card (19 Sept: it was a button, so the 40 deep links
+     existed and nothing pointed at them — no cmd-click to compare two pieces, no "copy link address",
+     and no crawl path for the links pins depend on). The click handler opens the viewer instead of
+     navigating; a modified click is left to the browser. */
+  .piece h3 a { text-align: inherit; letter-spacing: inherit; text-transform: inherit; }
   .piece .slide { display: block; }
-  .piece h3 button::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
-  .piece h3 button:focus-visible { outline: 0; }
-  .piece h3 button:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
-  .js .piece.in h3 button:focus-visible::after { outline-offset: -3px; }   /* inside the box while overflow clips the slide */
+  .piece h3 a::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
+  .piece h3 a:focus-visible { outline: 0; }
+  .piece h3 a:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .js .piece.in h3 a:focus-visible::after { outline-offset: -3px; }   /* inside the box while overflow clips the slide */
   .piece .ct { font-size: .85rem; letter-spacing: .04em; white-space: nowrap; }
   .piece.collection .ct { font-size: clamp(.8rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; padding: .5em .8em; background: var(--c); color: var(--cink); }
   .piece .note { font-size: clamp(.95rem, 1.05vw, 1.1rem); line-height: 1.4; margin-top: .6rem; max-width: 40ch; }
@@ -203,30 +207,32 @@
   footer { padding: 4rem var(--pad) 3rem; font-size: .9rem; border-top: 4px solid var(--ink); }
 
   /* ---------- Lightbox: black ground, the photo whole, slides up ---------- */
-  #lightbox { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
+  #lightbox { --lbh: 66vh;   /* the photo's height budget; the frame is that at 3:2, so the arrows hug it */
+              position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
               display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .55s var(--ease), visibility 0s linear .55s; }
   #lightbox.open { translate: 0 0; visibility: visible; transition: translate .55s var(--ease); }
   .lb-top { display: flex; justify-content: space-between; align-items: center; }
   .lb-top img { width: 28px; height: 28px; }
   #lb-close { font-size: 1.2rem; background: var(--ground); color: var(--ink); padding: .5rem .9rem; }
-  .lb-stage { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2vw; min-height: 0; }
-  .lb-frame { position: relative; min-width: 0; }
-  #lb-img { max-width: 100%; max-height: 66vh; width: auto; height: auto; margin: 0 auto; }
+  /* Flex, not grid: the three items pack to the middle together. As a 1fr grid track the frame filled
+     the row and left the arrows ~220px out at the screen edges, a control detached from its subject. */
+  .lb-stage { position: relative; display: flex; align-items: center; justify-content: center; gap: 2vw; min-height: 0; }
+  .lb-frame { position: relative; min-width: 0; flex: 0 1 auto; width: min(100%, calc(var(--lbh) * 1.5)); }
+  #lb-img { max-width: 100%; max-height: var(--lbh); width: auto; height: auto; margin: 0 auto; }
   #lightbox.noimg #lb-img { visibility: hidden; }
   #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
   .lb-btn { font-weight: 700; font-size: clamp(2rem, 4vw, 4rem); line-height: 1; padding: .4em .3em; user-select: none; }
   .lb-btn:hover { background: var(--lichen); color: var(--ink); }
   #lightbox.single .lb-btn { display: none; }
-  /* Caption row: title + note | what you can do about this piece | photo counter. */
+  /* Caption row: title + note | where this piece lives (+ Buy on Etsy if listed) | photo counter. */
   .lb-cap { display: grid; grid-template-columns: 1fr auto auto; grid-template-areas: "cap act count"; gap: 1rem 2rem;
             align-items: baseline; border-top: 4px solid var(--ground); padding-top: 1rem; }
   #lightbox.single .lb-cap { grid-template-columns: 1fr auto; grid-template-areas: "cap act"; }
   #lb-caption { grid-area: cap; min-width: 0; }
   #lb-counter { grid-area: count; }
-  /* The piece's collection (closes back to its grid) and one action: Buy on Etsy for a piece that is
-     listed (lichen, like every Etsy button), otherwise an email about this piece (ground, like the
-     Contact email). Same flat blocks and underlined links as the rest of the site. */
+  /* The piece's collection (closes back to its grid), and Buy on Etsy when the piece is listed
+     (lichen, like every Etsy button). Same flat blocks and underlined links as the rest of the site. */
   .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: .8rem 1.8rem; font-weight: 700;
                 font-size: clamp(.9rem, 1.05vw, 1.1rem); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
   #lb-coll { border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
@@ -264,6 +270,17 @@
     /* the 36px Etsy / email blocks reach 44px */
     .cta a.etsy, #contact .cta a { position: relative; }
     .cta a.etsy::before, #contact .cta a::before { content: ""; position: absolute; top: -4px; right: 0; bottom: -4px; left: 0; }
+    /* The viewer's own chrome shrinks on a short screen (a phone held sideways), which left the ✕ at
+       32x32, the arrows 36x46 and the action block 30px tall. The blocks keep their size; the hit
+       area grows around them. -7px sideways leaves a 2px gap between neighbours in the action row. */
+    #lb-close, .lb-btn, #lb-act { position: relative; }
+    #lb-close::before, .lb-btn::before, #lb-act::before { content: ""; position: absolute; top: -8px; right: -7px; bottom: -8px; left: -7px; }
+    /* The stage is a positioned sibling that comes later, so it was taking the hits for the ✕'s
+       lower edge. The top bar goes above it. */
+    .lb-top { position: relative; z-index: 1; }
+    /* "← Bowls" is a 22px block whose 3px underline eats into the hit area (it is measured from the
+       padding box), so this one needs a little more than the site's usual 12px. */
+    #lb-coll::before { top: -14px; bottom: -14px; }
   }
 
   /* ---------- Phone / tablet ---------- */
@@ -322,7 +339,7 @@
     .lb-btn { font-size: 2rem; padding: .4em .2em; }
     .lb-cap { gap: .8rem 1rem; }
     #lb-caption span { font-size: .85rem; margin-top: .35rem; }
-    #lb-img { max-height: 56vh; }
+    #lightbox { --lbh: 56vh; }
   }
   /* Landscape phones: ~360-430px of height for everything. */
   @media (max-width: 1100px) and (max-height: 520px) {
@@ -349,10 +366,9 @@
     .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
                    background: none; padding: 1.5vh var(--pad) 2.5vh; }
     /* The lightbox has ~390px of height here: shrink its chrome so the photo keeps the middle. */
-    #lightbox { padding: .6rem var(--pad) .7rem; }
+    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 62vh; }
     .lb-top img { width: 20px; height: 20px; }
     #lb-close { font-size: .95rem; padding: .35rem .6rem; }
-    #lb-img { max-height: 62vh; }
     .lb-cap { padding-top: .5rem; border-top-width: 3px; }
     #lb-caption strong { font-size: 1.05rem; }
     #lb-caption span { font-size: .78rem; margin-top: .2rem; }
@@ -378,10 +394,15 @@
      edge, the arrows are 44px+ blocks under it, and the caption with its action row sits at the
      bottom of the screen, in thumb reach. Single- and multi-photo pieces now show at the same size. */
   @media (max-width: 700px) {
-    .lb-stage { grid-template-columns: 1fr 1fr; grid-template-areas: "frame frame" "prev next"; align-content: center; gap: 1.1rem 0; }
+    /* A 3:2 photo at 100vw is 260px tall on an 844px screen, so there is ~280px spare. Centring the
+       stage split that into two 139px voids, one above the photo and one between the arrows and the
+       caption — three bands where there should be one group. The spare now sits in a single field
+       above the photo, and photo -> arrows -> caption -> actions read as one block in thumb reach. */
+    .lb-stage { display: grid; grid-template-columns: 1fr 1fr; grid-template-areas: "frame frame" "prev next"; align-content: end; gap: 1.1rem 0; }
     #lightbox.single .lb-stage { grid-template-areas: "frame frame"; }
-    .lb-frame { grid-area: frame; margin: 0 calc(-1 * var(--pad)); }
-    #lb-img { width: 100%; max-height: 58vh; object-fit: contain; }
+    .lb-frame { grid-area: frame; width: auto; margin: 0 calc(-1 * var(--pad)); }
+    #lightbox { --lbh: 58vh; }
+    #lb-img { width: 100%; max-height: var(--lbh); object-fit: contain; }
     #lb-prev { grid-area: prev; justify-self: start; }
     #lb-next { grid-area: next; justify-self: end; }
     .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; border: 3px solid var(--ground); }
@@ -545,10 +566,11 @@
   </div>
   <div class="lb-cap">
     <div id="lb-caption"><strong></strong><span></span></div>
-    <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy when the
-         piece has an etsy link in photos.js, otherwise an email with the piece as the subject. -->
-    <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="mailto:TEMDesign@proton.me"></a></div>
-    <div id="lb-counter" aria-live="polite"></div>
+    <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy for a piece
+         that is listed. A piece that isn't for sale shows no action block (Torin, 19 Sept). -->
+    <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
+    <div id="lb-counter"></div>
+    <p id="lb-live" class="vh" aria-live="polite"></p>
   </div>
 </div>
 
@@ -669,7 +691,14 @@
   }
   function wireCard(card, onOpen) {
     card.querySelector('.thumb img').addEventListener('error', e => e.target.closest('.thumb').classList.add('noimg'));
-    card.addEventListener('click', onOpen);
+    // The title is a real link now, so a modified click belongs to the browser: cmd/ctrl-click opens
+    // the piece's own deep link in a new tab, shift-click in a new window. A plain click opens the
+    // viewer here instead of navigating.
+    card.addEventListener('click', e => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+      e.preventDefault();
+      onOpen();
+    });
     return card;
   }
   // Piece card: the photo whole, a rule, the title (a real button stretched over the card),
@@ -678,9 +707,9 @@
     const card = baseCard(animate, delayIdx);
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="${esc(piece.title)}" width="1600" height="1067" loading="lazy"></div>
+        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
-          <h3><button type="button">${esc(piece.title)}</button></h3>
+          <h3><a href="#${esc(pieceSlug(piece))}">${esc(piece.title)}</a></h3>
           ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
         </div>
         <p class="note">${esc(piece.note)}</p>
@@ -707,7 +736,7 @@
       <div class="slide">
         <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
-          <h3><button type="button" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</button></h3>
+          <h3><a href="#${esc(slug(tag))}" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
           <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
         </div>
       </div>`;
@@ -753,8 +782,10 @@
   const lbNext = document.getElementById('lb-next');
   const lbColl = document.getElementById('lb-coll');
   const lbAct = document.getElementById('lb-act');
+  const lbLive = document.getElementById('lb-live');
   const BASE_TITLE = document.title;
   let cur = { piece: 0, photo: 0 };
+  let openedPiece = 0;   // the piece the viewer was opened on, before any stepping
   let lastFocus = null;
 
   // History: an open piece is ONE history entry on top of its collection, so the phone's Back button
@@ -763,11 +794,17 @@
   const PIECE_STATE = { tem: 'piece' };
   const inPieceEntry = () => !!(history.state && history.state.tem === 'piece');
 
+  // The arrows walk the whole collection (see step), so they are only pointless when the collection
+  // holds a single photo in total.
+  const reelOf = tag => PIECES.reduce((a, pc, i) => { if (pc.tag === tag) a.push(i); return a; }, []);
+  const reelPhotos = tag => reelOf(tag).reduce((n, i) => n + PIECES[i].photos.length, 0);
+
   function openLightbox(pi, idx) {
     cur = { piece: pi, photo: idx };
+    openedPiece = pi;
     if (!lb.classList.contains('open')) lastFocus = document.activeElement;
     lbImg.style.animation = '';
-    lb.classList.toggle('single', PIECES[pi].photos.length < 2);
+    lb.classList.toggle('single', reelPhotos(PIECES[pi].tag) < 2);
     render();
     lb.classList.add('open');
     document.body.style.overflow = 'hidden';
@@ -787,8 +824,15 @@
       if (inPieceEntry()) { try { history.back(); } catch (e) {} }
       else if (pieceFromHash() !== -1) { try { history.replaceState(null, '', curCat ? '#' + slug(curCat) : location.pathname + location.search); } catch (e) {} }
     }
-    const f = focusTarget || lastFocus;
+    // Stepping through the collection can end on a different piece than the one that opened the
+    // viewer, so focus goes to THAT piece's card. Only when it actually moved: on a pin arrival
+    // nothing had focus, and focusing a card there would scroll the page off the grid it parked on.
+    const f = focusTarget || (cur.piece !== openedPiece ? cardLinkFor(cur.piece) : null) || lastFocus;
     if (f && typeof f.focus === 'function' && document.contains(f)) f.focus(focusTarget ? { preventScroll: true } : undefined);
+  }
+  function cardLinkFor(pi) {
+    const h = '#' + pieceSlug(PIECES[pi]);
+    return [...grid.querySelectorAll('h3 a')].find(a => a.getAttribute('href') === h) || null;
   }
   // A photo that fails outright blanks out and says so, rather than leaving the previous photo up.
   lbImg.addEventListener('error', () => {
@@ -804,20 +848,25 @@
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
     lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
+    // The dialog is named after the piece, so opening it announces "Oak Bowl, photo viewer" instead
+    // of a bare "Photo viewer"; the live region then reports each step.
+    lb.setAttribute('aria-label', `${p.title}, photo viewer`);
+    lbLive.textContent = p.photos.length > 1
+      ? `${p.title}, photo ${cur.photo + 1} of ${p.photos.length}`
+      : p.title;
     // The action row: this piece's collection, then Buy on Etsy if it's listed (an https link in
-    // photos.js), otherwise an email about it with the piece's name as the subject.
+    // photos.js). A piece that isn't listed shows no action block at all.
     lbColl.textContent = `← ${p.tag}`;
     lbColl.href = '#' + slug(p.tag);
     const etsy = typeof p.etsy === 'string' && /^https:\/\//.test(p.etsy) ? p.etsy : '';
+    lbAct.hidden = !etsy;
     lbAct.classList.toggle('buy', !!etsy);
     if (etsy) {
       lbAct.textContent = 'Buy on Etsy';
       lbAct.href = etsy; lbAct.target = '_blank'; lbAct.rel = 'noopener';
       lbAct.setAttribute('aria-label', 'Buy on Etsy (opens in a new tab)');
     } else {
-      lbAct.textContent = 'Ask about this piece';
-      lbAct.href = 'mailto:TEMDesign@proton.me?subject=' + encodeURIComponent(p.title);
-      lbAct.removeAttribute('target'); lbAct.removeAttribute('rel'); lbAct.removeAttribute('aria-label');
+      lbAct.textContent = '';
     }
     if (dir !== 0 && !reduceMotion) {
       lbImg.style.animation = 'none';
@@ -825,11 +874,28 @@
       lbImg.style.animation = `lb-step-${dir > 0 ? 'next' : 'prev'} .38s var(--ease)`;
     }
   }
-  function step(dir) {
+  // The URL and the tab title follow the open piece WITHOUT adding a history entry, so ✕ / Esc /
+  // Back still step off the one piece entry onto the collection, however far along the reel you are.
+  function syncPiece() {
     const p = PIECES[cur.piece];
-    if (p.photos.length < 2) return;
-    cur.photo = (cur.photo + dir + p.photos.length) % p.photos.length;
+    document.title = `${p.title} — ${BASE_TITLE}`;
+    try { history.replaceState(PIECE_STATE, '', '#' + pieceSlug(p)); } catch (e) {}
+  }
+  // ← → walk the whole COLLECTION as one reel: this piece's angles, then straight on into the next
+  // piece's. Before this they cycled one piece's photos only, so 19 of the 40 pieces (single-photo)
+  // had no arrows at all and seeing eleven bowls cost eleven open-look-close cycles.
+  function step(dir) {
+    const reel = reelOf(PIECES[cur.piece].tag);
+    let piece = cur.piece, photo = cur.photo + dir;
+    if (photo < 0 || photo >= PIECES[piece].photos.length) {
+      piece = reel[(reel.indexOf(piece) + dir + reel.length) % reel.length];
+      photo = dir > 0 ? 0 : PIECES[piece].photos.length - 1;
+    }
+    if (piece === cur.piece && photo === cur.photo) return;   // one piece, one photo: nowhere to go
+    const moved = piece !== cur.piece;
+    cur = { piece, photo };
     render(dir);
+    if (moved) syncPiece();
   }
   lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
   lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
