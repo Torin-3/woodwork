@@ -20,6 +20,16 @@
 //  IF YOU CHANGE A PIECE'S TAG, move its photo files into the matching
 //      folder too, or those photos will 404.
 //
+//  TWO OPTIONAL EXTRAS a piece can have:
+//      etsy: "https://..."   the piece is for sale. Its photo viewer shows a
+//                            "Buy on Etsy" button linking there (use the listing's
+//                            own link, or the shop's). Pieces without one show
+//                            "Ask about this piece", which emails you instead.
+//      slug: "oak-bowl"      pins the piece's link (#oak-bowl) so you can rename
+//                            the title later without breaking pins that point at
+//                            it. Before renaming a piece, set its slug to the old
+//                            link name (the old title, lowercase, words joined by -).
+//
 //  The first photo in each list is used as the cover image.
 //  Pieces appear on the site in the order they appear here.
 //  The tag decides which category a piece lives in on the site,
@@ -175,6 +185,7 @@ const PIECES = [
     title: "Disc Pendant",
     note: "Elm and Oak pendants, hung on a leather cord.",
     tag: "Jewellery",
+    etsy: "https://torinemdesigns.etsy.com",
     photos: ["16.1.jpg", "16.2.jpg", "16.3.jpg"],
   },
   {

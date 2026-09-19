@@ -49,7 +49,7 @@
   /* ---------- Focus & skip link ---------- */
   a:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   #work:focus, #work:focus-visible { outline: none; } /* focus target for the skip link only */
-  #lightbox :focus-visible { outline-color: var(--ground); }
+  #lightbox :focus-visible, #contact :focus-visible { outline-color: var(--ground); }   /* ink ring on an ink ground is invisible */
   .skip-link { position: absolute; left: 16px; top: -56px; z-index: 600; background: var(--ink); color: var(--ground); padding: 10px 18px; font-weight: 700; font-size: .875rem; transition: top .2s; }
   .skip-link:focus { top: 0; }
 
@@ -123,9 +123,17 @@
   #contact .in { --from: -48px 0; }
 
   /* ---------- Sections ---------- */
-  section { scroll-margin-top: calc(var(--navh) + 14px); }
+  /* Exactly the nav's height (1px under, so rounding never leaves a strip of the section above showing) */
+  section { scroll-margin-top: calc(var(--navh) - 1px); }
+  /* A block waiting to slide in from the side sits 48px past its column; on screens narrower than
+     ~1200px that's past the page edge (the About list reached 1031px on a 1024px iPad) and let the
+     page scroll sideways. Each section clips its own width; `clip` makes no scroll container, so
+     sticky and vertical layout are untouched. */
+  #work, #about, #contact { overflow-x: clip; }
   .section-head { display: flex; align-items: baseline; gap: 2.4rem; flex-wrap: wrap; margin-bottom: 6vh; }
-  h2 { font-size: clamp(2.2rem, 3.6vw, 3.6rem); }
+  /* Section heads sit a clear step (~1.33x) above the uppercase collection titles below them */
+  h2 { font-size: clamp(2.4rem, 4.6vw, 4.8rem); }
+  #work h2:focus { outline: none; }   /* focused by script when a collection opens, so screen readers announce it */
   .section-sub { font-size: clamp(1rem, 1.25vw, 1.3rem); }
 
   /* ---------- Gallery: the old skeleton (head → 2-up collections → 3-up pieces), re-skinned ---------- */
@@ -150,6 +158,7 @@
   .piece h3 button::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
   .piece h3 button:focus-visible { outline: 0; }
   .piece h3 button:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .js .piece.in h3 button:focus-visible::after { outline-offset: -3px; }   /* inside the box while overflow clips the slide */
   .piece .ct { font-size: .85rem; letter-spacing: .04em; white-space: nowrap; }
   .piece.collection .ct { font-size: clamp(.8rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; padding: .5em .8em; background: var(--c); color: var(--cink); }
   .piece .note { font-size: clamp(.95rem, 1.05vw, 1.1rem); line-height: 1.4; margin-top: .6rem; max-width: 40ch; }
@@ -174,7 +183,7 @@
   #contact .cta a { border-bottom-color: var(--ground); }
   #contact .cta a.etsy { background: var(--lichen); color: var(--ink); }
   #contact .cta a.etsy:hover { background: var(--ground); }
-  #contact .cta a.mail { background: var(--ground); color: var(--ink); border: 0; padding: .55em .9em; }
+  #contact .cta a.mail { background: var(--ground); color: var(--ink); border: 0; padding: .55em .9em; text-transform: none; }
   #contact .cta a.mail:hover { background: var(--xanth); }
   /* Desktop (Torin, 18 Sept): the two buttons sit in the empty ink to the RIGHT of the headline and
      line, oversized, stacked, each fitted to its own text, and centred on the text block's height,
@@ -195,20 +204,37 @@
 
   /* ---------- Lightbox: black ground, the photo whole, slides up ---------- */
   #lightbox { position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
-              display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem;
+              display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .55s var(--ease), visibility 0s linear .55s; }
   #lightbox.open { translate: 0 0; visibility: visible; transition: translate .55s var(--ease); }
   .lb-top { display: flex; justify-content: space-between; align-items: center; }
   .lb-top img { width: 28px; height: 28px; }
   #lb-close { font-size: 1.2rem; background: var(--ground); color: var(--ink); padding: .5rem .9rem; }
   .lb-stage { position: relative; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 2vw; min-height: 0; }
+  .lb-frame { position: relative; min-width: 0; }
   #lb-img { max-width: 100%; max-height: 66vh; width: auto; height: auto; margin: 0 auto; }
   #lightbox.noimg #lb-img { visibility: hidden; }
-  #lightbox.noimg .lb-stage::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+  #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
   .lb-btn { font-weight: 700; font-size: clamp(2rem, 4vw, 4rem); line-height: 1; padding: .4em .3em; user-select: none; }
   .lb-btn:hover { background: var(--lichen); color: var(--ink); }
   #lightbox.single .lb-btn { display: none; }
-  .lb-cap { display: grid; grid-template-columns: 1fr auto; gap: 2rem; align-items: baseline; border-top: 4px solid var(--ground); padding-top: 1rem; }
+  /* Caption row: title + note | what you can do about this piece | photo counter. */
+  .lb-cap { display: grid; grid-template-columns: 1fr auto auto; grid-template-areas: "cap act count"; gap: 1rem 2rem;
+            align-items: baseline; border-top: 4px solid var(--ground); padding-top: 1rem; }
+  #lightbox.single .lb-cap { grid-template-columns: 1fr auto; grid-template-areas: "cap act"; }
+  #lb-caption { grid-area: cap; min-width: 0; }
+  #lb-counter { grid-area: count; }
+  /* The piece's collection (closes back to its grid) and one action: Buy on Etsy for a piece that is
+     listed (lichen, like every Etsy button), otherwise an email about this piece (ground, like the
+     Contact email). Same flat blocks and underlined links as the rest of the site. */
+  .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: .8rem 1.8rem; font-weight: 700;
+                font-size: clamp(.9rem, 1.05vw, 1.1rem); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
+  #lb-coll { border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
+  #lb-coll:hover { border-bottom-color: var(--xanth); }
+  #lb-act { padding: .55em .9em; background: var(--ground); color: var(--ink); }
+  #lb-act:hover { background: var(--xanth); }
+  #lb-act.buy { background: var(--lichen); }
+  #lb-act.buy:hover { background: var(--ground); }
   #lb-caption strong { display: block; font-size: clamp(1.4rem, 2.4vw, 2.6rem); letter-spacing: -.03em; line-height: 1; }
   #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: .6rem; max-width: 60ch; }
   #lb-counter { font-size: .95rem; letter-spacing: .06em; background: var(--lichen); color: var(--ink); padding: .5em .8em; white-space: nowrap; }
@@ -227,6 +253,17 @@
     .cta a.etsy:hover { background: var(--lichen); color: var(--ink); }
     .piece:hover .bar, .piece.collection:hover .bar { border-top-color: var(--ink); }
     .lb-btn:hover { background: none; color: inherit; }
+    #lb-coll:hover { border-bottom-color: var(--ground); }
+    #lb-act:hover { background: var(--ground); } #lb-act.buy:hover { background: var(--lichen); }
+  }
+  /* Touch: text links get a 44px+ tap area without changing how they look (WCAG 2.5.5 comfort size). */
+  @media (pointer: coarse) {
+    .nav-links a, .hero-chrome .cta a:not(.etsy), #lb-coll, #work-back button { position: relative; }
+    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before {
+      content: ""; position: absolute; top: -12px; right: -6px; bottom: -12px; left: -6px; }
+    /* the 36px Etsy / email blocks reach 44px */
+    .cta a.etsy, #contact .cta a { position: relative; }
+    .cta a.etsy::before, #contact .cta a::before { content: ""; position: absolute; top: -4px; right: 0; bottom: -4px; left: 0; }
   }
 
   /* ---------- Phone / tablet ---------- */
@@ -283,7 +320,7 @@
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
     .lb-stage { gap: 1vw; }
     .lb-btn { font-size: 2rem; padding: .4em .2em; }
-    .lb-cap { grid-template-columns: 1fr auto; gap: 1rem; }
+    .lb-cap { gap: .8rem 1rem; }
     #lb-caption span { font-size: .85rem; margin-top: .35rem; }
     #lb-img { max-height: 56vh; }
   }
@@ -321,6 +358,7 @@
     #lb-caption span { font-size: .78rem; margin-top: .2rem; }
     #lb-counter { font-size: .78rem; padding: .35em .6em; }
     .lb-btn { font-size: 1.6rem; }
+    .lb-actions { font-size: .76rem; gap: .5rem 1rem; }
   }
   /* Contact on phones: the text as it was, the two buttons centred on the screen beneath it, one above
      the other, each fitted to its own text. The #contact rules outrank the hero's triangle. Unlike the
@@ -334,6 +372,23 @@
                     container-type: normal; font-size: clamp(.9rem, 1.05vw, 1.1rem); }
     #contact .cta a { font-size: inherit; padding: .55em .9em; text-align: center; }
     #contact .cta a.etsy { grid-column: auto; order: 0; }
+  }
+  /* Photo viewer on portrait phones (critique, 19 Sept): the arrows flanking the photo left it 254px
+     wide on a 390px screen, smaller than the thumbnail that opened it. Here the photo runs edge to
+     edge, the arrows are 44px+ blocks under it, and the caption with its action row sits at the
+     bottom of the screen, in thumb reach. Single- and multi-photo pieces now show at the same size. */
+  @media (max-width: 700px) {
+    .lb-stage { grid-template-columns: 1fr 1fr; grid-template-areas: "frame frame" "prev next"; align-content: center; gap: 1.1rem 0; }
+    #lightbox.single .lb-stage { grid-template-areas: "frame frame"; }
+    .lb-frame { grid-area: frame; margin: 0 calc(-1 * var(--pad)); }
+    #lb-img { width: 100%; max-height: 58vh; object-fit: contain; }
+    #lb-prev { grid-area: prev; justify-self: start; }
+    #lb-next { grid-area: next; justify-self: end; }
+    .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; border: 3px solid var(--ground); }
+    .lb-cap { grid-template-columns: 1fr auto; grid-template-areas: "cap count" "act act"; }
+    #lightbox.single .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; }
+    .lb-actions { justify-content: space-between; align-items: center; margin-top: .4rem; }
+    #lb-act { padding: .85em 1.1em; }   /* the viewer's main action: a full 44px+ thumb target */
   }
   /* Sideways entrances need spare width to travel through; below ~900px they push content past the
      edge mid-animation. Everything except the hero words (clipped by the hero) travels vertically. */
@@ -351,18 +406,23 @@
     .nav-links a.shop { padding: .4rem .6rem; }
   }
 
-  /* ---------- Portrait phones: the desktop hero, re-proportioned for a tall screen ----------
+  /* ---------- Portrait phones AND portrait tablets (up to 1100px wide; the 768px iPad used to crop
+     the bowl into a plank): the desktop hero, re-proportioned for a tall screen ----------
+     Gated on the screen being at least 5:4 tall, not just "portrait": the stack needs ~74vw plus the
+     lede and links, which a near-square window (900x1000) can't give; those keep the desktop hero.
+     The <source> media query must match this one exactly.
      Same photo (its backdrop extended — see the <source>), drawn exactly 100vw wide, so the bowl is a
      fixed fraction of the screen: centred on the WOOD (not its shadow), 90% of the width, a 5% gap
      each side — the same as --pad, so TEM starts at the bowl's left edge and DESIGN ends at its right.
      A phone has the height the desktop lacks, so the words do not overlap the bowl here (Torin, 18
      Sept): TEM sits just above the rim, DESIGN just below the foot. Lede and links sit on the photo
      at the bottom. Numbers from hero-bbox.json "phone". */
-  @media (max-width: 700px) and (orientation: portrait) {
+  @media (max-width: 1100px) and (max-aspect-ratio: 4/5) {
     /* Rows: space / the bowl slot / space / chrome. The headline lives INSIDE .plate in the markup
        (desktop positions it in the photo's coordinates), so the words are pinned to the slot's edges
        rather than given grid rows; the slot's margins reserve room for them. */
-    header { display: grid; grid-template-rows: 1fr auto 1fr auto; align-content: stretch; }
+    /* --pad is 5vw here at every width (tablets use 4vw elsewhere) so the words line up with the bowl's 5% gap. */
+    header { --pad: 5vw; display: grid; grid-template-rows: 1fr auto 1fr auto; align-content: stretch; }
     /* .plate is a slot exactly the bowl's height. The tall photo hangs from it, placed so the bowl in
        the photo lands in the slot; the header clips whatever reaches past its own edges. */
     .plate { grid-row: 2; display: block; position: relative; width: 100%; height: 34.375vw;
@@ -377,10 +437,10 @@
     .t2 { right: var(--pad); left: auto; bottom: auto; top: calc(100% + .12em); --from: 28vw 0; }
     .hero-chrome { grid-row: 4; position: relative; background: none; flex-direction: column;
                    align-items: center; text-align: center; gap: 1.1rem; padding: 0 var(--pad) 4.5vh; }
-    .lede { max-width: 34ch; font-size: .95rem; --from: -48px 0; }
+    .lede { max-width: 34ch; font-size: clamp(.95rem, 2.2vw, 1.2rem); --from: -48px 0; }
     /* The three links as a triangle: the two section links side by side, Etsy centred beneath. */
     .cta { display: grid; grid-template-columns: auto auto; justify-content: center; justify-items: center;
-           gap: .8rem 2rem; white-space: nowrap; font-size: clamp(.9rem, 1.05vw, 1.1rem); --from: 48px 0; }
+           gap: 1rem 2rem; white-space: nowrap; font-size: clamp(.9rem, 1.05vw, 1.1rem); --from: 48px 0; }   /* 1rem: the rows' tap areas never meet */
     .cta a.etsy { grid-column: 1 / -1; order: 3; }
   }
 
@@ -403,7 +463,7 @@
       <a href="#work">Gallery</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
-      <a class="shop" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener">Shop</a>
+      <a class="shop" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener" aria-label="Shop on Etsy (opens in a new tab)">Shop</a>
     </div>
   </div>
 </nav>
@@ -414,7 +474,7 @@
       <!-- Portrait phones get the same photo with its own backdrop extended up and down
            (docs/superpowers/scripts/make_hero.py), so it can fill a tall screen without cutting
            the bowl's sides off. -->
-      <source media="(max-width: 700px) and (orientation: portrait)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
+      <source media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
       <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     </picture>
     <h1 aria-label="TEM Design"><span class="tier t1 in" aria-hidden="true">TEM</span><span class="tier t2 in" aria-hidden="true">Design</span></h1>
@@ -423,14 +483,14 @@
     <p class="lede in">I'm Torin. I turn everything from bowls to jewellery on my lathe, alongside various other woodworking projects in my workshop in Fife. All wood is sustainably sourced where possible.</p>
     <div class="cta in">
       <a href="#work">See the work</a>
-      <a class="etsy" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener">Shop on Etsy</a>
+      <a class="etsy" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener" aria-label="Shop on Etsy (opens in a new tab)">Shop on Etsy</a>
       <a href="#contact">Get in touch</a>
     </div>
   </div>
 </header>
 
 <section id="work" tabindex="-1">
-  <div class="section-head in"><h2>Gallery</h2><p class="section-sub">Four collections. Pick one to see the pieces.</p></div>
+  <div class="section-head in"><h2 tabindex="-1">Gallery</h2><p class="section-sub">Four collections. Pick one to see the pieces.</p></div>
   <noscript><p class="section-sub">The photo gallery needs JavaScript to load. If it isn't showing, email me and I'll happily send pictures of anything.</p></noscript>
   <p id="work-back" hidden><button type="button">← Back to gallery</button></p>
   <div id="gallery-grid"></div>
@@ -462,7 +522,7 @@
     <h2>Like something you see?</h2>
     <p>Most pieces are one-offs, but you can see what I currently have available in my Etsy shop. I also take commissions, and I'm always happy to talk.</p>
     <div class="cta">
-      <a class="etsy" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener">Shop on Etsy</a>
+      <a class="etsy" href="https://torinemdesigns.etsy.com" target="_blank" rel="noopener" aria-label="Shop on Etsy (opens in a new tab)">Shop on Etsy</a>
       <a class="mail" href="mailto:TEMDesign@proton.me">TEMDesign@proton.me</a>
     </div>
   </div>
@@ -480,11 +540,14 @@
   </div>
   <div class="lb-stage">
     <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo">←</button>
-    <img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt="">
+    <div class="lb-frame"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></div>
     <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo">→</button>
   </div>
   <div class="lb-cap">
     <div id="lb-caption"><strong></strong><span></span></div>
+    <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy when the
+         piece has an etsy link in photos.js, otherwise an email with the piece as the subject. -->
+    <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="mailto:TEMDesign@proton.me"></a></div>
     <div id="lb-counter" aria-live="polite"></div>
   </div>
 </div>
@@ -508,10 +571,12 @@
   }
 
   // Deep links: every piece is shareable as #its-title (e.g. #knotty-bowl); every collection as #its-tag.
+  // A piece can pin its link with an optional `slug` in photos.js, so renaming it never breaks old pins.
   const slug = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const pieceSlug = pc => pc.slug ? slug(pc.slug) : slug(pc.title);
   const pieceFromHash = () => {
     const h = decodeURIComponent(location.hash.slice(1));
-    return h ? PIECES.findIndex(pc => slug(pc.title) === h) : -1;
+    return h ? PIECES.findIndex(pc => pieceSlug(pc) === h) : -1;
   };
   const CATS = [...new Set(PIECES.map(pc => pc.tag))];
   const catFromHash = () => {
@@ -622,13 +687,15 @@
       </div>`;
     // With a real pointer, hovering a piece that has a second angle swaps to it — instantly, no
     // transition — and swaps back on leave. Touch devices never see this.
+    // Clicking opens the viewer on whichever photo the card is showing.
+    let shown = 0;
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const im = card.querySelector('.thumb img');
-      const show = n => { im.srcset = srcsetFor(n); im.src = imgSrc(n); };
-      card.addEventListener('mouseenter', () => show(piece.photos[1]));
-      card.addEventListener('mouseleave', () => show(piece.photos[0]));
+      const show = i => { shown = i; im.srcset = srcsetFor(piece.photos[i]); im.src = imgSrc(piece.photos[i]); };
+      card.addEventListener('mouseenter', () => show(1));
+      card.addEventListener('mouseleave', () => show(0));
     }
-    return wireCard(card, () => openLightbox(pi, 0));
+    return wireCard(card, () => openLightbox(pi, shown));
   }
   // Collection card: the cover photo whole, a rule, the tag as a heading and the count as a colour tab.
   function catCard(tag, animate, delayIdx) {
@@ -668,6 +735,9 @@
     // The grid swaps in place; scroll to its top on a deliberate switch only — never when routing
     // a deep link on load, where the open-at-top rules own the scroll position.
     if (scroll !== false && push) workSection.scrollIntoView({ block: 'start' });
+    // The grid holding focus was just replaced; move focus to the heading so a screen reader
+    // announces the new view ("Bowls") and the next Tab lands on its first piece.
+    if (push) workH2.focus({ preventScroll: true });
   }
   workBack.querySelector('button').addEventListener('click', () => showCat(null, true));
   renderGrid(true);
@@ -681,25 +751,44 @@
   const lbClose = document.getElementById('lb-close');
   const lbPrev = document.getElementById('lb-prev');
   const lbNext = document.getElementById('lb-next');
+  const lbColl = document.getElementById('lb-coll');
+  const lbAct = document.getElementById('lb-act');
+  const BASE_TITLE = document.title;
   let cur = { piece: 0, photo: 0 };
   let lastFocus = null;
 
+  // History: an open piece is ONE history entry on top of its collection, so the phone's Back button
+  // (and ✕ / Esc, which step back through it) land on the collection's grid, never two views back
+  // and never off the site. Stepping through photos never adds entries.
+  const PIECE_STATE = { tem: 'piece' };
+  const inPieceEntry = () => !!(history.state && history.state.tem === 'piece');
+
   function openLightbox(pi, idx) {
     cur = { piece: pi, photo: idx };
-    lastFocus = document.activeElement;
+    if (!lb.classList.contains('open')) lastFocus = document.activeElement;
     lbImg.style.animation = '';
     lb.classList.toggle('single', PIECES[pi].photos.length < 2);
     render();
     lb.classList.add('open');
     document.body.style.overflow = 'hidden';
-    try { history.replaceState(null, '', '#' + slug(PIECES[pi].title)); } catch (e) {}
+    const h = '#' + pieceSlug(PIECES[pi]);
+    try { if (inPieceEntry()) history.replaceState(PIECE_STATE, '', h); else history.pushState(PIECE_STATE, '', h); } catch (e) {}
+    document.title = `${PIECES[pi].title} — ${BASE_TITLE}`;   // shared or bookmarked tabs name the piece
     requestAnimationFrame(() => lbClose.focus());
   }
-  function closeLightbox() {
+  // viaHistory: the browser already stepped back (popstate), so don't step again.
+  // focusTarget: where focus goes after closing (default: whatever opened the viewer).
+  function closeLightbox(viaHistory, focusTarget) {
+    if (!lb.classList.contains('open')) return;
     lb.classList.remove('open');
     document.body.style.overflow = '';
-    if (pieceFromHash() !== -1) { try { history.replaceState(null, '', curCat ? '#' + slug(curCat) : location.pathname + location.search); } catch (e) {} }
-    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+    document.title = BASE_TITLE;
+    if (!viaHistory) {
+      if (inPieceEntry()) { try { history.back(); } catch (e) {} }
+      else if (pieceFromHash() !== -1) { try { history.replaceState(null, '', curCat ? '#' + slug(curCat) : location.pathname + location.search); } catch (e) {} }
+    }
+    const f = focusTarget || lastFocus;
+    if (f && typeof f.focus === 'function' && document.contains(f)) f.focus(focusTarget ? { preventScroll: true } : undefined);
   }
   // A photo that fails outright blanks out and says so, rather than leaving the previous photo up.
   lbImg.addEventListener('error', () => {
@@ -709,12 +798,27 @@
     const p = PIECES[cur.piece];
     lb.classList.remove('noimg');
     lbImg.srcset = srcsetFor(p.photos[cur.photo]);
-    lbImg.sizes = '92vw';
+    lbImg.sizes = '(max-width: 700px) 100vw, 92vw';
     lbImg.src = imgSrc(p.photos[cur.photo]);
     lbImg.alt = `${p.title}, photo ${cur.photo + 1}`;
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
     lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
+    // The action row: this piece's collection, then Buy on Etsy if it's listed (an https link in
+    // photos.js), otherwise an email about it with the piece's name as the subject.
+    lbColl.textContent = `← ${p.tag}`;
+    lbColl.href = '#' + slug(p.tag);
+    const etsy = typeof p.etsy === 'string' && /^https:\/\//.test(p.etsy) ? p.etsy : '';
+    lbAct.classList.toggle('buy', !!etsy);
+    if (etsy) {
+      lbAct.textContent = 'Buy on Etsy';
+      lbAct.href = etsy; lbAct.target = '_blank'; lbAct.rel = 'noopener';
+      lbAct.setAttribute('aria-label', 'Buy on Etsy (opens in a new tab)');
+    } else {
+      lbAct.textContent = 'Ask about this piece';
+      lbAct.href = 'mailto:TEMDesign@proton.me?subject=' + encodeURIComponent(p.title);
+      lbAct.removeAttribute('target'); lbAct.removeAttribute('rel'); lbAct.removeAttribute('aria-label');
+    }
     if (dir !== 0 && !reduceMotion) {
       lbImg.style.animation = 'none';
       void lbImg.offsetWidth; // restart the animation
@@ -731,7 +835,21 @@
   lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
   // Photos change via the arrow buttons / keyboard only — deliberately no swipe, so that
   // pinch-zooming a photo on a phone never accidentally flips to the next one.
-  lbClose.addEventListener('click', closeLightbox);
+  lbClose.addEventListener('click', () => closeLightbox());
+  // "← Bowls": close back to the piece's collection, at the top of its grid.
+  lbColl.addEventListener('click', e => {
+    e.preventDefault();
+    const tag = PIECES[cur.piece].tag;
+    if (curCat !== tag) { curCat = tag; renderGrid(false); }
+    closeLightbox(false, workH2);
+    workSection.scrollIntoView({ block: 'start' });
+  });
+  // With a mouse, a click on the black ground around the photo closes it too. Not on touch, where a
+  // near-miss on an arrow would throw the visitor out of the viewer.
+  if (matchMedia('(pointer: fine)').matches) {
+    const lbStage = lb.querySelector('.lb-stage'), lbFrame = lb.querySelector('.lb-frame');
+    lb.addEventListener('click', e => { if (e.target === lb || e.target === lbStage || e.target === lbFrame) closeLightbox(); });
+  }
   document.addEventListener('keydown', e => {
     if (!lb.classList.contains('open')) return;
     if (e.key === 'Escape') closeLightbox();
@@ -739,7 +857,7 @@
     if (e.key === 'ArrowRight') step(1);
     if (e.key === 'Tab') {
       // Keep focus inside the dialog.
-      const focusables = [lbClose, lbPrev, lbNext].filter(b => b.offsetParent !== null);
+      const focusables = [lbClose, lbPrev, lbNext, lbColl, lbAct].filter(b => b.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];
       if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
@@ -794,19 +912,47 @@
   }
 
   // ---- Route a shared link: #piece opens its lightbox inside its collection; #collection opens that view ----
+  // A piece link that matches nothing (renamed or mistyped): show the gallery and say so, in the 404
+  // page's own words, instead of silently showing the top of the page.
+  function showMoved() {
+    if (curCat !== null) { curCat = null; renderGrid(false); }
+    workSub.textContent = 'This page has moved. Have a look through the gallery instead.';
+    try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
+    workSection.scrollIntoView({ block: 'start' });
+  }
   const linkedPiece = pieceFromHash();
   if (linkedPiece !== -1) {
+    // A pin lands here. Put the piece's collection in history underneath it and park the page on
+    // that grid, so Back or ✕ shows the rest of the collection instead of leaving the site.
     curCat = PIECES[linkedPiece].tag;
     renderGrid(false);
+    if (!inPieceEntry()) { try { history.replaceState(null, '', '#' + slug(curCat)); } catch (e) {} }
+    workSection.scrollIntoView({ block: 'start' });
     openLightbox(linkedPiece, 0);
   } else {
     const linkedCat = catFromHash();
-    if (linkedCat) { curCat = linkedCat; renderGrid(false); }
+    const h = decodeURIComponent(location.hash.slice(1));
+    if (linkedCat) {
+      curCat = linkedCat; renderGrid(false);
+      workSection.scrollIntoView({ block: 'start' });   // a collection has no element of its own to land on
+    } else if (h && !document.getElementById(h)) {
+      showMoved();
+    }
   }
   addEventListener('popstate', () => {
-    if (lb.classList.contains('open')) closeLightbox();
-    const ct = catFromHash();
-    if (ct !== curCat) { curCat = ct; renderGrid(false); }
+    const pi = pieceFromHash();
+    if (pi !== -1) {   // Forward onto a piece: reopen it in its collection
+      if (PIECES[pi].tag !== curCat) { curCat = PIECES[pi].tag; renderGrid(false); }
+      if (!lb.classList.contains('open') || cur.piece !== pi) openLightbox(pi, 0);
+      return;
+    }
+    if (lb.classList.contains('open')) closeLightbox(true);
+    const ct = catFromHash(), h = decodeURIComponent(location.hash.slice(1));
+    if (!ct && h && !document.getElementById(h)) { showMoved(); return; }   // edited to a dead link
+    if (ct !== curCat) {
+      curCat = ct; renderGrid(false);
+      if (document.activeElement === document.body) workH2.focus({ preventScroll: true });
+    }
   });
 </script>
 
