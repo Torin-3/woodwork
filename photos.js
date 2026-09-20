@@ -292,4 +292,22 @@ const PIECES = [
     tag: "Homeware",
     photos: ["33.1.jpg", "33.2.jpg"],
   },
+  {
+    title: "Banksia Grandis Vase",
+    note: "Bud vase turned from a banksia nut, with the seed follicles left open across the body.",
+    tag: "Decorative",
+    photos: ["34.1.jpg", "34.2.jpg", "34.3.jpg"],
+  },
+  {
+    title: "Split Oak Bowl",
+    note: "Rounded oak bowl with the natural split left open down one side.",
+    tag: "Bowls",
+    photos: ["35.1.jpg", "35.2.jpg"],
+  },
+  {
+    title: "Match Slot Tealight Holder",
+    note: "Single tealight set into a pine block, with a matchbox slot cut alongside.",
+    tag: "Homeware",
+    photos: ["36.1.jpg", "36.2.jpg", "36.3.jpg"],
+  },
 ];
