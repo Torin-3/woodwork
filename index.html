@@ -210,11 +210,9 @@
      Redesigned 20 Sept (Torin: "underdesigned and cluttered"). It used to invent its own furniture:
      a full-width rule across the screen, arrows floating at the screen edges, and a bottom bar with
      the caption, the collection link and a lichen counter chip on three different alignments. Now it
-     reuses the gallery card's system — photo, controls, 4px rule, title, note — and EVERYTHING under
-     the photo is a column exactly the photo's width (`--lbw`), so type is bound to the object the
-     way the hero's words are bound to the bowl. */
+     reuses the gallery card's system — photo, controls, 4px rule, title, note — in one fixed frame
+     of furniture that spans the screen, identical for every photo, with the photo centred above it. */
   #lightbox { --lbh: 66vh;                              /* the photo's height budget */
-              --lbw: min(100%, calc(var(--lbh) * 1.5));  /* every photo is 3:2, so this IS the photo's width */
               position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
               display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .55s var(--ease), visibility 0s linear .55s; }
@@ -228,12 +226,15 @@
   /* align-items: end — the photo and everything under it read as ONE block, with the spare height
      gathered above it. Centred, an iPad left the photo floating 170px above its own caption. */
   .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; }
-  .lb-frame { position: relative; min-width: 0; flex: 0 1 auto; width: var(--lbw); }
+  .lb-frame { position: relative; min-width: 0; flex: 1 1 auto; width: 100%; }
   #lb-img { max-width: 100%; max-height: var(--lbh); width: auto; height: auto; margin: 0 auto; display: block; }
   #lightbox.noimg #lb-img { visibility: hidden; }
   #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-  /* The foot: the photo's own width, so the rule, the type and the controls all line up with it. */
-  .lb-foot { width: var(--lbw); margin: 0 auto; min-width: 0; }
+  /* The foot spans the screen, the same width for every photo (Torin, 20 Sept). It was sized off
+     the photo, which only holds while every photo is 3:2 — nine of them are not, three are portrait
+     (Homeware 19.2 / 21.2 / 22.1), so the furniture moved from piece to piece and read as accidental.
+     The photo now sits centred above a fixed frame of furniture. */
+  .lb-foot { width: 100%; min-width: 0; }
   .lb-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.1rem 0 1rem; }
   .lb-btn { font-weight: 700; font-size: 1.5rem; line-height: 1; min-width: 3.4rem; min-height: 2.9rem;
             padding: .25em .7em; border: 3px solid var(--ground); user-select: none; }
@@ -420,7 +421,6 @@
     #lightbox { --lbh: 58vh; }
     .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
     #lb-img { width: 100%; max-height: var(--lbh); object-fit: contain; }
-    .lb-foot { width: auto; }
     .lb-controls { margin: .9rem 0 .85rem; }
     .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; }
     .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
