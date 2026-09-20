@@ -23,8 +23,8 @@
 //  TWO OPTIONAL EXTRAS a piece can have:
 //      etsy: "https://..."   the piece is for sale. Its photo viewer shows a
 //                            "Buy on Etsy" button linking there (use the listing's
-//                            own link, or the shop's). Pieces without one show
-//                            "Ask about this piece", which emails you instead.
+//                            own link, or the shop's). A piece without one shows
+//                            no button at all - enquiries go through Contact.
 //      slug: "oak-bowl"      pins the piece's link (#oak-bowl) so you can rename
 //                            the title later without breaking pins that point at
 //                            it. Before renaming a piece, set its slug to the old
