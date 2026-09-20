@@ -18,6 +18,18 @@
      to your profile. Safe to remove if you stop using Pinterest. -->
 <meta name="p:domain_verify" content="83834553f194f9127ad4e61206f0baca"/>
 <meta name="theme-color" content="#F0F0EE">
+<!-- The hero photo is the largest thing on the first screen, so it is claimed here rather than
+     when the parser reaches the <picture> 400 lines down: it then starts ahead of the logo and the
+     gallery covers instead of behind them: LCP 1528ms -> 1484ms on a 4x-throttled phone over a
+     1.6Mbps link, measured over six loads each.
+     THESE TWO MEDIA QUERIES MUST STAY THE MIRROR IMAGE OF EACH OTHER, and the first must match the
+     <source> in the hero and the CSS phone query EXACTLY (see "Mobile hero" in CLAUDE.md) — if they
+     drift, a device can match both and download two hero photos, or match neither and preload the
+     wrong one. srcset/sizes must likewise match their counterparts below. Verified on desktop,
+     iPhone and iPad portrait: exactly one hero file is fetched in every case.
+     The hero is JPEG only — see the note on the <picture> below for why WebP loses here. -->
+<link rel="preload" as="image" fetchpriority="high" media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" imagesizes="100vw">
+<link rel="preload" as="image" fetchpriority="high" media="not all and (max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" imagesizes="(max-aspect-ratio: 3/2) 150vh, 100vw">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="logo/favicon-512.png">
@@ -41,6 +53,7 @@
   html.smooth { scroll-behavior: smooth; } /* enabled by JS only after the page settles at the top */
   body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-weight: 500; line-height: 1.4; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   img { display: block; max-width: 100%; height: auto; }
+  picture { display: contents; }   /* the WebP wrapper is not a box: .thumb img / .plate img still lay out as before */
   a { color: inherit; text-decoration: none; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   h1, h2, h3 { font-weight: 700; line-height: 1.1; letter-spacing: -.03em; text-wrap: balance; }
@@ -511,6 +524,12 @@
       <!-- Portrait phones get the same photo with its own backdrop extended up and down
            (docs/superpowers/scripts/make_hero.py), so it can fill a tall screen without cutting
            the bowl's sides off. -->
+      <!-- NO WebP here, deliberately, and it was measured: the phone hero is the one photo on the
+           site that WebP loses on. make_hero.py sprinkles grain over the synthesised backdrop to
+           stop it banding, and grain is expensive in WebP — at the quality needed to match the
+           JPEG, 14.1-phone-1200 came out 164KB against the JPEG's 94KB, and 14.1-1600 could not
+           match it at any quality at all. A <source type="image/webp"> cannot mix formats inside
+           one srcset, so each breakpoint is all-or-nothing, and neither wins. -->
       <source media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
       <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     </picture>
@@ -578,7 +597,7 @@
     <button type="button" id="lb-close" aria-label="Close photo viewer">✕</button>
   </div>
   <div class="lb-stage">
-    <div class="lb-frame"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></div>
+    <div class="lb-frame"><picture><source id="lb-src" type="image/webp"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></picture></div>
   </div>
   <div class="lb-foot">
     <!-- The step controls and the counter they drive, as one cluster the width of the photo. -->
@@ -655,15 +674,19 @@
   const startLock = () => {
     interacted = false;
     ['touchstart', 'wheel', 'keydown', 'mousedown', 'pointerdown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
-    const deadline = performance.now() + 1500;
-    const lockFrame = () => {
-      if (interacted) return;
-      if (window.scrollY !== 0) window.scrollTo(0, 0);
-      if (performance.now() < deadline) requestAnimationFrame(lockFrame);
-      else release();
-    };
+    // Same 1.5s window, same release triggers — but the position is corrected WHEN it moves rather
+    // than polled on every frame. Reading scrollY in a requestAnimationFrame loop forced a style
+    // recalculation on all 90 frames of the window, for a position that almost never moves: 91
+    // recalcs over the load became 41, and ~14ms of main-thread time went back to the page on a
+    // 4x-throttled phone, during the very window someone is most likely to tap something.
+    // A restore fires a scroll event, so the listener catches it at once; the slow interval is
+    // the belt for a restore applied without one.
+    const snap = () => { if (!interacted && window.scrollY !== 0) window.scrollTo(0, 0); };
+    addEventListener('scroll', snap, { passive: true });
+    const sweep = setInterval(snap, 250);
+    const stop = () => { clearInterval(sweep); removeEventListener('scroll', snap); release(); };
     window.scrollTo(0, 0);
-    requestAnimationFrame(lockFrame);
+    setTimeout(stop, 1500);
   };
   if (navEntry.type === 'reload' && location.hash && pieceFromHash() === -1) {
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
@@ -700,6 +723,15 @@
     return `${b}-480.jpg 480w, ${b}-960.jpg 960w`;
   };
   const imgSrc = name => `${dirFor(name) + name.replace(/\.jpg$/i, '')}-960.jpg`;
+
+  // WebP sits in a PARALLEL folder per collection ("Bowls-webp/"), never mixed in with the JPEGs:
+  // each folder then stays far below GitHub's 100-file upload limit, and adding WebP never means
+  // re-uploading the JPEGs. The JPEG remains the <img> fallback, so nothing depends on WebP.
+  const webpDirFor = name => PHOTO_DIR + (PHOTO_CAT[name] ? encodeURIComponent(PHOTO_CAT[name]) + '-webp/' : '');
+  const webpSrcsetFor = name => {
+    const b = webpDirFor(name) + name.replace(/\.jpg$/i, '');
+    return `${b}-480.webp 480w, ${b}-960.webp 960w`;
+  };
 
   // If a photo fails to load, swap in a transparent pixel so the broken-image glyph never shows.
   const BLANK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='2'%3E%3C/svg%3E";
@@ -738,7 +770,7 @@
     const card = baseCard(animate, delayIdx);
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></div>
+        <div class="thumb"><picture><source type="image/webp" srcset="${webpSrcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></picture></div>
         <div class="bar">
           <h3><a href="#${esc(pieceSlug(piece))}">${esc(piece.title)}</a></h3>
           ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
@@ -751,7 +783,9 @@
     let shown = 0;
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const im = card.querySelector('.thumb img');
-      const show = i => { shown = i; im.srcset = srcsetFor(piece.photos[i]); im.src = imgSrc(piece.photos[i]); };
+      const sc = card.querySelector('.thumb source');
+      // The <source> outranks the <img>, so it has to move to the new angle as well.
+      const show = i => { shown = i; sc.srcset = webpSrcsetFor(piece.photos[i]); im.srcset = srcsetFor(piece.photos[i]); im.src = imgSrc(piece.photos[i]); };
       card.addEventListener('mouseenter', () => show(1));
       card.addEventListener('mouseleave', () => show(0));
     }
@@ -765,7 +799,7 @@
     card.classList.add('collection', tagClass(tag));
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
+        <div class="thumb"><picture><source type="image/webp" srcset="${webpSrcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></picture></div>
         <div class="bar">
           <h3><a href="#${esc(slug(tag))}" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
           <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
@@ -781,12 +815,16 @@
     workSub.textContent = curCat === null
       ? 'Four collections. Pick one to see the pieces.'
       : `${PIECES.filter(pc => pc.tag === curCat).length} pieces. Click any one to see more photos.`;
+    // Built off-document and inserted once: appending card by card put each one into the live
+    // tree on its own, so every card invalidated the grid's layout again on the way in.
+    const frag = document.createDocumentFragment();
     if (curCat === null) {
-      CATS.forEach((t, i) => grid.appendChild(catCard(t, animate, i)));
+      CATS.forEach((t, i) => frag.appendChild(catCard(t, animate, i)));
     } else {
       let di = 0;
-      PIECES.forEach((pc, pi) => { if (pc.tag === curCat) grid.appendChild(pieceCard(pc, pi, animate, di++)); });
+      PIECES.forEach((pc, pi) => { if (pc.tag === curCat) frag.appendChild(pieceCard(pc, pi, animate, di++)); });
     }
+    grid.appendChild(frag);
   }
   function showCat(tag, push, scroll) {
     curCat = tag;
@@ -805,6 +843,7 @@
   // ---- Lightbox ----
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lb-img');
+  const lbSrc = document.getElementById('lb-src');   // the WebP candidate; must be kept in step with lbImg
   const lbTitle = document.querySelector('#lb-caption strong');
   const lbNote = document.querySelector('#lb-caption span');
   const lbCounter = document.getElementById('lb-counter');
@@ -868,11 +907,16 @@
   }
   // A photo that fails outright blanks out and says so, rather than leaving the previous photo up.
   lbImg.addEventListener('error', () => {
+    // The <source> has to go too: it outranks the <img>, so blanking src alone would leave the
+    // browser still holding the WebP candidate for the photo that just failed.
+    lbSrc.removeAttribute('srcset');
     lbImg.removeAttribute('srcset'); lbImg.src = BLANK; lb.classList.add('noimg');
   });
   function render(dir = 0) {
     const p = PIECES[cur.piece];
     lb.classList.remove('noimg');
+    lbSrc.srcset = webpSrcsetFor(p.photos[cur.photo]);
+    lbSrc.sizes = '(max-width: 700px) 100vw, 92vw';
     lbImg.srcset = srcsetFor(p.photos[cur.photo]);
     lbImg.sizes = '(max-width: 700px) 100vw, 92vw';
     lbImg.src = imgSrc(p.photos[cur.photo]);
@@ -978,16 +1022,21 @@
   const risers = [...document.querySelectorAll('.in')].filter(el => !el.closest('header'));
   const revealCheck = () => {
     const line = innerHeight * 0.88;
+    // Measure everything BEFORE changing anything. Adding .visible dirties style, so the next
+    // getBoundingClientRect in the same loop had to force a fresh layout to answer — one forced
+    // layout per revealed block, on a scroll frame. Read all, then write all.
+    const hit = [];
     for (let i = risers.length - 1; i >= 0; i--) {
+      const r = risers[i].getBoundingClientRect();
+      if (r.top < line && r.bottom > 0) hit.push(i);   // descending, so the splices below stay valid
+    }
+    for (const i of hit) {
       const el = risers[i];
-      const r = el.getBoundingClientRect();
-      if (r.top < line && r.bottom > 0) {
-        el.classList.add('visible');
-        risers.splice(i, 1);
-        // Once in place, strip the reveal machinery so hover transitions behave normally afterwards.
-        const delay = parseFloat(el.style.getPropertyValue('--d')) || 0;
-        setTimeout(() => { el.classList.remove('in', 'visible'); el.style.removeProperty('--d'); }, delay + 1200);
-      }
+      el.classList.add('visible');
+      risers.splice(i, 1);
+      // Once in place, strip the reveal machinery so hover transitions behave normally afterwards.
+      const delay = parseFloat(el.style.getPropertyValue('--d')) || 0;
+      setTimeout(() => { el.classList.remove('in', 'visible'); el.style.removeProperty('--d'); }, delay + 1200);
     }
     if (!risers.length) removeEventListener('scroll', onScroll);
   };
