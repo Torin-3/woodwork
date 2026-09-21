@@ -780,16 +780,19 @@
     // With a real pointer, hovering a piece that has a second angle swaps to it — instantly, no
     // transition — and swaps back on leave. Touch devices never see this.
     // Clicking opens the viewer on whichever photo the card is showing.
-    let shown = 0;
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const im = card.querySelector('.thumb img');
       const sc = card.querySelector('.thumb source');
       // The <source> outranks the <img>, so it has to move to the new angle as well.
-      const show = i => { shown = i; sc.srcset = webpSrcsetFor(piece.photos[i]); im.srcset = srcsetFor(piece.photos[i]); im.src = imgSrc(piece.photos[i]); };
+      const show = i => { sc.srcset = webpSrcsetFor(piece.photos[i]); im.srcset = srcsetFor(piece.photos[i]); im.src = imgSrc(piece.photos[i]); };
       card.addEventListener('mouseenter', () => show(1));
       card.addEventListener('mouseleave', () => show(0));
     }
-    return wireCard(card, () => openLightbox(pi, shown));
+    // ALWAYS open on the piece's first photo. This used to open whichever angle the card happened to
+    // be showing, which sounded right and was wrong in practice: with a mouse you have to hover a
+    // card to click it, so a multi-photo piece ALWAYS opened on photo 2 and its first angle could
+    // only be reached by stepping backwards (Torin, 21 Sept). The hover swap stays a preview.
+    return wireCard(card, () => openLightbox(pi, 0));
   }
   // Collection card: the cover photo whole, a rule, the tag as a heading and the count as a colour tab.
   function catCard(tag, animate, delayIdx) {
