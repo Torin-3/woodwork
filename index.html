@@ -188,10 +188,11 @@
   #work-back { margin: -3vh 0 5vh; }
   #work-back button { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
   /* On hover the words melt into one body of ink and re-form as a back arrow the same size (Torin,
-     23 Sept). The ink is drawn on a canvas laid exactly over the words; while it shows, the words
-     themselves are hidden. Every pixel it paints is solid ink or nothing — see the script. */
-  #work-back canvas { position: absolute; pointer-events: none; }
-  #work-back button.morphing .wb-text { visibility: hidden; }
+     23 Sept) — here and on the viewer's "Bowls". The ink is drawn on a canvas laid exactly over the
+     words; while it shows, the words themselves are hidden. Every pixel it paints is solid ink or
+     nothing — see morphArrow() in the script. */
+  .morph-cv { position: absolute; pointer-events: none; }
+  .morphing .mt { visibility: hidden; }
   #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
   #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 10vh 3vw; }
   .piece { position: relative; display: block; --c: var(--ink); --cink: var(--ground); }
@@ -268,12 +269,17 @@
               display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .55s var(--ease), visibility 0s linear .55s; }
   #lightbox.open { translate: 0 0; visibility: visible; transition: translate .55s var(--ease); }
-  .lb-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  /* position + z-index: the photo's frame is a positioned sibling that comes later, and when the photo
+     runs a few px taller than its stage (1208x782 does) the frame overlaps the ✕'s lower edge and
+     takes its hover and clicks. The top bar always sits above it — for mouse as well as touch. */
+  .lb-top { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
   /* The mark was a decorative orphan: not a link, no wordmark, and on a pin arrival it was the only
      branding on screen. It is now the nav's lockup and it takes you into the site. */
   #lb-home { color: var(--ground); }
   #lb-home img { width: 28px; height: 28px; }
-  #lb-close { font-size: 1.2rem; background: var(--ground); color: var(--ink); padding: .5rem .9rem; }
+  /* ✕ is one of the square tabs (.lb-btn, below), with a cross cut from the same heavy stroke. Its
+     hover is its own (Torin, 24 Sept: not the arrows' orange): the tab inverts to an ink square with a
+     ground edge and cross, so leaving reads differently from stepping. */
   /* align-items: end — the photo and everything under it read as ONE block, with the spare height
      gathered above it. Centred, an iPad left the photo floating 170px above its own caption. */
   .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; }
@@ -287,9 +293,17 @@
      The photo now sits centred above a fixed frame of furniture. */
   .lb-foot { width: 100%; min-width: 0; }
   .lb-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.1rem 0 1rem; }
-  .lb-btn { font-weight: 700; font-size: 1.5rem; line-height: 1; min-width: 3.4rem; min-height: 2.9rem;
-            padding: .25em .7em; border: 3px solid var(--ground); user-select: none; }
-  .lb-btn:hover { background: var(--ground); color: var(--ink); }
+  /* Square ground tabs with a chunky, sharp arrow to match the brutalist hero (Torin, 24 Sept; they
+     were outlined boxes round a ← character). The arrow is a heavy stroke with a mitred point and
+     square-cut ends, weighted like the hero's bold caps. Hover is Xanthoria, as on "Bowls" and the
+     other action blocks — never lichen, which in here means buy. */
+  .lb-btn { --sq: 3.2rem; display: grid; place-items: center; width: var(--sq); height: var(--sq); padding: 0;
+            background: var(--ground); color: var(--ink); user-select: none; }
+  .lb-btn svg { display: block; width: calc(var(--sq) * .58); height: auto; overflow: visible; }   /* off the square, so a border never shrinks it */
+  #lb-next svg { scale: -1 1; }
+  .lb-btn:hover { background: var(--xanth); }
+  #lb-close { border: 3px solid transparent; }   /* the ground shows through until hover draws the edge */
+  #lb-close:hover { background: var(--ink); color: var(--ground); border-color: var(--ground); }
   #lightbox.single .lb-controls { display: none; }
   /* Under the rule, exactly as a card reads: the title, then the note. The action row sits at the
      photo's right edge, level with the last line of the note. */
@@ -300,7 +314,7 @@
      (lichen, like every Etsy button). Same flat blocks and underlined links as the rest of the site. */
   .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: .8rem 1.8rem; font-weight: 700;
                 font-size: clamp(.9rem, 1.05vw, 1.1rem); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
-  #lb-coll { border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
+  #lb-coll { position: relative; border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
   #lb-coll:hover { border-bottom-color: var(--xanth); }
   #lb-act { padding: .55em .9em; background: var(--ground); color: var(--ink); }
   #lb-act:hover { background: var(--xanth); }
@@ -333,7 +347,8 @@
     .cta a:hover { border-bottom-color: var(--ink); }
     .cta a.etsy:hover { background: var(--lichen); color: var(--ink); }
     .piece:hover .bar, .piece.collection:hover .bar { border-top-color: var(--ink); }
-    .lb-btn:hover { background: none; color: inherit; }
+    .lb-btn:hover { background: var(--ground); }
+    #lb-close:hover { background: var(--ground); color: var(--ink); border-color: transparent; }
     #lb-coll:hover { border-bottom-color: var(--ground); }
     #lb-act:hover { background: var(--ground); } #lb-act.buy:hover { background: var(--lichen); }
   }
@@ -350,9 +365,8 @@
        area grows around them. -7px sideways leaves a 2px gap between neighbours in the action row. */
     #lb-close, .lb-btn, #lb-act { position: relative; }
     #lb-close::before, .lb-btn::before, #lb-act::before { content: ""; position: absolute; top: -8px; right: -7px; bottom: -8px; left: -7px; }
-    /* The stage is a positioned sibling that comes later, so it was taking the hits for the ✕'s
-       lower edge. The top bar goes above it. */
-    .lb-top { position: relative; z-index: 1; }
+    /* measured from the padding box, which the ✕'s 3px hover border eats into (the #lb-coll trap again) */
+    #lb-close::before { top: -11px; right: -10px; bottom: -11px; left: -10px; }
     /* "← Bowls" is a 22px block whose 3px underline eats into the hit area (it is measured from the
        padding box), so this one needs a little more than the site's usual 12px. */
     #lb-coll::before { top: -14px; bottom: -14px; }
@@ -442,13 +456,12 @@
     #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 54vh; }
     #lb-home img { width: 20px; height: 20px; }
     .logo { font-size: .8rem; }
-    #lb-close { font-size: .95rem; padding: .35rem .6rem; }
     .lb-controls { margin: .5rem 0 .45rem; }
     .lb-cap { padding-top: .5rem; border-top-width: 3px; }
     #lb-caption strong { font-size: 1.3rem; }
     #lb-caption span { font-size: .78rem; margin-top: .2rem; }
     #lb-counter { font-size: .72rem; padding: .3em .55em; }
-    .lb-btn { font-size: 1.1rem; min-height: 2.2rem; min-width: 2.8rem; border-width: 2px; padding: .15em .5em; }
+    .lb-btn { --sq: 2.2rem; }
     .lb-actions { font-size: .76rem; gap: .5rem 1rem; }
   }
   /* Contact on phones: the text as it was, the two buttons centred on the screen beneath it, one above
@@ -476,10 +489,12 @@
     .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
     #lb-img { width: 100%; max-height: var(--lbh); object-fit: contain; }
     .lb-controls { margin: .9rem 0 .85rem; }
-    .lb-btn { font-size: 1.7rem; min-width: 3.6rem; min-height: 2.9rem; padding: .2em .5em; }
+    .lb-btn { --sq: 3rem; }
     .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
     .lb-actions { justify-content: space-between; align-items: center; }
     #lb-act { padding: .85em 1.1em; }   /* the viewer's main action: a full 44px+ thumb target */
+    /* "← Bowls" sits at the right edge, alone or beside Buy on Etsy (Torin, 23 Sept). */
+    #lb-coll { order: 1; margin-left: auto; }
   }
   /* Sideways entrances need spare width to travel through; below ~900px they push content past the
      edge mid-animation. Everything except the hero words (clipped by the hero) travels vertically. */
@@ -593,7 +608,7 @@
 <section id="work" tabindex="-1">
   <div class="section-head in"><h2 tabindex="-1">Gallery</h2><p class="section-sub">Four collections. Pick one to see the pieces.</p></div>
   <noscript><p class="section-sub">The photo gallery needs JavaScript to load. If it isn't showing, email me and I'll happily send pictures of anything.</p></noscript>
-  <p id="work-back" hidden><button type="button" aria-label="Back to gallery"><span class="wb-text">Back to gallery</span></button></p>
+  <p id="work-back" hidden><button type="button" aria-label="Back to gallery"><span class="mt">Back to gallery</span></button></p>
   <div id="gallery-grid"></div>
 </section>
 
@@ -639,7 +654,7 @@
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <div class="lb-top">
     <a class="logo" id="lb-home" href="#" aria-label="TEM Design home"><img src="logo/logo-128.png" width="128" height="128" alt=""><span>TEMDesign</span></a>
-    <button type="button" id="lb-close" aria-label="Close photo viewer">✕</button>
+    <button type="button" id="lb-close" class="lb-btn" aria-label="Close photo viewer"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/></svg></button>
   </div>
   <div class="lb-stage">
     <div class="lb-frame"><picture><source id="lb-src" type="image/webp"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></picture></div>
@@ -647,15 +662,15 @@
   <div class="lb-foot">
     <!-- The step controls and the counter they drive, as one cluster the width of the photo. -->
     <div class="lb-controls">
-      <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo">←</button>
+      <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
       <div id="lb-counter"></div>
-      <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo">→</button>
+      <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
     </div>
     <div class="lb-cap">
       <div id="lb-caption"><strong></strong><span></span></div>
       <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy for a piece
            that is listed. A piece that isn't for sale shows no action block (Torin, 19 Sept). -->
-      <div class="lb-actions"><a id="lb-coll" href="#work"></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
+      <div class="lb-actions"><a id="lb-coll" href="#work"><span class="mt"></span></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
     </div>
     <p id="lb-live" class="vh" aria-live="polite"></p>
   </div>
@@ -916,20 +931,21 @@
   }
   workBack.querySelector('button').addEventListener('click', () => showCat(null, true));
 
-  // "Back to gallery" → ← on hover, and back again. The words are rasterised, broken into a few
+  // "Back to gallery" (and the viewer's "Bowls") → ← on hover, and back again. The words are rasterised, broken into a few
   // hundred drops of ink, and each drop flows along a curve into its place in an arrow the same size:
   // down into one stream along the arrow's shaft, then out into the head. The drops are summed into
   // a density field OFF screen, blurred together mid-flow so they merge like liquid (Torin allowed
   // blur here, 23 Sept — the one exception to Hard rule 13), and only the thresholded result is
   // painted: flat ink with a text-like anti-aliased edge, never a soft or translucent one.
   // Mouse only: on touch there is no hover, and a tap just goes back.
-  (function morphBack() {
-    const btn = workBack.querySelector('button'), label = btn.querySelector('.wb-text');
-    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+  // Returns a reset() that snaps back to the words at once (for when the control is taken away mid-hover).
+  function morphArrow(btn) {
+    const label = btn.querySelector('.mt'), none = () => {};
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return none;
     const cv = document.createElement('canvas');
-    cv.setAttribute('aria-hidden', 'true');
+    cv.className = 'morph-cv'; cv.setAttribute('aria-hidden', 'true');
     const out = cv.getContext('2d');
-    if (!out) return;
+    if (!out) return none;
     const field = document.createElement('canvas'), fx = field.getContext('2d', { willReadFrequently: true });
     const textC = document.createElement('canvas'), arrowC = document.createElement('canvas');
     const sprite = document.createElement('canvas');
@@ -954,7 +970,7 @@
       const r = label.getBoundingClientRect(), b = btn.getBoundingClientRect();
       const cs = getComputedStyle(label), font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
       const dpr = Math.min(window.devicePixelRatio || 1, 3), em = parseFloat(cs.fontSize);
-      const key = [r.width, r.height, dpr, font].join();
+      const key = [r.width, r.height, dpr, font, label.textContent].join();
       if (S && S.key === key) return;
       const pad = Math.ceil(em * .4);                       // room for the ink to bulge while it flows
       const w = Math.ceil(r.width + pad * 2), h = Math.ceil(r.height + pad * 2);
@@ -966,9 +982,12 @@
       // its baseline.
       const tx = textC.getContext('2d');
       tx.setTransform(dpr, 0, 0, dpr, 0, 0); tx.font = font; tx.fillStyle = ink; tx.textBaseline = 'alphabetic';
-      const m = tx.measureText(label.textContent);
+      // As the DOM shows it: its case and its tracking (the viewer's "BOWLS" is uppercased by CSS).
+      const tt = cs.textTransform, word = tt === 'uppercase' ? label.textContent.toUpperCase() : tt === 'lowercase' ? label.textContent.toLowerCase() : label.textContent;
+      if ('letterSpacing' in tx) tx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
+      const m = tx.measureText(word);
       const base = pad + (m.fontBoundingBoxAscent || em * .77);
-      tx.fillText(label.textContent, pad, base);
+      tx.fillText(word, pad, base);
 
       // The arrow: the words' width, a shaft as thick as the bold stems, the head as tall as a capital.
       const ax = arrowC.getContext('2d'), sw = Math.max(2, em * .17), mid = base - em * .36, hh = em * .5;
@@ -1076,9 +1095,13 @@
     }
     btn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') go(1); });
     btn.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') go(0); });
-    // Leaving the grid (the button hides) mid-hover must not strand the arrow.
-    btn.addEventListener('click', () => { target = t = 0; stop(); });
-  })();
+    // The control is taken away by its own click (the grid swaps, the viewer closes), so it must
+    // not be left showing the arrow when it next appears.
+    const reset = () => { target = t = 0; stop(); };
+    btn.addEventListener('click', reset);
+    return reset;
+  }
+  morphArrow(workBack.querySelector('button'));
   renderGrid('reveal');
 
   // ---- Lightbox ----
@@ -1093,6 +1116,8 @@
   const lbPrev = document.getElementById('lb-prev');
   const lbNext = document.getElementById('lb-next');
   const lbColl = document.getElementById('lb-coll');
+  const lbCollText = lbColl.querySelector('.mt');
+  const resetColl = morphArrow(lbColl);
   const lbAct = document.getElementById('lb-act');
   const lbLive = document.getElementById('lb-live');
   const lbHome = document.getElementById('lb-home');
@@ -1134,6 +1159,7 @@
   function closeLightbox(viaHistory, focusTarget) {
     if (!lb.classList.contains('open')) return;
     lb.classList.remove('open');
+    resetColl();   // Esc or ✕ with the pointer resting on it: don't reopen onto an arrow
     document.body.style.overflow = '';
     document.title = BASE_TITLE;
     if (!viaHistory) {
@@ -1177,7 +1203,9 @@
       : p.title;
     // The action row: this piece's collection, then Buy on Etsy if it's listed (an https link in
     // photos.js). A piece that isn't listed shows no action block at all.
-    lbColl.textContent = `← ${p.tag}`;
+    // The word alone; on hover it melts into the arrow (morphArrow). The name says where it goes.
+    lbCollText.textContent = p.tag;
+    lbColl.setAttribute('aria-label', `Back to ${p.tag}`);
     lbColl.href = '#' + slug(p.tag);
     const etsy = typeof p.etsy === 'string' && /^https:\/\//.test(p.etsy) ? p.etsy : '';
     lbAct.hidden = !etsy;
