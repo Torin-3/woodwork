@@ -186,7 +186,12 @@
   /* ---------- Gallery: the old skeleton (head → 2-up collections → 3-up pieces), re-skinned ---------- */
   #work { padding: 14vh var(--pad) 12vh; }
   #work-back { margin: -3vh 0 5vh; }
-  #work-back button { font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
+  #work-back button { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
+  /* On hover the words melt into one body of ink and re-form as a back arrow the same size (Torin,
+     23 Sept). The ink is drawn on a canvas laid exactly over the words; while it shows, the words
+     themselves are hidden. Every pixel it paints is solid ink or nothing — see the script. */
+  #work-back canvas { position: absolute; pointer-events: none; }
+  #work-back button.morphing .wb-text { visibility: hidden; }
   #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
   #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 10vh 3vw; }
   .piece { position: relative; display: block; --c: var(--ink); --cink: var(--ground); }
@@ -312,8 +317,11 @@
                 background: var(--ground); color: var(--ink);
                 padding: .5em .8em; white-space: nowrap; }
   #lb-counter:empty { display: none; }
-  @keyframes lb-step-next { from { translate: 46px 0; } }
-  @keyframes lb-step-prev { from { translate: -46px 0; } }
+  /* A step pushes the photos like a strip: the outgoing one (a stand-in copy, .lb-out) slides off
+     one side of the screen while the new one slides in from the other, both on a spring that
+     settles with a 1.5% overshoot. Translate only, fully opaque throughout — #lightbox's
+     overflow: hidden is the edge they cross. Driven from step() with the Web Animations API. */
+  .lb-out { position: absolute; margin: 0; max-width: none; max-height: none; pointer-events: none; }
 
   /* ---------- Scroll reveal: the same `.in` slides, triggered by scroll position (rules above). ---------- */
 
@@ -585,7 +593,7 @@
 <section id="work" tabindex="-1">
   <div class="section-head in"><h2 tabindex="-1">Gallery</h2><p class="section-sub">Four collections. Pick one to see the pieces.</p></div>
   <noscript><p class="section-sub">The photo gallery needs JavaScript to load. If it isn't showing, email me and I'll happily send pictures of anything.</p></noscript>
-  <p id="work-back" hidden><button type="button">← Back to gallery</button></p>
+  <p id="work-back" hidden><button type="button" aria-label="Back to gallery"><span class="wb-text">Back to gallery</span></button></p>
   <div id="gallery-grid"></div>
 </section>
 
@@ -907,11 +915,176 @@
     if (push) workH2.focus({ preventScroll: true });
   }
   workBack.querySelector('button').addEventListener('click', () => showCat(null, true));
+
+  // "Back to gallery" → ← on hover, and back again. The words are rasterised, broken into a few
+  // hundred drops of ink, and each drop flows along a curve into its place in an arrow the same size:
+  // down into one stream along the arrow's shaft, then out into the head. The drops are summed into
+  // a density field OFF screen, blurred together mid-flow so they merge like liquid (Torin allowed
+  // blur here, 23 Sept — the one exception to Hard rule 13), and only the thresholded result is
+  // painted: flat ink with a text-like anti-aliased edge, never a soft or translucent one.
+  // Mouse only: on touch there is no hover, and a tap just goes back.
+  (function morphBack() {
+    const btn = workBack.querySelector('button'), label = btn.querySelector('.wb-text');
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    const cv = document.createElement('canvas');
+    cv.setAttribute('aria-hidden', 'true');
+    const out = cv.getContext('2d');
+    if (!out) return;
+    const field = document.createElement('canvas'), fx = field.getContext('2d', { willReadFrequently: true });
+    const textC = document.createElement('canvas'), arrowC = document.createElement('canvas');
+    const sprite = document.createElement('canvas');
+    const dropC = document.createElement('canvas'), dx = dropC.getContext('2d');
+    const DUR = 720;           // ms for the whole flow, either way
+    let S = null;              // the built shapes, for one size of the words
+    let t = 0, target = 0, last = 0, raf = 0;
+
+    const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
+    const ease = v => v < .5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2;
+
+    // Sample one raster into drop positions on a regular grid, left to right.
+    function sample(c, step) {
+      const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, pts = [];
+      for (let y = step / 2 | 0; y < c.height; y += step)
+        for (let x = step / 2 | 0; x < c.width; x += step)
+          if (d[(y * c.width + x) * 4 + 3] > 127) pts.push([x, y]);
+      return pts.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+    }
+
+    function build() {
+      const r = label.getBoundingClientRect(), b = btn.getBoundingClientRect();
+      const cs = getComputedStyle(label), font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      const dpr = Math.min(window.devicePixelRatio || 1, 3), em = parseFloat(cs.fontSize);
+      const key = [r.width, r.height, dpr, font].join();
+      if (S && S.key === key) return;
+      const pad = Math.ceil(em * .4);                       // room for the ink to bulge while it flows
+      const w = Math.ceil(r.width + pad * 2), h = Math.ceil(r.height + pad * 2);
+      for (const c of [cv, field, textC, arrowC]) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
+      Object.assign(cv.style, { left: `${r.left - b.left - pad}px`, top: `${r.top - b.top - pad}px`, width: `${w}px`, height: `${h}px` });
+      const ink = getComputedStyle(btn).color;
+
+      // The words, drawn where the DOM draws them: an inline box's top sits one font-ascent above
+      // its baseline.
+      const tx = textC.getContext('2d');
+      tx.setTransform(dpr, 0, 0, dpr, 0, 0); tx.font = font; tx.fillStyle = ink; tx.textBaseline = 'alphabetic';
+      const m = tx.measureText(label.textContent);
+      const base = pad + (m.fontBoundingBoxAscent || em * .77);
+      tx.fillText(label.textContent, pad, base);
+
+      // The arrow: the words' width, a shaft as thick as the bold stems, the head as tall as a capital.
+      const ax = arrowC.getContext('2d'), sw = Math.max(2, em * .17), mid = base - em * .36, hh = em * .5;
+      ax.setTransform(dpr, 0, 0, dpr, 0, 0); ax.strokeStyle = ink; ax.lineWidth = sw; ax.lineCap = 'butt'; ax.lineJoin = 'miter';
+      const x0 = pad + sw * .7, x1 = pad + r.width;
+      ax.beginPath(); ax.moveTo(x1, mid); ax.lineTo(x0 + sw * .3, mid); ax.stroke();
+      ax.beginPath(); ax.moveTo(x0 + hh, mid - hh); ax.lineTo(x0, mid); ax.lineTo(x0 + hh, mid + hh); ax.stroke();
+
+      // Drops: one per grid cell of ink, then both shapes stretched to the same count and paired in
+      // left-to-right order, so each letter flows into the part of the arrow beneath it.
+      const step = Math.max(1, Math.round(dpr));
+      const A = sample(textC, step), B = sample(arrowC, step), n = Math.max(A.length, B.length);
+      const pick = (P, i) => P[Math.floor(i * P.length / n)];
+      const my = mid * dpr, W = w * dpr, cx = (pad + r.width / 2) * dpr;
+      const drops = [];
+      for (let i = 0; i < n; i++) {
+        const a = pick(A, i), z = pick(B, i);
+        // Every path bends through the shaft's line, pulled a little towards the middle, so the ink
+        // pools into one body before it spreads out again. Each drop leaves slightly after the one
+        // to its left, the way the arrow points.
+        const hx = (a[0] + z[0]) / 2;
+        drops.push({ a, z, c: [hx + (cx - hx) * .3, my], d: .16 * (a[0] / W) });
+      }
+      // The words hold more ink than the arrow, so several drops land on each point of it. Each
+      // drop's weight moves from one shape's share to the other's, keeping the ink's thickness true
+      // at both ends instead of arriving at a bold arrow that then snaps thin.
+      const wA = A.length / n, wB = B.length / n;
+      dropC.width = field.width; dropC.height = field.height;
+
+      // The drop's footprint: a soft disc in the off-screen field only. Its weight is set so a solid
+      // run of drops sums to the same density as the solid words.
+      const R = step * 2.2, sr = Math.ceil(R);
+      sprite.width = sprite.height = sr * 2;
+      const sx = sprite.getContext('2d'), g = sx.createRadialGradient(sr, sr, 0, sr, sr, R);
+      const k = .42 * step * step / (R * R) * 2.6;
+      for (let s = 0; s <= 8; s++) { const u = s / 8; g.addColorStop(u, `rgba(0,0,0,${Math.min(1, k * Math.pow(1 - u * u, 2))})`); }
+      sx.clearRect(0, 0, sprite.width, sprite.height); sx.fillStyle = g; sx.fillRect(0, 0, sprite.width, sprite.height);
+
+      const rgb = ink.match(/\d+/g).map(Number);
+      S = { key, drops, sr, rgb, wA, wB, goo: em * .2 * dpr, W: cv.width, H: cv.height, img: out.createImageData(cv.width, cv.height) };
+    }
+
+    function draw() {
+      const { drops, sr, W, H, img, rgb, wA, wB, goo } = S;
+      fx.globalCompositeOperation = 'source-over';
+      fx.clearRect(0, 0, W, H);
+      fx.globalCompositeOperation = 'lighter';
+      // The crisp words hand over to the drops at the start, and the drops to the crisp arrow at the
+      // end, inside the field — so the outline melts rather than swaps.
+      const wa = clamp(1 - t / .18), wb = clamp((t - .82) / .18), wd = 1 - Math.max(wa, wb);
+      // Mid-flow the drops are blurred together into one liquid body; the blur swells and subsides
+      // with the flow, so both ends are sharp. The threshold drops with it, or the blur would thin
+      // the ink away.
+      const bf = Math.pow(Math.sin(Math.PI * clamp((t - .02) / .74)), 2);
+      if (wa > 0) { fx.globalAlpha = wa; fx.drawImage(textC, 0, 0); }
+      if (wb > 0) { fx.globalAlpha = wb; fx.drawImage(arrowC, 0, 0); }
+      if (wd > 0) {
+        dx.clearRect(0, 0, W, H);
+        dx.globalCompositeOperation = 'lighter';
+        for (const p of drops) {
+          const u = ease(clamp((t - p.d) / .84)), v = 1 - u;
+          const x = v * v * p.a[0] + 2 * v * u * p.c[0] + u * u * p.z[0];
+          const y = v * v * p.a[1] + 2 * v * u * p.c[1] + u * u * p.z[1];
+          dx.globalAlpha = wA + (wB - wA) * u;
+          dx.drawImage(sprite, x - sr, y - sr);
+        }
+        fx.globalAlpha = wd;
+        fx.filter = bf > .02 ? `blur(${(goo * bf).toFixed(2)}px)` : 'none';
+        fx.drawImage(dropC, 0, 0);
+        fx.filter = 'none';
+      }
+      fx.globalAlpha = 1;
+      // Threshold: solid ink inside, a narrow edge like any text anti-aliasing, nothing outside.
+      const src = fx.getImageData(0, 0, W, H).data, dst = img.data;
+      // The blur flattens the field's slope, so the edge band narrows with it to stay a crisp edge.
+      const lo = 100 - 64 * bf, hi = lo + 64 / (1 + 5 * bf), span = 255 / (hi - lo);
+      for (let i = 3; i < src.length; i += 4) {
+        const a = src[i], o = a <= lo ? 0 : a >= hi ? 255 : (a - lo) * span;
+        dst[i - 3] = rgb[0]; dst[i - 2] = rgb[1]; dst[i - 1] = rgb[2]; dst[i] = o;
+      }
+      out.putImageData(img, 0, 0);
+    }
+
+    function frame(now) {
+      const dt = last ? now - last : 16; last = now;
+      t = target > t ? Math.min(target, t + dt / DUR) : Math.max(target, t - dt / DUR);
+      if (t === 0) { stop(); return; }     // back to the words themselves
+      draw();
+      raf = t === target ? 0 : requestAnimationFrame(frame);
+      if (!raf) last = 0;
+    }
+    function stop() {
+      cancelAnimationFrame(raf); raf = 0; last = 0;
+      btn.classList.remove('morphing'); cv.remove();
+    }
+    function go(to) {
+      target = to;
+      if (to === 1 && t === 0) {
+        build();
+        btn.appendChild(cv);
+        btn.classList.add('morphing');
+      }
+      if (reduceMotion) { t = to; if (t === 0) stop(); else draw(); return; }
+      if (!raf) { last = 0; raf = requestAnimationFrame(frame); }
+    }
+    btn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') go(1); });
+    btn.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') go(0); });
+    // Leaving the grid (the button hides) mid-hover must not strand the arrow.
+    btn.addEventListener('click', () => { target = t = 0; stop(); });
+  })();
   renderGrid('reveal');
 
   // ---- Lightbox ----
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lb-img');
+  const lbFrame = lb.querySelector('.lb-frame');
   const lbSrc = document.getElementById('lb-src');   // the WebP candidate; must be kept in step with lbImg
   const lbTitle = document.querySelector('#lb-caption strong');
   const lbNote = document.querySelector('#lb-caption span');
@@ -943,7 +1116,10 @@
     cur = { piece: pi, photo: idx };
     openedPiece = pi;
     if (!lb.classList.contains('open')) lastFocus = document.activeElement;
-    lbImg.style.animation = '';
+    stepRun++;   // abandon any slide still waiting from the last visit
+    lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
+    lbImg.getAnimations().forEach(a => a.cancel());
+    lbImg.style.translate = '';
     lb.classList.toggle('single', reelPhotos(PIECES[pi].tag) < 2);
     render();
     lb.classList.add('open');
@@ -981,7 +1157,7 @@
     lbSrc.removeAttribute('srcset');
     lbImg.removeAttribute('srcset'); lbImg.src = BLANK; lb.classList.add('noimg');
   });
-  function render(dir = 0) {
+  function render() {
     const p = PIECES[cur.piece];
     lb.classList.remove('noimg');
     lbSrc.srcset = webpSrcsetFor(p.photos[cur.photo]);
@@ -1013,11 +1189,44 @@
     } else {
       lbAct.textContent = '';
     }
-    if (dir !== 0 && !reduceMotion) {
-      lbImg.style.animation = 'none';
-      void lbImg.offsetWidth; // restart the animation
-      lbImg.style.animation = `lb-step-${dir > 0 ? 'next' : 'prev'} .38s var(--ease)`;
+  }
+  // The step: the photo on screen is copied into a stand-in that slides off one side while the real
+  // <img>, already holding the next photo, slides in from the other. The easing is a sampled spring
+  // (bounce .2, visual duration .3s — it peaks 1.5% past centre and settles). Old browsers without
+  // linear() easing get the site's own ease-out instead, with no overshoot.
+  const SPRING = 'linear(0, 0.034, 0.117, 0.227, 0.345, 0.463, 0.572, 0.668, 0.751, 0.819, 0.874, 0.917, 0.95, 0.974, 0.991, 1.002, 1.009, 1.013, 1.015, 1.015, 1.014, 1.013, 1.011, 1.009, 1.007, 1.006, 1.004, 1.003, 1.002, 1.002, 1)';
+  const STEP_EASE = CSS.supports('animation-timing-function', SPRING) ? SPRING : 'cubic-bezier(.16, 1, .3, 1)';
+  const STEP_MS = 485;
+  let stepRun = 0;
+  function slidePhotos(dir, paint) {
+    // A second click mid-slide lands the first one at once, so the strip never piles up.
+    lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
+    lbImg.getAnimations().forEach(a => a.cancel());
+    const run = ++stepRun;
+    const shown = !lb.classList.contains('noimg') && lbImg.currentSrc && lbImg.currentSrc !== BLANK;
+    let out = null;
+    if (shown) {
+      const f = lbFrame.getBoundingClientRect(), r = lbImg.getBoundingClientRect();
+      out = document.createElement('img');
+      out.className = 'lb-out'; out.alt = ''; out.setAttribute('aria-hidden', 'true');
+      out.src = lbImg.currentSrc;
+      Object.assign(out.style, { left: `${r.left - f.left}px`, top: `${r.top - f.top}px`, width: `${r.width}px`, height: `${r.height}px` });
+      lbFrame.appendChild(out);
     }
+    const w = lb.clientWidth;   // a whole screen: both photos travel fully off it, never half-visible
+    paint();
+    // Park the new photo off screen until it can be drawn, so it never slides in empty. A cached
+    // photo decodes at once; a slow one is waited on for at most 300ms, then it slides regardless.
+    lbImg.style.translate = `${dir * w}px 0`;
+    const ready = lbImg.decode ? lbImg.decode().catch(() => {}) : Promise.resolve();
+    Promise.race([ready, new Promise(r => setTimeout(r, 300))]).then(() => {
+      if (run !== stepRun) return;
+      lbImg.style.translate = '';
+      const opts = { duration: STEP_MS, easing: STEP_EASE };
+      lbImg.animate([{ translate: `${dir * w}px 0` }, { translate: '0 0' }], opts);
+      if (out) out.animate([{ translate: '0 0' }, { translate: `${-dir * w}px 0` }], { ...opts, fill: 'forwards' })
+        .finished.then(() => out.remove(), () => out.remove());
+    });
   }
   // The URL and the tab title follow the open piece WITHOUT adding a history entry, so ✕ / Esc /
   // Back still step off the one piece entry onto the collection, however far along the reel you are.
@@ -1039,7 +1248,7 @@
     if (piece === cur.piece && photo === cur.photo) return;   // one piece, one photo: nowhere to go
     const moved = piece !== cur.piece;
     cur = { piece, photo };
-    render(dir);
+    if (reduceMotion) render(); else slidePhotos(dir, render);
     if (moved) syncPiece();
   }
   lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
@@ -1065,7 +1274,7 @@
   // With a mouse, a click on the black ground around the photo closes it too. Not on touch, where a
   // near-miss on an arrow would throw the visitor out of the viewer.
   if (matchMedia('(pointer: fine)').matches) {
-    const lbStage = lb.querySelector('.lb-stage'), lbFrame = lb.querySelector('.lb-frame');
+    const lbStage = lb.querySelector('.lb-stage');
     lb.addEventListener('click', e => { if (e.target === lb || e.target === lbStage || e.target === lbFrame) closeLightbox(); });
   }
   document.addEventListener('keydown', e => {
