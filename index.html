@@ -99,12 +99,10 @@
   /* ---------- Hero: the whole Oak Bowl photo, TEM behind the rim, DESIGN in front of the foot ----------
      The plate is the photo's own box, sized exactly as object-fit: cover would size it (3:2 photo,
      anchored 50% 56%), so the type can be positioned in the photo's coordinates with container units. */
-  /* The hero clips at its sides and its bottom, but NOT at its top: the photo is allowed to run up
-     behind the strip the nav covers (clip-path, one nav-height above the box), so that on a fresh visit
-     that strip shows the top of the photo until the nav slides in over it, never a blank bar (Torin,
-     2 Oct). At rest the nav sits over it and nothing differs. `overflow: clip visible` keeps the wide
-     plate from ever widening the page; browsers without `clip` keep `hidden` and simply lose the strip. */
-  header { position: relative; overflow: hidden; overflow: clip visible; clip-path: inset(calc(-1 * var(--navh)) 0 0 0);
+  /* The hero clips whatever reaches past its own edges (the plate is far wider than a phone, and the
+     tall phone photo hangs well above and below it). With script and motion it stops clipping and
+     #hero-pin does it instead, from the very top of the page: see "Hero motion" below. */
+  header { position: relative; overflow: hidden;
            height: calc(100vh - var(--navh)); height: calc(100svh - var(--navh)); container: hero / size; }
   .plate { position: absolute; left: 50%; top: 56%; translate: -50% -56%;
            width: max(100cqw, calc(100cqh * 1.5)); height: max(100cqh, calc(100cqw / 1.5));
@@ -146,18 +144,44 @@
      runway of 70% of a screen for the text to go, and the hero's height again; the gallery overlaps
      that last screen with a negative margin, so it rises over the still-pinned photo, and the hero only
      lets go once it is fully covered (it never lurks behind the rest of the page). Only with script and
-     motion: without them the hero is an ordinary block and the page scrolls as it always did. */
+     motion: without them the hero is an ordinary block and the page scrolls as it always did.
+
+     WHAT PINS IS #hero-pin, NOT THE HERO (2 Oct, after an iPhone showed a blank band where the nav was
+     about to land). The pin starts at the very top of the PAGE, behind the nav: the run is pulled up by
+     the nav's height and the pin pads the hero back down to exactly where it always sat. The pin is the
+     one box that clips, with plain `overflow: hidden` and nothing else, so the strip the nav will cover
+     is simply the top of a clipped box with the photo inside it. The first version let the photo paint
+     ABOVE the hero's own box (`overflow: clip visible` and a clip-path with a negative inset): desktop
+     browsers and Safari's engine on Windows painted that, iPhone Safari did not. Do not go back to it.
+
+     The pin is the LARGE viewport tall (lvh) and the hero inside it the small one (svh). When a phone's
+     toolbar slides away the screen grows by about 90px, and the photo carries on down into it instead
+     of ending in a bar of bare ground. The run and the gallery's overlap grow by the same amount, so
+     nothing else on the page moves. On a desktop the two heights are the same. */
   @media (prefers-reduced-motion: no-preference) {
     /* The runway is rounded to a whole pixel (where round() is supported): at 70% of a 768px screen it
-       is 537.6px, which set everything below the hero 0.4px off where it used to sit. */
-    .js:not(.m-off) #hero-run { height: calc((100vh - var(--navh)) * 2 + 70vh); height: calc((100svh - var(--navh)) * 2 + 70svh);
-                                height: calc((100svh - var(--navh)) * 2 + round(70svh, 1px)); }
-    .js:not(.m-off) #hero-run > header { position: sticky; top: var(--navtop, var(--navh)); }   /* the nav's exact height: see setNavH */
-    .js:not(.m-off) #work { margin-top: calc(-1 * (100vh - var(--navh))); margin-top: calc(-1 * (100svh - var(--navh))); }
+       is 537.6px, which set everything below the hero 0.4px off where it used to sit.
+       --navtop is the nav's exact height (see setNavH); --navh is that rounded. */
+    .js:not(.m-off) #hero-run { margin-top: calc(-1 * var(--navtop, var(--navh)));
+                                height: calc(200vh - var(--navh) * 2 + var(--navtop, var(--navh)) + 70vh);
+                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + 70svh);
+                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + round(70svh, 1px)); }
+    .js:not(.m-off) #hero-pin { position: sticky; top: 0; overflow: hidden; padding-top: var(--navtop, var(--navh));
+                                height: calc(100vh - var(--navh) + var(--navtop, var(--navh)));
+                                height: calc(100lvh - var(--navh) + var(--navtop, var(--navh))); }
+    .js:not(.m-off) #hero-pin > header { overflow: visible; }
+    .js:not(.m-off) #work { margin-top: calc(-1 * (100vh - var(--navh))); margin-top: calc(-1 * (100lvh - var(--navh))); }
   }
   /* The mirrored copy that carries the photo's backdrop up behind the nav's strip where the photo
      itself stops at the hero's top edge. Placed, flipped and removed by the script (Hero). */
   .plate .photo-up { transform-origin: 0 0; }
+  /* The parting cut is two SHUTTERS the colour of the ground, closed over the whole pin on a fresh
+     visit and drawn apart from the bowl's centre line by the script (Hero), then removed. Only their
+     transforms move, each on a layer of its own, so opening the photo never repaints it. It was a
+     clip-path on the photo itself until 2 Oct: that re-drew a photograph four screens tall on every
+     frame of the opening, on the device least able to (a phone at 3x). */
+  #hero-pin > .cut { position: absolute; left: 0; right: 0; z-index: 5; background: var(--ground); will-change: transform; pointer-events: none; }
+  .m-off #hero-pin > .cut { display: none; }
   /* A card keeps its own box still and the engine moves its inner .slide, clipped to the card while it
      moves (a sideways translate would otherwise widen the page). The clip comes off when it lands. */
   .piece.m-clip { overflow: hidden; }
@@ -577,8 +601,10 @@
   </div>
 </nav>
 
-<!-- The hero's runway: it pins inside this while the scroll rewinds its text, then the gallery covers it. -->
+<!-- The hero's runway. #hero-pin holds still inside it while the scroll rewinds the hero's text, then
+     the gallery covers it. The pin reaches up behind the nav and is the box that clips the photo. -->
 <div id="hero-run">
+<div id="hero-pin">
 <header id="hero">
   <div class="plate">
     <picture>
@@ -605,6 +631,7 @@
     </div>
   </div>
 </header>
+</div>
 </div>
 
 <section id="work" tabindex="-1">
@@ -768,9 +795,13 @@
   // --navtop is the nav's EXACT height (68.875px on desktop, where --navh rounds to 69): the hero pins
   // to it. Pinned at the rounded value it sat an eighth of a pixel lower than it does in the flow, which
   // redrew all its text a fraction off.
+  // Written only when it changes: a phone fires resize every time its toolbar slides away or back, and
+  // setting a custom property on the root restyles the whole page for a value that has not moved.
+  let navH = -1, navTop = -1;
   function setNavH() {
-    document.documentElement.style.setProperty('--navh', navEl.offsetHeight + 'px');
-    document.documentElement.style.setProperty('--navtop', navEl.getBoundingClientRect().height + 'px');
+    const h = navEl.offsetHeight, t = navEl.getBoundingClientRect().height;
+    if (h !== navH) docEl.style.setProperty('--navh', (navH = h) + 'px');
+    if (t !== navTop) docEl.style.setProperty('--navtop', (navTop = t) + 'px');
   }
   setNavH();
   addEventListener('resize', setNavH, { passive: true });
@@ -800,12 +831,22 @@
   // offsetTop ignores transforms, so a block is measured where it really sits even while it moves.
   const docTop = el => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
 
+  const heroEl = document.getElementById('hero');
+  let viewerOpen = false;   // set by the photo viewer; nothing behind it is hurried while it is open
+
   const Motion = (() => {
     const tracks = [];
     let live = !reduceMotion, vh = innerHeight, maxScroll = 0, narrow = false, raf = 0, last = 0, hero = null;
+    // The screen's height as the LAYOUT sees it. The hero is 100svh less the nav, so the two together
+    // are the small viewport, which never changes while you scroll. innerHeight does: a phone's toolbar
+    // slides away as you scroll and comes back when you turn round, innerHeight follows it (about 90px
+    // on an iPhone) and a resize fires. Measured against innerHeight, every block on its way in lurched
+    // at that moment: one at 67% jumped to 99% (2 Oct). This was half of the jitter on a phone.
+    const screenH = () => heroEl ? heroEl.offsetHeight + navEl.offsetHeight : innerHeight;
     function measure() {
-      vh = innerHeight;
-      maxScroll = Math.max(0, document.documentElement.scrollHeight - vh);
+      vh = screenH();
+      // The furthest the page can scroll: on the taller screen, when the toolbar is away.
+      maxScroll = Math.max(0, document.documentElement.scrollHeight - Math.max(vh, innerHeight));
       narrow = matchMedia('(max-width: 900px)').matches;
       // A grid card's column is the rank of its left edge, so the sides follow the real layout at every
       // width: two across for collections, three for pieces, fewer on a narrow screen.
@@ -826,11 +867,26 @@
       // Landed, or within half a pixel of it: clear everything. A block can come to REST a hair short of
       // its line (the first row of a just-opened collection did, when the line was at 40%), and a
       // leftover scale(0.9995) there redraws its photograph at 99.95%, which softens it.
-      if (90 * (1 - e) < .5) { s.transform = ''; s.opacity = ''; if (t.clip) t.el.classList.remove('m-clip'); return; }
+      t.rest = 90 * (1 - e) < .5;
+      if (t.rest) { s.transform = ''; s.opacity = ''; if (t.clip) t.el.classList.remove('m-clip'); return; }
       const x = narrow ? 0 : t.side * 90 * (1 - e);
       s.transform = `translate(${x.toFixed(1)}px, ${(80 * (1 - e)).toFixed(1)}px) scale(${(.9 + .1 * e).toFixed(4)})`;
       s.opacity = Math.min(1, 1.5 * p).toFixed(3);
       if (t.clip) t.el.classList.add('m-clip');
+    }
+    // A block on its way sits on a LAYER OF ITS OWN (will-change), so a frame only moves that layer.
+    // Without it every frame repainted the block and redrew its photograph at a new size, and that was
+    // the other half of the jitter on a phone: one scroll down the page cost 1273 raster tasks on a
+    // 4x-slowed phone, 41 with the layers (2 Oct). The layer is made half a screen before the block
+    // comes into view, so it is drawn before anyone sees it, and given back the moment the block lands:
+    // the resting page keeps no layers.
+    // The same look-ahead starts a card's photograph loading, two screens out. Safari leaves a lazy
+    // photo until it is about 560px away, which a quick flick on a phone outruns, and the card then
+    // faded in around an empty box. (Chromium starts 2900px out and never showed it.)
+    function heat(t, y, warm) {
+      const hot = !t.rest && y > t.start - .5 * vh;
+      if (hot !== t.hot) { t.hot = hot; t.mover.style.willChange = hot ? 'transform, opacity' : ''; }
+      if (warm && t.img && y > t.start - 2 * vh) { t.img.loading = 'eager'; t.img = null; }
     }
     function frame(now) {
       if (!live) return;
@@ -839,6 +895,10 @@
       const y = scrollY;
       let busy = false;
       try {
+        if (hero && hero.frame(now, dt, y)) busy = true;
+        // No photograph is hurried while the hero is still opening on a fresh visit (the hero photo has
+        // the connection to itself: see Performance in CLAUDE.md), nor behind an open viewer.
+        const warm = !viewerOpen && !(hero && hero.opening);
         for (const t of tracks) {
           const goal = target(t, y);
           let p;
@@ -851,8 +911,8 @@
             if (p !== goal) busy = true;
           }
           if (p !== t.p) { paint(t, p); t.p = p; }
+          heat(t, y, warm);
         }
-        if (hero && hero.frame(now, dt, y)) busy = true;
       } catch (e) { fail(e); return; }
       raf = busy ? requestAnimationFrame(frame) : 0;
       if (!raf) last = 0;
@@ -862,7 +922,7 @@
     function fail(e) {
       live = false; raf = 0;
       docEl.classList.add('m-off');
-      tracks.forEach(t => { t.mover.style.transform = ''; t.mover.style.opacity = ''; t.el.classList.remove('m-clip'); });
+      tracks.forEach(t => { t.mover.style.transform = ''; t.mover.style.opacity = ''; t.mover.style.willChange = ''; t.el.classList.remove('m-clip'); });
       console.warn('Motion stopped:', e);
     }
     // Measure, and put every NEW track straight where the scroll puts it (existing ones glide there).
@@ -880,7 +940,9 @@
     }
     function add(el, opt = {}) {
       if (!el) return null;
-      const t = { el, mover: opt.mover || el, side: opt.side || 0, grid: !!opt.grid, clip: !!opt.clip, col: 0, start: 0, end: 0, p: -1, timed: null };
+      // rest: landed and cleared. hot: on its own layer. img: a lazy photograph still to be hurried (cards).
+      const t = { el, mover: opt.mover || el, side: opt.side || 0, grid: !!opt.grid, clip: !!opt.clip, col: 0, start: 0, end: 0, p: -1, timed: null,
+                  rest: false, hot: false, img: null };
       tracks.push(t);
       return t;
     }
@@ -893,6 +955,8 @@
       const now = performance.now();
       cards.forEach((c, i) => {
         const t = add(c, { mover: c.querySelector('.slide'), clip: true, grid: true });
+        const im = c.querySelector('.thumb img');
+        if (im && im.loading === 'lazy') t.img = im;
         if (enter) { t.p = 0; paint(t, 0); if (i < 6) t.timed = { t0: now, delay: i * 60 }; }
       });
       sync();
@@ -914,7 +978,8 @@
 
   // ---- The hero ----
   // Two things play. The PHOTO plays once, on a fresh visit, by the clock: it opens as a band from the
-  // bowl's centre line (the parting cut) while it settles from 107%. Until the nav arrives, the strip
+  // bowl's centre line (the parting cut: two ground-coloured shutters drawn apart) while it settles
+  // from 107%. Until the nav arrives, the strip
   // the nav will cover shows the top of the photo, never a blank bar, and the nav slides in over it.
   // The TEXT (TEM, DESIGN, the lede, the links) plays with it over the same 2.6s, and from then on, and
   // on any other arrival, belongs to the scroll: the hero holds still (pinned in #hero-run by CSS)
@@ -923,19 +988,60 @@
   // collection sees it play (Torin, 2 Oct). Each part is cleared the moment it lands. Spec 2026-10-02 §5.
   const Hero = (() => {
     if (!Motion.live) return null;
-    const header = document.querySelector('header'), runway = document.getElementById('hero-run');
+    const header = heroEl, runway = document.getElementById('hero-run'), pin = document.getElementById('hero-pin');
     const plate = header.querySelector('.plate'), photo = plate.querySelector('.photo');
     const t1 = header.querySelector('.t1'), t2 = header.querySelector('.t2'), lede = header.querySelector('.lede');
     const links = [...header.querySelectorAll('.cta a')];
     const SECS = 2.6, at = s => s / SECS;   // the intro's timings, in seconds of a fresh visit
     const LAP = 2;                          // px the mirrored strip overlaps the photo's top (see measure)
     const fresh = docEl.classList.contains('hero-pre') && navEntry.type !== 'back_forward';
-    // tp / tt: the photo's and the text's shown progress; up: the mirrored strip above the photo
+    // tp / tt: the photo's and the text's shown progress; up: the mirrored strip above the photo;
+    // dirty: the geometry changed, so repaint even though neither progress did; away: the hero is
+    // covered by the gallery and scrolled off; key: what the last measure was taken against.
     let G = null, introT = fresh ? 0 : 1, playing = false, clock = 0, tp = -1, tt = -1, navIn = !fresh, up = null;
+    let dirty = false, away = false, key = '';
+    // The parting cut's shutters (see .cut in the CSS): one above the bowl's centre line, one below.
+    let cutA = null, cutB = null;
+    if (fresh && pin) {
+      cutA = document.createElement('div'); cutB = document.createElement('div');
+      cutA.className = cutB.className = 'cut';
+      cutA.setAttribute('aria-hidden', 'true'); cutB.setAttribute('aria-hidden', 'true');
+      pin.append(cutA, cutB);
+    }
+
+    // A part that is moving sits on a layer of its own (will-change), so a frame moves the layer instead
+    // of repainting the words, their blur or the photograph; it is given back the moment the part lands,
+    // and while the hero is off screen under the rest of the page. See heat() in the engine.
+    const lifted = new WeakSet();
+    function lift(el, on, what) {
+      if (lifted.has(el) === on) return;
+      if (on) lifted.add(el); else lifted.delete(el);
+      el.style.willChange = on ? what : '';
+    }
+    // The browser's OWN bar above the page: an iPhone's status bar, Android's toolbar. It wears the
+    // ground's colour, so on a fresh visit it stood as a pale band over the photo until the nav landed
+    // (Torin, 2 Oct: "it covers the status bar and where the nav would be"). While the photo is at the
+    // top of the page and the nav is away, the bar takes the photo's backdrop colour instead, and the
+    // ground's again as the nav comes in. SKY is the top of both hero photos (200, 208, 229, even to
+    // within 4 across the top third of the phone canvas): re-measure it if make_hero.py is ever re-run.
+    // Two ways in, because Safari changed: up to iOS 18 it reads <meta name="theme-color">; from iOS 26
+    // it takes the background colour of whatever is fixed or stuck at the top edge, which here is the
+    // pin (the nav is hidden, not just moved away, so it is not the one sampled). The pin is covered by
+    // the photo whenever this is on, so its colour is never seen on the page itself.
+    const barMeta = document.querySelector('meta[name="theme-color"]'), GROUND = barMeta ? barMeta.content : '', SKY = '#C8D0E5';
+    let sky = false;
+    function bar(on) {
+      if (on === sky) return;
+      sky = on;
+      if (barMeta) barMeta.content = on ? SKY : GROUND;
+      if (pin) pin.style.backgroundColor = on ? SKY : '';
+    }
 
     // Where the bowl's centre falls in the photo as this layout draws it: stretched to the plate on
     // desktop, the tall phone canvas in portrait, cover-cropped in landscape, contained when stacked.
+    const geoKey = () => [innerWidth, header.offsetWidth, header.offsetHeight, photo.currentSrc, photo.naturalWidth].join();
     function measure() {
+      key = geoKey();
       const cs = getComputedStyle(photo);
       const pl = parseFloat(cs.paddingLeft) || 0, pr = parseFloat(cs.paddingRight) || 0;
       const pt = parseFloat(cs.paddingTop) || 0, pb = parseFloat(cs.paddingBottom) || 0;
@@ -955,21 +1061,31 @@
       // How far the photo runs up past the hero's top edge, behind the strip the nav covers. Measured
       // where the photo rests, with the settle's scale off.
       const held = photo.style.transform; photo.style.transform = '';
-      const over = header.getBoundingClientRect().top - photo.getBoundingClientRect().top;
+      const photoTop = photo.getBoundingClientRect().top, over = header.getBoundingClientRect().top - photoTop;
       photo.style.transform = held;
-      const hh = header.offsetHeight, pinned = !!runway && runway.offsetHeight > hh * 1.5;
-      G = { cx: pl + ox + fx * nw * sx, cy: pt + oy + fy * nh * sy, h: photo.offsetHeight,
-            // the runway the text rewinds over: #hero-run is the hero, the runway, and the hero again
-            run: pinned ? runway.offsetHeight - 2 * hh : .7 * hh,
+      const hh = header.offsetHeight, pinned = !!(runway && pin) && runway.offsetHeight > hh * 1.5;
+      G = { cx: pl + ox + fx * nw * sx, cy: pt + oy + fy * nh * sy, h: photo.offsetHeight, hh,
+            // the runway the text rewinds over: #hero-run is the pin, the runway, and the hero's height again
+            run: pinned ? runway.offsetHeight - pin.offsetHeight - hh : .7 * hh,
             // the part of the strip the photo does NOT reach (none where the photo is not at the hero's top at all)
-            gap: over >= 0 ? Math.max(0, navEl.offsetHeight - over) : 0 };
+            gap: over >= 0 ? Math.max(0, navEl.offsetHeight - over) : 0,
+            // the strip behind the nav is photograph (itself or its mirrored copy), not the ground
+            strip: over >= 0 };
       photo.style.transformOrigin = `${G.cx.toFixed(1)}px ${G.cy.toFixed(1)}px`;
+      // The shutters meet on the bowl's centre line, measured down the pin. They overlap by a pixel or
+      // two: two edges meeting on a fractional pixel would leave a hairline of the photo between them.
+      if (cutA) {
+        const line = photoTop - pin.getBoundingClientRect().top + G.cy;
+        cutA.style.top = '0'; cutA.style.height = `${Math.ceil(line) + 1}px`;
+        cutB.style.top = `${Math.floor(line)}px`; cutB.style.bottom = '0';
+      }
       // Where the photo stops short of the strip (a tall window, a phone held sideways), a mirrored copy
       // carries its backdrop on upwards: a reflection is seamless at the join. It exists only until the
       // nav has landed over the strip.
       if (G.gap > 0 && !navIn && !up) {
         up = new Image();
         up.className = 'photo-up'; up.alt = ''; up.setAttribute('aria-hidden', 'true');
+        up.style.willChange = 'transform';   // it settles with the photo, on a layer like it
         plate.appendChild(up);
       }
       if (up && (G.gap <= 0 || navIn)) { up.remove(); up = null; }
@@ -984,6 +1100,7 @@
     // The title: from 114%, blurred 0.14em and faint, to sharp. Opacity arrives in the first 60%.
     function pull(el, u) {
       const s = el.style;
+      lift(el, u < 1 && !away, 'transform, opacity, filter');
       if (u >= 1) { s.opacity = ''; s.transform = ''; s.filter = ''; return; }
       const e = out3(u);
       s.opacity = out3(seg(u, 0, .6)).toFixed(3);
@@ -993,6 +1110,7 @@
     // The lede and links: up 32px, fading in.
     function rise(el, u) {
       const s = el.style;
+      lift(el, u < 1 && !away, 'transform, opacity');
       if (u >= 1) { s.opacity = ''; s.transform = ''; return; }
       const e = out3(u);
       s.opacity = e.toFixed(3);
@@ -1002,14 +1120,16 @@
     function paint(vp, vt) {
       const c = inOut3(seg(vp, 0, at(1.2)));                                       // the parting cut: 0 = closed to the centre line
       const z = seg(vp, 0, at(1.8)), sc = z >= 1 ? 1 : 1 + .07 * (1 - out3(z));    // the settle from 107%
-      // The band's top edge runs from the centre line to the top of the photo and, where the photo stops
-      // short of the nav's strip, on up through the mirrored copy (negative = above the photo's top).
-      const yTop = G.cy - c * (G.cy + G.gap);
-      photo.style.clipPath = c >= 1 ? '' : `inset(${Math.max(0, yTop).toFixed(1)}px 0px ${((1 - c) * (G.h - G.cy)).toFixed(1)}px 0px)`;
+      // Each shutter slides its own height away from the centre line: the upper one off the top of the
+      // pin (so the band reaches the very top of the page, through the nav's strip), the lower one off
+      // the bottom. Both go once the photo is fully open.
+      if (cutA) {
+        if (c >= 1) { cutA.remove(); cutB.remove(); cutA = cutB = null; }
+        else { cutA.style.transform = `translateY(${(-100 * c).toFixed(2)}%)`; cutB.style.transform = `translateY(${(100 * c).toFixed(2)}%)`; }
+      }
+      lift(photo, sc !== 1, 'transform');
       photo.style.transform = sc === 1 ? '' : `scale(${sc.toFixed(4)})`;
       if (up) {
-        // It is flipped, so its own first rows are its join with the photo: the band reveals it from there.
-        up.style.clipPath = `inset(0px 0px ${(yTop < 0 ? G.h - LAP + yTop : G.h).toFixed(1)}px 0px)`;
         // Flipped about its own middle, then settled with the photo about the bowl's centre.
         const by = G.h - LAP + G.cy;
         up.style.transform = `translate(${G.cx.toFixed(1)}px, ${by.toFixed(1)}px) scale(${sc.toFixed(4)}) translate(${(-G.cx).toFixed(1)}px, ${(-by).toFixed(1)}px) ` +
@@ -1026,7 +1146,8 @@
     function showNav(animate) {
       if (navIn) return;
       navIn = true;
-      navEl.style.transform = '';
+      bar(false);   // the browser's bar goes back to the ground's colour as the nav comes down under it
+      navEl.style.transform = ''; navEl.style.visibility = '';
       const landed = () => { if (up) { up.remove(); up = null; } };   // the nav covers the strip from here on
       if (animate) navEl.animate([{ transform: 'translateY(-100%)' }, { transform: 'none' }], { duration: 600, easing: OUT3 }).finished.then(landed, landed);
       else landed();
@@ -1035,16 +1156,24 @@
     function frame(now, dt, y) {
       if (!G) return false;
       if (playing) { introT = clamp01((now - clock) / (SECS * 1000)); if (introT >= 1) playing = false; }
+      const gone = y > G.run + G.hh;   // covered by the gallery and scrolled off: its layers are given back
+      if (gone !== away) { away = gone; dirty = true; }
       const goal = textGoal(y);
       const v = tt < 0 ? goal : glide(tt, goal, dt);
-      if (v !== tt || introT !== tp) { paint(introT, v); tt = v; tp = introT; }
-      if (!navIn && introT >= at(2.4)) showNav(true);
+      if (v !== tt || introT !== tp || dirty) { paint(introT, v); tt = v; tp = introT; dirty = false; }
+      if (!navIn) {
+        // The bar changes as the cut's top edge nears the top of the screen (0.85s in: the cut is 90%
+        // open, and the browser takes a moment to blend the colour), never while the ground still shows.
+        bar(G.strip && introT >= at(.85));
+        if (introT >= at(2.4)) showNav(true);
+      }
       return playing || v !== goal;
     }
     measure();
     tp = introT; tt = textGoal(scrollY);
     paint(tp, tt);
-    if (fresh) navEl.style.transform = 'translateY(-100%)';
+    // Hidden as well as moved away: a hidden nav is not what Safari samples for its bar (see bar()).
+    if (fresh) { navEl.style.transform = 'translateY(-100%)'; navEl.style.visibility = 'hidden'; }
     docEl.classList.remove('hero-pre');
     if (fresh) {
       // The clock starts once the photo can be drawn, so the cut never opens onto nothing; a slow photo
@@ -1054,12 +1183,14 @@
       // Any key, tap, click or wheel during the intro brings the nav in at once, so nothing is out of reach.
       ['keydown', 'pointerdown', 'touchstart', 'wheel'].forEach(ev => addEventListener(ev, () => showNav(true), { passive: true, once: true }));
     }
-    const remeasure = () => { measure(); tp = -1; tt = -1; Motion.kick(); };
+    // Only when something it measures has changed. A phone's toolbar sliding away fires resize and
+    // changes none of it; and the text is never snapped, it glides on from where it is.
+    const remeasure = () => { if (geoKey() === key) return; measure(); dirty = true; Motion.kick(); };
     addEventListener('resize', remeasure, { passive: true });
     photo.addEventListener('load', remeasure);   // a new srcset candidate, or the phone/desktop photo swap
     // A page restored from the back/forward cache comes back as it left, possibly mid-intro: finish it.
     addEventListener('pageshow', e => { if (e.persisted && (playing || !navIn)) { playing = false; introT = 1; showNav(false); Motion.kick(); } });
-    return { frame };
+    return { frame, get opening() { return fresh && introT < 1; } };
   })();
   if (Hero) Motion.setHero(Hero); else docEl.classList.remove('hero-pre');
 
@@ -1441,6 +1572,7 @@
     lbImg.getAnimations().forEach(a => a.cancel());
     lbImg.style.translate = '';
     lb.classList.toggle('single', reelPhotos(PIECES[pi].tag) < 2);
+    viewerOpen = true;
     render();
     lb.classList.add('open');
     if (arriving && !reduceMotion) viewerArrive();
@@ -1455,6 +1587,7 @@
   function closeLightbox(viaHistory, focusTarget) {
     if (!lb.classList.contains('open')) return;
     lb.classList.remove('open');
+    viewerOpen = false; Motion.kick();   // the grid behind may hurry its photographs again
     resetColl();   // Esc or ✕ with the pointer resting on it: don't reopen onto an arrow
     document.body.style.overflow = '';
     document.title = BASE_TITLE;
@@ -1478,6 +1611,24 @@
     // browser still holding the WebP candidate for the photo that just failed.
     lbSrc.removeAttribute('srcset');
     lbImg.removeAttribute('srcset'); lbImg.src = BLANK; lb.classList.add('noimg');
+  });
+  // Once the open photo has arrived, the photos a step either side of it are fetched too, so a step
+  // shows the next photograph at once. Before this each step went to the network on demand, and the
+  // slide waits 300ms at most: on a phone the new photo slid in late, or still empty. Same format,
+  // srcset and sizes as the viewer's own request, so it is the very file the step will ask for. Only
+  // ever the two neighbours, and only after the open photo has landed: never the whole reel.
+  const ahead = new Map();   // photo name -> the Image fetching it
+  lbImg.addEventListener('load', () => {
+    if (!viewerOpen || lb.classList.contains('noimg')) return;
+    const setFor = /\.webp$/i.test(lbImg.currentSrc) ? webpSrcsetFor : srcsetFor;
+    [1, -1].forEach(dir => {
+      const n = neighbour(dir), name = PIECES[n.piece].photos[n.photo];
+      if (ahead.has(name) || (n.piece === cur.piece && n.photo === cur.photo)) return;
+      const im = new Image();
+      im.sizes = lbImg.sizes; im.srcset = setFor(name);
+      ahead.set(name, im);
+      if (ahead.size > 8) ahead.delete(ahead.keys().next().value);   // the oldest has long since arrived
+    });
   });
   function render() {
     const p = PIECES[cur.piece];
@@ -1573,13 +1724,19 @@
   // ← → walk the whole COLLECTION as one reel: this piece's angles, then straight on into the next
   // piece's. Before this they cycled one piece's photos only, so 19 of the 40 pieces (single-photo)
   // had no arrows at all and seeing eleven bowls cost eleven open-look-close cycles.
-  function step(dir) {
+  // The photo one step along the reel from the open one: this piece's next angle, or on into the
+  // neighbouring piece (and round the ends).
+  function neighbour(dir) {
     const reel = reelOf(PIECES[cur.piece].tag);
     let piece = cur.piece, photo = cur.photo + dir;
     if (photo < 0 || photo >= PIECES[piece].photos.length) {
       piece = reel[(reel.indexOf(piece) + dir + reel.length) % reel.length];
       photo = dir > 0 ? 0 : PIECES[piece].photos.length - 1;
     }
+    return { piece, photo };
+  }
+  function step(dir) {
+    const { piece, photo } = neighbour(dir);
     if (piece === cur.piece && photo === cur.photo) return;   // one piece, one photo: nowhere to go
     const moved = piece !== cur.piece;
     cur = { piece, photo };
