@@ -3,28 +3,35 @@
 // =====================================================================
 //
 //  PHOTOS ARE FILED BY COLLECTION, in folders sitting next to index.html:
-//      Homeware/   Decorative/   Bowls/   Jewellery/
+//      Homeware-webp/   Decorative-webp/   Bowls-webp/   Jewellery-webp/
 //      Each piece's photos live in the folder matching its "tag", and the site
-//      works the folder out from the tag — so you only ever write the bare
-//      filename below (e.g. "12.1.jpg"), never the folder.
+//      works the folder out from the tag — so you only ever write the photo's
+//      own name below (e.g. "12.1.jpg", the name of the original), never the
+//      folder and never a size.
+//
+//  EVERY PHOTO IS THREE FILES, one per size, all WebP:
+//      12.1-480.webp     12.1-960.webp     12.1-1600.webp
+//      (Need them made? Put the original in Photos-originals/ and ask Claude,
+//      or use any image resizer.)
 //
 //  HOW TO ADD A PHOTO to an existing piece:
-//      put its -480.jpg and -960.jpg copies into the folder for that piece's
-//      tag, then add the bare filename to that piece's "photos" list below.
-//      (Need the -480/-960 copies made? Ask Claude, or any image resizer.)
+//      put its three .webp files into the folder for that piece's tag, then
+//      add the photo's name to that piece's "photos" list below.
 //
 //  HOW TO ADD A NEW PIECE:
 //      copy any block between { ... }, paste it into the list,
 //      and edit the title, note, tag, and photos.
 //
 //  IF YOU CHANGE A PIECE'S TAG, move its photo files into the matching
-//      folder too, or those photos will 404.
+//      folder too, or those photos will go missing.
 //
 //  TWO OPTIONAL EXTRAS a piece can have:
-//      etsy: "https://..."   the piece is for sale. Its photo viewer shows a
-//                            "Buy on Etsy" button linking there (use the listing's
-//                            own link, or the shop's). A piece without one shows
-//                            no button at all - enquiries go through Contact.
+//      etsy: "https://..."   the piece is for sale. Its card in the gallery
+//                            shows a "For sale" tab, and its photo viewer a
+//                            "Buy on Etsy" button linking there (use the
+//                            listing's own link, or the shop's). A piece
+//                            without one shows neither - enquiries go through
+//                            Contact.
 //      slug: "oak-bowl"      pins the piece's link (#oak-bowl) so you can rename
 //                            the title later without breaking pins that point at
 //                            it. Before renaming a piece, set its slug to the old
@@ -32,17 +39,13 @@
 //
 //  The first photo in each list is used as the cover image.
 //  Pieces appear on the site in the order they appear here.
-//  The tag decides which category a piece lives in on the site,
-//  and the first 8 pieces in this list appear in the hero deck.
+//  The tag decides which collection a piece lives in on the site.
 // =====================================================================
 
 // Prefix in front of every photo path. The collection folders sit right next to
 // index.html, so this is empty. If you ever move them inside a parent folder,
 // set this to e.g. "Photos/" — keep the trailing slash.
 const PHOTO_DIR = "";
-
-// Photos for the scrolling shelf under the hero — add, remove or reorder freely.
-const STRIP_PHOTOS = ["3.2.jpg", "10.1.jpg", "5.3.jpg", "16.1.jpg", "20.1.jpg", "2.2.jpg", "13.1.jpg", "22.1.jpg", "30.1.jpg", "4.2.jpg"];
 
 const PIECES = [
   {

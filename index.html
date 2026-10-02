@@ -8,26 +8,14 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="TEMDesign, hand-turned wooden bowls, homeware and jewellery in Fife, Scotland">
 <meta property="og:description" content="Hand-turned bowls, homeware, jewellery and decorative pieces, made on the lathe in Fife, Scotland.">
-<meta property="og:image" content="https://torin-3.github.io/woodwork/Bowls/14.1-960.jpg">
+<meta property="og:image" content="https://torin-3.github.io/woodwork/hero/14.1-960.jpg">
 <meta property="og:image:width" content="960">
 <meta property="og:image:height" content="640">
 <meta property="og:image:alt" content="A hand-turned oak bowl with a clean taper down to a narrow foot.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="referrer" content="strict-origin-when-cross-origin">
-<!-- Pinterest site verification: proves this site is yours so pins from it are credited
-     to your profile. Safe to remove if you stop using Pinterest. -->
 <meta name="p:domain_verify" content="83834553f194f9127ad4e61206f0baca"/>
 <meta name="theme-color" content="#F0F0EE">
-<!-- The hero photo is the largest thing on the first screen, so it is claimed here rather than
-     when the parser reaches the <picture> 400 lines down: it then starts ahead of the logo and the
-     gallery covers instead of behind them: LCP 1528ms -> 1484ms on a 4x-throttled phone over a
-     1.6Mbps link, measured over six loads each.
-     THESE TWO MEDIA QUERIES MUST STAY THE MIRROR IMAGE OF EACH OTHER, and the first must match the
-     <source> in the hero and the CSS phone query EXACTLY (see "Mobile hero" in CLAUDE.md) — if they
-     drift, a device can match both and download two hero photos, or match neither and preload the
-     wrong one. srcset/sizes must likewise match their counterparts below. Verified on desktop,
-     iPhone and iPad portrait: exactly one hero file is fetched in every case.
-     The hero is JPEG only — see the note on the <picture> below for why WebP loses here. -->
 <link rel="preload" as="image" fetchpriority="high" media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" imagesizes="100vw">
 <link rel="preload" as="image" fetchpriority="high" media="not all and (max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" imagesizes="(max-aspect-ratio: 3/2) 150vh, 100vw">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
@@ -38,70 +26,58 @@
   var d = document.documentElement;
   if (!('noModule' in document.createElement('script') && 'IntersectionObserver' in window)) return;
   d.classList.add('js');
-  // A fresh visit (no hash) opens on the ground alone, and the hero intro takes over in its first
-  // frame (Hero, in the script). If the intro never starts, this lets go after 4s, so the hero can
-  // never stay hidden. Reduced motion never hides it at all.
+  if (location.hash) {
+    d.classList.add('arriving');
+    setTimeout(function () { d.classList.remove('arriving'); }, 3000);
+  }
   if (!location.hash && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     d.classList.add('hero-pre');
     setTimeout(function () { d.classList.remove('hero-pre'); }, 4000);
   }
 })();</script>
 <style>
-  /* TEM Design — brutalist shell, Sept 2026. At rest: flat colour only, no gradients / shadows /
-     translucency; no rounded corners, no card panels; photographs shown whole. Motion may fade,
-     scale, blur and clip, but everything it touches lands clean (Oct 2026).
-     Specs: docs/superpowers/specs/2026-09-17-brutalist-redesign-design.md, 2026-10-02-scroll-tied-motion-design.md */
   :root {
     --ground: #F0F0EE; --ink: #0F0F0F;
-    --lichen: #C6E400; --xanth: #F28C00; --kelp: #1F6B3A; --slate: #2F5D8A;   /* fills; lichen & xanth are never text on the ground */
+    --lichen: #C6E400; --xanth: #F28C00; --kelp: #1F6B3A; --slate: #2F5D8A;
     --pad: 4vw; --navh: 64px;
     --ease: cubic-bezier(.16, 1, .3, 1);
-    --ease-fast: cubic-bezier(.25, 1, .5, 1);   /* ease-out-quart, for anything answering a pointer */
-    --dur-fb: 140ms;                            /* feedback: under the ~80-150ms band where a response still reads as instant */
-    --ease-out3: cubic-bezier(.33, 1, .68, 1);   /* cubic ease-out, the motion engine's curve, for CSS */
-    --ease-glide: cubic-bezier(.22, .7, .12, 1); /* the viewer arriving: eases in, then settles */
-    --ease-in: cubic-bezier(.5, 0, .75, 0);      /* the viewer leaving */
+    --ease-fast: cubic-bezier(.25, 1, .5, 1);
+    --dur-fb: 140ms;
+    --ease-out3: cubic-bezier(.33, 1, .68, 1);
+    --ease-glide: cubic-bezier(.22, .7, .12, 1);
+    --ease-in: cubic-bezier(.5, 0, .75, 0);
     --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    /* the hero grid: the bowl's centre, top and bottom in hero/14.1-1600.jpg, % of the photo (hero-bbox.json) */
     --bcx: 46.0; --bcy: 50.9; --bty: 32.9; --bby: 69.0;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: auto; }
-  html.smooth { scroll-behavior: smooth; } /* enabled by JS only after the page settles at the top */
+  html.smooth { scroll-behavior: smooth; }
   body { background: var(--ground); color: var(--ink); font-family: var(--sans); font-weight: 500; line-height: 1.4; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
   img { display: block; max-width: 100%; height: auto; }
-  picture { display: contents; }   /* the WebP wrapper is not a box: .thumb img / .plate img still lay out as before */
+  picture { display: contents; }
   a { color: inherit; text-decoration: none; }
   button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
   h1, h2, h3 { font-weight: 700; line-height: 1.1; letter-spacing: -.03em; text-wrap: balance; }
   p { text-wrap: pretty; }
 
-  /* ---------- Focus & skip link ---------- */
   a:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
-  #work:focus, #work:focus-visible { outline: none; } /* focus target for the skip link only */
-  #lightbox :focus-visible, #contact :focus-visible { outline-color: var(--ground); }   /* ink ring on an ink ground is invisible */
+  #work:focus, #work:focus-visible { outline: none; }
+  #lightbox :focus-visible, #contact :focus-visible { outline-color: var(--ground); }
   .skip-link { position: absolute; left: 16px; top: -56px; z-index: 600; background: var(--ink); color: var(--ground); padding: 10px 18px; font-weight: 700; font-size: .875rem; transition: top .2s; }
   .skip-link:focus { top: 0; }
   .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-  /* ---------- Nav: sticky, solid, ruled. The mark alone at left. ---------- */
   nav { position: sticky; top: 0; z-index: 100; background: var(--ground); border-bottom: 2px solid var(--ink); }
   .nav-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px var(--pad); }
   .logo { display: flex; align-items: center; gap: 9px; font-weight: 700; font-size: 1rem; letter-spacing: -.02em; }
   .logo img { width: 28px; height: 28px; }
   .nav-links { display: flex; align-items: center; gap: 2.2rem; font-weight: 700; font-size: .95rem; }
-  .nav-links a { padding: .4rem 0 .15rem; border-bottom: 2px solid transparent; } /* vertical padding keeps the links ≥ 24px tall on phones (WCAG 2.5.8) */
+  .nav-links a { padding: .4rem 0 .15rem; border-bottom: 2px solid transparent; }
   .nav-links a:hover { border-bottom-color: var(--ink); }
   .nav-links a.active { border-bottom-color: var(--ink); }
   .nav-links a.shop { background: var(--ink); color: var(--ground); padding: .55rem 1rem; border-bottom: 0; }
   .nav-links a.shop:hover { background: var(--lichen); color: var(--ink); }
 
-  /* ---------- Hero: the whole Oak Bowl photo, TEM behind the rim, DESIGN in front of the foot ----------
-     The plate is the photo's own box, sized exactly as object-fit: cover would size it (3:2 photo,
-     anchored 50% 56%), so the type can be positioned in the photo's coordinates with container units. */
-  /* The hero clips whatever reaches past its own edges (the plate is far wider than a phone, and the
-     tall phone photo hangs well above and below it). With script and motion it stops clipping and
-     #hero-pin does it instead, from the very top of the page: see "Hero motion" below. */
   header { position: relative; overflow: hidden;
            height: calc(100vh - var(--navh)); height: calc(100svh - var(--navh)); container: hero / size; }
   .plate { position: absolute; left: 50%; top: 56%; translate: -50% -56%;
@@ -110,19 +86,18 @@
   .plate img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; max-width: none; }
   .plate .photo { z-index: 0; }
   h1 { display: contents; }
-  .tier { position: absolute; z-index: 3; font-weight: 700; font-size: 15.5cqw; line-height: .78; letter-spacing: -.045em; text-transform: uppercase; white-space: nowrap; }
-  /* Both words sit in front of the photo. TEM ends 4% left of the bowl's centre with its lower 0.17em
-     (about a fifth of the line) over the rim; DESIGN starts 4% left of centre with its top 0.43em
-     across the foot. Offsets are in em so the relationship holds at every type size. */
+  .tier { position: absolute; z-index: 3; font-weight: 700; font-size: 15.5cqw; line-height: .78; letter-spacing: -.045em; text-transform: uppercase; white-space: nowrap;
+          font-size: max(3rem, min(15.5cqw,
+                     calc((56vh - .56 * var(--navh) - 23.1cqh - 1.4vh) / .578),
+                     calc((44vh - .44 * var(--navh) - 13cqh - 4vh - 2.5 * clamp(.9rem, 1.05vw, 1.1rem) - 1rem) / .318)));
+          font-size: max(3rem, min(15.5cqw,
+                     calc((56svh - .56 * var(--navh) - 23.1cqh - 1.4vh) / .578),
+                     calc((44svh - .44 * var(--navh) - 13cqh - 4vh - 2.5 * clamp(.9rem, 1.05vw, 1.1rem) - 1rem) / .318))); }
   .t1 { right: calc((100 - var(--bcx) + 4) * 1cqw); bottom: calc((100 - var(--bty)) * 1cqh - .17em); }
   .t2 { left: calc((var(--bcx) - 4) * 1cqw); top: calc(var(--bby) * 1cqh - .43em); }
-  /* When the hero is narrower than 3:2 (phones, tall windows) the plate overflows sideways, so the
-     horizontal placement is clamped to the screen instead; the vertical rules above still apply. */
   @container hero (max-aspect-ratio: 3/2) {
     .t1 { right: auto; left: calc((100cqw - 100vw) / 2 + 5vw); }
     .t2 { left: auto; right: calc((100cqw - 100vw) / 2 + 4vw); }
-    /* On a narrow-but-not-phone screen (iPad portrait) the plate is much wider than the viewport and
-       the words would hang off both edges, so cap them to what the screen can actually show. */
     .tier { font-size: min(15.5cqw, (100vw - 2 * var(--pad)) / 4.6); }
   }
   .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4; display: flex; justify-content: space-between; align-items: flex-end; gap: 2rem; padding: 0 var(--pad) 4vh; }
@@ -134,110 +109,52 @@
   .cta a.etsy:hover { background: var(--ink); color: var(--ground); }
   .clip { overflow: hidden; }
 
-  /* ---------- Hero motion (spec 2026-10-02 §5) ----------
-     A fresh visit (no hash; set in <head>) opens on the ground alone: the photo, the words, the lede
-     and links and the nav wait hidden until the intro takes them over in its first frame. Everything
-     else about the hero's motion is written by the script (Hero) and cleared once it lands. */
   .hero-pre .plate .photo, .hero-pre .tier, .hero-pre .hero-chrome, .hero-pre nav { visibility: hidden; }
-  /* Scrolling away (Torin's review, 2 Oct): the hero HOLDS STILL while the scroll rewinds its text,
-     the photo stays, and then the gallery slides up over it. #hero-run is the hero's own height, a
-     runway of 70% of a screen for the text to go, and the hero's height again; the gallery overlaps
-     that last screen with a negative margin, so it rises over the still-pinned photo, and the hero only
-     lets go once it is fully covered (it never lurks behind the rest of the page). Only with script and
-     motion: without them the hero is an ordinary block and the page scrolls as it always did.
-
-     WHAT PINS IS #hero-pin, NOT THE HERO (2 Oct, after an iPhone showed a blank band where the nav was
-     about to land). The pin starts at the very top of the PAGE, behind the nav: the run is pulled up by
-     the nav's height and the pin pads the hero back down to exactly where it always sat. The pin is the
-     one box that clips, with plain `overflow: hidden` and nothing else, so the strip the nav will cover
-     is simply the top of a clipped box with the photo inside it. The first version let the photo paint
-     ABOVE the hero's own box (`overflow: clip visible` and a clip-path with a negative inset): desktop
-     browsers and Safari's engine on Windows painted that, iPhone Safari did not. Do not go back to it.
-
-     The pin is the LARGE viewport tall (lvh) and the hero inside it the small one (svh). When a phone's
-     toolbar slides away the screen grows by about 90px, and the photo carries on down into it instead
-     of ending in a bar of bare ground. The run and the gallery's overlap grow by the same amount, so
-     nothing else on the page moves. On a desktop the two heights are the same. */
+  .arriving body { visibility: hidden; }
   @media (prefers-reduced-motion: no-preference) {
-    /* The runway is rounded to a whole pixel (where round() is supported): at 70% of a 768px screen it
-       is 537.6px, which set everything below the hero 0.4px off where it used to sit.
-       --navtop is the nav's exact height (see setNavH); --navh is that rounded. */
     .js:not(.m-off) #hero-run { margin-top: calc(-1 * var(--navtop, var(--navh)));
-                                height: calc(200vh - var(--navh) * 2 + var(--navtop, var(--navh)) + 70vh);
-                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + 70svh);
-                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + round(70svh, 1px)); }
+                                height: calc(200vh - var(--navh) * 2 + var(--navtop, var(--navh)) + 40vh);
+                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + 40svh);
+                                height: calc(100svh + 100lvh - var(--navh) * 2 + var(--navtop, var(--navh)) + round(40svh, 1px)); }
     .js:not(.m-off) #hero-pin { position: sticky; top: 0; overflow: hidden; padding-top: var(--navtop, var(--navh));
                                 height: calc(100vh - var(--navh) + var(--navtop, var(--navh)));
                                 height: calc(100lvh - var(--navh) + var(--navtop, var(--navh))); }
     .js:not(.m-off) #hero-pin > header { overflow: visible; }
     .js:not(.m-off) #work { margin-top: calc(-1 * (100vh - var(--navh))); margin-top: calc(-1 * (100lvh - var(--navh))); }
   }
-  /* The mirrored copy that carries the photo's backdrop up behind the nav's strip where the photo
-     itself stops at the hero's top edge. Placed, flipped and removed by the script (Hero). */
   .plate .photo-up { transform-origin: 0 0; }
-  /* The parting cut is two SHUTTERS the colour of the ground, closed over the whole pin on a fresh
-     visit and drawn apart from the bowl's centre line by the script (Hero), then removed. Only their
-     transforms move, each on a layer of its own, so opening the photo never repaints it. It was a
-     clip-path on the photo itself until 2 Oct: that re-drew a photograph four screens tall on every
-     frame of the opening, on the device least able to (a phone at 3x). */
   #hero-pin > .cut { position: absolute; left: 0; right: 0; z-index: 5; background: var(--ground); will-change: transform; pointer-events: none; }
   .m-off #hero-pin > .cut { display: none; }
-  /* A card keeps its own box still and the engine moves its inner .slide, clipped to the card while it
-     moves (a sideways translate would otherwise widen the page). The clip comes off when it lands. */
   .piece.m-clip { overflow: hidden; }
 
-  /* ---------- Motion: blocks tied to the scroll (spec 2026-10-02) ----------
-     The engine (Motion, in the script) gives each .m block a progress from 0 to 1 by where it sits on
-     the screen and writes its transform and opacity; at 1 it clears them, so the resting site is the
-     flat one. Until the engine has taken a block over (.m-live) it waits unseen, so nothing flashes
-     in its final place first. Reduced motion never hides anything; if the engine fails, .m-off shows
-     everything. */
   @media (prefers-reduced-motion: no-preference) { .js .m:not(.m-live) { opacity: 0; } }
   .m-off .m, .m-off .m > .slide { opacity: 1 !important; transform: none !important; }
 
-  /* ---------- Feedback ----------
-     Every hover was an instant snap except the card's rule, which eased at .25s: one element
-     behaving unlike the rest. They all ease now, on one short curve. A flat colour moving to
-     another flat colour is never translucent on the way, so nothing here fades. */
-  .nav-links a, .cta a, #lb-coll { transition: border-color var(--dur-fb) var(--ease-fast), background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
+  .nav-links a, .cta a, #lb-coll, #work-others a { transition: border-color var(--dur-fb) var(--ease-fast), background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
   .nav-links a.shop, .cta a.etsy, #contact .cta a, .lb-btn, #lb-act { transition: background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
-  /* A press answers at once: 1px down, the only move the rules allow. */
   .nav-links a:active, .cta a:active, .lb-btn:active, #lb-coll:active, #lb-act:active,
-  #work-back button:active, .piece h3 a:active { translate: 0 1px; transition: translate 90ms var(--ease-fast); }
+  #work-back button:active, #work-others a:active, .piece h3 a:active { translate: 0 1px; transition: translate 90ms var(--ease-fast); }
 
-  /* ---------- Sections ---------- */
-  /* Exactly the nav's height (1px under, so rounding never leaves a strip of the section above showing) */
   section { scroll-margin-top: calc(var(--navh) - 1px); }
-  /* A block waiting to slide in from the side sits 48px past its column; on screens narrower than
-     ~1200px that's past the page edge (the About list reached 1031px on a 1024px iPad) and let the
-     page scroll sideways. Each section clips its own width; `clip` makes no scroll container, so
-     sticky and vertical layout are untouched. */
   #work, #about, #contact { overflow-x: clip; }
   .section-head { display: flex; align-items: baseline; gap: 2.4rem; flex-wrap: wrap; margin-bottom: 6vh; }
-  /* Section heads sit a clear step (~1.33x) above the uppercase collection titles below them */
   h2 { font-size: clamp(2.4rem, 4.6vw, 4.8rem); }
-  #work h2:focus { outline: none; }   /* focused by script when a collection opens, so screen readers announce it */
-  #work .section-head h2 { transform-origin: 0 60%; }   /* its focus pull grows from the left, where it is read from */
+  #work h2:focus { outline: none; }
+  #work .section-head h2 { transform-origin: 0 60%; }
   .section-sub { font-size: clamp(1rem, 1.25vw, 1.3rem); }
 
-  /* ---------- Gallery: the old skeleton (head → 2-up collections → 3-up pieces), re-skinned ---------- */
-  /* The gallery is what slides up over the pinned hero photo, so it is opaque and stacked above it. */
   #work { padding: 14vh var(--pad) 12vh; position: relative; z-index: 1; background: var(--ground); }
-  #work-back { margin: -3vh 0 5vh; }
-  #work-back button { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
-  /* On hover the words melt into one body of ink and re-form as a back arrow the same size (Torin,
-     23 Sept) — here and on the viewer's "Bowls". The ink is drawn on a canvas laid exactly over the
-     words; while it shows, the words themselves are hidden. Every pixel it paints is solid ink or
-     nothing — see morphArrow() in the script. */
+  #work-back { margin: -3vh 0 5vh; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1.2rem 2.4rem; }
+  #work-back[hidden] { display: none; }
+  #work-back button, #work-others a { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
+  #work-others { display: flex; flex-wrap: wrap; gap: 1.2rem 1.8rem; }
+  #work-others a:hover { border-bottom-color: var(--c); }
   .morph-cv { position: absolute; pointer-events: none; }
   .morphing .mt { visibility: hidden; }
   #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
   #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 10vh 3vw; }
   .piece { position: relative; display: block; --c: var(--ink); --cink: var(--ground); }
-  .piece .thumb img { width: 100%; height: auto; }  /* the photograph whole, at its own 3:2 */
-  /* The second angle, shown on hover with a mouse: layered over the first and crossfaded in. It sits
-     in the first photo's box, letterboxed on the ground if its shape differs, so the card never jumps.
-     At rest it is fully transparent, which is not there at all. */
+  .piece .thumb img { width: 100%; height: auto; }
   .piece .thumb { position: relative; }
   .piece .thumb .thumb-b { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: contain;
                            background: var(--ground); opacity: 0; transition: opacity .25s var(--ease-out3); }
@@ -250,26 +167,23 @@
   .piece.collection:hover .bar { border-top-color: var(--c); }
   .piece h3 { font-size: clamp(1.15rem, 1.5vw, 1.6rem); letter-spacing: -.02em; line-height: 1.05; }
   .piece.collection h3 { font-size: clamp(1.8rem, 3.4vw, 3.6rem); letter-spacing: -.035em; line-height: .95; text-transform: uppercase; }
-  /* The title is a real LINK stretched over the card (19 Sept: it was a button, so the 40 deep links
-     existed and nothing pointed at them — no cmd-click to compare two pieces, no "copy link address",
-     and no crawl path for the links pins depend on). The click handler opens the viewer instead of
-     navigating; a modified click is left to the browser. */
   .piece h3 a { text-align: inherit; letter-spacing: inherit; text-transform: inherit; }
   .piece .slide { display: block; }
   .piece h3 a::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; }
   .piece h3 a:focus-visible { outline: 0; }
   .piece h3 a:focus-visible::after { outline: 3px solid var(--ink); outline-offset: 3px; }
-  .piece.m-clip h3 a:focus-visible::after { outline-offset: -3px; }   /* inside the box while the card clips its moving slide */
+  .piece.m-clip h3 a:focus-visible::after { outline-offset: -3px; }
+  .piece .cts { display: flex; align-items: baseline; gap: .9rem; white-space: nowrap; }
+  .piece .cts:empty { display: none; }
   .piece .ct { font-size: .85rem; letter-spacing: .04em; white-space: nowrap; }
+  .piece .ct.sale { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: .4em .65em; background: var(--lichen); color: var(--ink); }
   .piece.collection .ct { font-size: clamp(.8rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; padding: .5em .8em; background: var(--c); color: var(--cink); }
   .piece .note { font-size: clamp(.95rem, 1.05vw, 1.1rem); line-height: 1.4; margin-top: .6rem; max-width: 40ch; }
-  /* Collection colour by tag name (slugified). Unknown tags keep the ink default above. */
   .tag-bowls { --c: var(--kelp); --cink: var(--ground); }
   .tag-homeware { --c: var(--xanth); --cink: var(--ink); }
   .tag-jewellery { --c: var(--lichen); --cink: var(--ink); }
   .tag-decorative { --c: var(--slate); --cink: var(--ground); }
 
-  /* ---------- About ---------- */
   #about { padding: 16vh var(--pad); }
   .about-inner { display: grid; grid-template-columns: 1.15fr .85fr; gap: 6vw; align-items: start; }
   .about-inner p { font-size: clamp(1.2rem, 2vw, 2.1rem); line-height: 1.3; max-width: 36ch; letter-spacing: -.015em; margin-top: 2.2rem; }
@@ -277,89 +191,49 @@
   .shoplist { list-style: none; margin-top: 2.2rem; border-top: 4px solid var(--ink); }
   .shoplist li { font-weight: 700; font-size: clamp(1.1rem, 1.6vw, 1.7rem); letter-spacing: -.02em; padding: .7em 0; border-bottom: 2px solid var(--ink); }
 
-  /* ---------- Contact: one black slab ---------- */
   #contact { background: var(--ink); color: var(--ground); padding: 16vh var(--pad) 14vh; }
   #contact h2 { font-size: clamp(3rem, 9vw, 10rem); line-height: .85; letter-spacing: -.045em; max-width: 11ch; }
   #contact p { font-size: clamp(1.1rem, 1.7vw, 1.8rem); line-height: 1.3; max-width: 44ch; margin: 5vh 0 6vh; }
   #contact .cta a { border-bottom-color: var(--ground); }
-  #contact .cta a.etsy { background: var(--lichen); color: var(--ink); }
+  #contact .cta a.etsy { background: var(--lichen); color: var(--ink); order: 0; grid-column: auto; }
   #contact .cta a.etsy:hover { background: var(--ground); }
   #contact .cta a.mail { background: var(--ground); color: var(--ink); border: 0; padding: .55em .9em; text-transform: none; }
   #contact .cta a.mail:hover { background: var(--xanth); }
-  /* Desktop (Torin, 18 Sept): the two buttons sit in the empty ink to the RIGHT of the headline and
-     line, oversized, stacked, each fitted to its own text, and centred on the text block's height,
-     not dropped to its bottom. The column is a size container so the type scales with the space: the
-     email address (~15em with its padding) is the long one, and 5.9cqw keeps it inside the column
-     with room for Helvetica's wider caps. */
-  /* The layout hangs on .contact-body, never on a motion class: the old scroll reveal stripped its
-     class 1.2s after a block landed, which once dropped the buttons back under the text. The motion
-     engine only ever adds .m / .m-live and inline styles, never layout. */
   #contact .contact-body { display: grid; grid-template-columns: auto 1fr; column-gap: 5vw; }
   #contact h2, #contact p { grid-column: 1; }
   #contact p { margin-bottom: 0; }
   #contact .cta { grid-column: 2; grid-row: 1 / 3; align-self: center; container-type: inline-size;
                   display: flex; flex-direction: column; align-items: flex-start; gap: 1rem; }
-  #contact .cta a { display: block; font-size: 5.9cqw; padding: .75em .9em; }
+  #contact .cta a { display: block; font-size: 5.9cqw; font-size: max(1rem, 5.9cqw); padding: .75em .9em; }
 
-  /* ---------- Footer ---------- */
   footer { padding: 4rem var(--pad) 3rem; font-size: .9rem; border-top: 4px solid var(--ink); }
 
-  /* ---------- Photo viewer: the gallery card at full size, on ink, slides up ----------
-     Redesigned 20 Sept (Torin: "underdesigned and cluttered"). It used to invent its own furniture:
-     a full-width rule across the screen, arrows floating at the screen edges, and a bottom bar with
-     the caption, the collection link and a lichen counter chip on three different alignments. Now it
-     reuses the gallery card's system — photo, controls, 4px rule, title, note — in one fixed frame
-     of furniture that spans the screen, identical for every photo, with the photo centred above it. */
-  #lightbox { --lbh: 66vh;                              /* the photo's height budget */
+  #lightbox { --lbh: 66vh;
               position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
               display: grid; grid-template-rows: auto 1fr auto; padding: 1.2rem var(--pad) 1.6rem; overflow: hidden;
               translate: 0 100%; visibility: hidden; transition: translate .5s var(--ease-in), visibility 0s linear .5s; }
-  /* Opening glides up over 0.7s on a curve that eases in before it settles (it was a 0.55s pop);
-     closing drops away in 0.5s. The photo and caption arrive on top of this (viewerArrive). */
   #lightbox.open { translate: 0 0; visibility: visible; transition: translate .7s var(--ease-glide); }
-  /* position + z-index: the photo's frame is a positioned sibling that comes later, and when the photo
-     runs a few px taller than its stage (1208x782 does) the frame overlaps the ✕'s lower edge and
-     takes its hover and clicks. The top bar always sits above it — for mouse as well as touch. */
   .lb-top { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
-  /* The mark was a decorative orphan: not a link, no wordmark, and on a pin arrival it was the only
-     branding on screen. It is now the nav's lockup and it takes you into the site. */
   #lb-home { color: var(--ground); }
   #lb-home img { width: 28px; height: 28px; }
-  /* ✕ is one of the square tabs (.lb-btn, below), with a cross cut from the same heavy stroke. Its
-     hover is its own (Torin, 24 Sept: not the arrows' orange): the tab inverts to an ink square with a
-     ground edge and cross, so leaving reads differently from stepping. */
-  /* align-items: end — the photo and everything under it read as ONE block, with the spare height
-     gathered above it. Centred, an iPad left the photo floating 170px above its own caption. */
-  .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; }
+  .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; container-type: size; }
   .lb-frame { position: relative; min-width: 0; flex: 1 1 auto; width: 100%; }
-  #lb-img { max-width: 100%; max-height: var(--lbh); width: auto; height: auto; margin: 0 auto; display: block; }
+  #lb-img { max-width: 100%; max-height: var(--lbh); max-height: min(var(--lbh), 100cqh); width: auto; height: auto; margin: 0 auto; display: block; }
   #lightbox.noimg #lb-img { visibility: hidden; }
   #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-  /* The foot spans the screen, the same width for every photo (Torin, 20 Sept). It was sized off
-     the photo, which only holds while every photo is 3:2 — nine of them are not, three are portrait
-     (Homeware 19.2 / 21.2 / 22.1), so the furniture moved from piece to piece and read as accidental.
-     The photo now sits centred above a fixed frame of furniture. */
   .lb-foot { width: 100%; min-width: 0; }
   .lb-controls { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 1.1rem 0 1rem; }
-  /* Square ground tabs with a chunky, sharp arrow to match the brutalist hero (Torin, 24 Sept; they
-     were outlined boxes round a ← character). The arrow is a heavy stroke with a mitred point and
-     square-cut ends, weighted like the hero's bold caps. Hover is Xanthoria, as on "Bowls" and the
-     other action blocks — never lichen, which in here means buy. */
-  .lb-btn { --sq: 3.2rem; display: grid; place-items: center; width: var(--sq); height: var(--sq); padding: 0;
+  .lb-btn { --sq: 3.2rem; display: grid; place-items: center; flex: none; width: var(--sq); height: var(--sq); padding: 0;
             background: var(--ground); color: var(--ink); user-select: none; }
-  .lb-btn svg { display: block; width: calc(var(--sq) * .58); height: auto; overflow: visible; }   /* off the square, so a border never shrinks it */
+  .lb-btn svg { display: block; width: calc(var(--sq) * .58); height: auto; overflow: visible; }
   #lb-next svg { scale: -1 1; }
   .lb-btn:hover { background: var(--xanth); }
-  #lb-close { border: 3px solid transparent; }   /* the ground shows through until hover draws the edge */
+  #lb-close { border: 3px solid transparent; }
   #lb-close:hover { background: var(--ink); color: var(--ground); border-color: var(--ground); }
   #lightbox.single .lb-controls { display: none; }
-  /* Under the rule, exactly as a card reads: the title, then the note. The action row sits at the
-     photo's right edge, level with the last line of the note. */
   .lb-cap { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cap act"; gap: 1rem 2rem;
             align-items: end; border-top: 4px solid var(--ground); padding-top: 1rem; }
   #lb-caption { grid-area: cap; min-width: 0; }
-  /* The piece's collection (closes back to its grid), and Buy on Etsy when the piece is listed
-     (lichen, like every Etsy button). Same flat blocks and underlined links as the rest of the site. */
   .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: .8rem 1.8rem; font-weight: 700;
                 font-size: clamp(.9rem, 1.05vw, 1.1rem); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
   #lb-coll { position: relative; border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
@@ -370,22 +244,13 @@
   #lb-act.buy:hover { background: var(--ground); }
   #lb-caption strong { display: block; font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -.035em; line-height: .95; }
   #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: .7rem; max-width: 60ch; }
-  /* The counter is a GROUND tab, not a collection colour. The viewer follows the Contact slab's
-     rule — on ink, ground is the structural colour and lichen means exactly one thing: buy. A
-     collection-coloured tab put a lichen counter next to the lichen Buy on Etsy block on the one
-     screen that sells something, and left kelp and slate barely visible on near-black. The
-     collection is named in words underneath ("← Bowls"), which is what a visitor actually reads. */
-  #lb-counter { font-size: .95rem; font-weight: 700; letter-spacing: .06em;
-                background: var(--ground); color: var(--ink);
-                padding: .5em .8em; white-space: nowrap; }
-  #lb-counter:empty { display: none; }
-  /* A step pushes the photos like a strip: the outgoing one (a stand-in copy, .lb-out) slides off
-     one side of the screen while the new one slides in from the other, both on a spring that
-     settles with a 1.5% overshoot. Translate only, fully opaque throughout — #lightbox's
-     overflow: hidden is the edge they cross. Driven from step() with the Web Animations API. */
+  .lb-count { display: flex; align-items: center; gap: .5rem; min-width: 0; }
+  #lb-place, #lb-counter { font-size: .95rem; font-weight: 700; letter-spacing: .06em;
+                           background: var(--ground); color: var(--ink);
+                           padding: .5em .8em; white-space: nowrap; }
+  #lb-place:empty, #lb-counter:empty { display: none; }
   .lb-out { position: absolute; margin: 0; max-width: none; max-height: none; pointer-events: none; }
 
-  /* ---------- Touch: no lingering hover states ---------- */
   @media (hover: none) {
     .nav-links a:hover { border-bottom-color: transparent; }
     .nav-links a.active { border-bottom-color: var(--ink); }
@@ -393,32 +258,29 @@
     .cta a:hover { border-bottom-color: var(--ink); }
     .cta a.etsy:hover { background: var(--lichen); color: var(--ink); }
     .piece:hover .bar, .piece.collection:hover .bar { border-top-color: var(--ink); }
+    #work-others a:hover { border-bottom-color: var(--ink); }
     .lb-btn:hover { background: var(--ground); }
     #lb-close:hover { background: var(--ground); color: var(--ink); border-color: transparent; }
     #lb-coll:hover { border-bottom-color: var(--ground); }
     #lb-act:hover { background: var(--ground); } #lb-act.buy:hover { background: var(--lichen); }
   }
-  /* Touch: text links get a 44px+ tap area without changing how they look (WCAG 2.5.5 comfort size). */
   @media (pointer: coarse) {
     .nav-links a, .hero-chrome .cta a:not(.etsy), #lb-coll, #work-back button { position: relative; }
-    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before {
+    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before, #work-others a::before {
       content: ""; position: absolute; top: -12px; right: -6px; bottom: -12px; left: -6px; }
-    /* the 36px Etsy / email blocks reach 44px */
     .cta a.etsy, #contact .cta a { position: relative; }
     .cta a.etsy::before, #contact .cta a::before { content: ""; position: absolute; top: -4px; right: 0; bottom: -4px; left: 0; }
-    /* The viewer's own chrome shrinks on a short screen (a phone held sideways), which left the ✕ at
-       32x32, the arrows 36x46 and the action block 30px tall. The blocks keep their size; the hit
-       area grows around them. -7px sideways leaves a 2px gap between neighbours in the action row. */
     #lb-close, .lb-btn, #lb-act { position: relative; }
     #lb-close::before, .lb-btn::before, #lb-act::before { content: ""; position: absolute; top: -8px; right: -7px; bottom: -8px; left: -7px; }
-    /* measured from the padding box, which the ✕'s 3px hover border eats into (the #lb-coll trap again) */
     #lb-close::before { top: -11px; right: -10px; bottom: -11px; left: -10px; }
-    /* "← Bowls" is a 22px block whose 3px underline eats into the hit area (it is measured from the
-       padding box), so this one needs a little more than the site's usual 12px. */
     #lb-coll::before { top: -14px; bottom: -14px; }
+    .logo { position: relative; }
+    .logo::before { content: ""; position: absolute; top: -12px; right: -6px; bottom: -15px; left: -6px; }
+  }
+  @media (pointer: coarse) and (max-height: 520px) {
+    .hero-chrome .cta a.etsy::before { top: -7px; bottom: -7px; }
   }
 
-  /* ---------- Phone / tablet ---------- */
   @media (max-width: 700px), (max-height: 520px) and (max-width: 1100px) {
     :root { --pad: 5vw; }
     .nav-inner { padding: 12px var(--pad); gap: 14px; }
@@ -426,25 +288,13 @@
     .nav-links { gap: .85rem; font-size: .8rem; }
     .nav-links a.shop { padding: .45rem .65rem; }
     .logo { font-size: .875rem; gap: 7px; }
-    /* Phones: the desktop hero positions the words in the PLATE's coordinates, and the plate is far
-       wider than a phone screen — that pushed the words off both edges and over the lede. Here the
-       hero is a stack: TEM, the photo, DESIGN, then the chrome. The words sit tight to the photo so
-       the desktop relationship survives — TEM resting on the rim, DESIGN meeting the foot. */
     header { display: grid; grid-template-rows: auto minmax(0, auto) auto 1fr; container-type: normal;
              align-content: start; }
-    /* `contain`, not `cover`: cover cropped the bowl's sides off the screen and threw it off centre.
-       Contained (with a little side padding) the whole bowl fits, centred, with air either side. */
     .plate { position: relative; grid-row: 2; left: auto; top: auto; translate: none;
              width: 100%; height: 100%; container-type: normal; overflow: visible; }
-    /* The bowl's centre is at 46% of the frame, not 50% (hero-bbox.json), so the contained photo is
-       nudged right by that 4% to put the BOWL in the middle of the screen, not the photo. */
-    /* The phone crop is already tight to the bowl and already centred, so it just sits in its row
-       at full width with a small gap each side — no cover-cropping, no letterbox rectangle. */
     .plate { display: grid; place-items: center; }
     .plate .photo { position: static; width: 100%; height: auto; max-height: 100%;
                     object-fit: contain; padding: 0 4vw; }
-    /* "DESIGN" is the long word: 6 characters at ~0.62em each plus the indent must fit the screen,
-       so the size is capped by width as well as height. Nothing is ever clipped or wrapped. */
     h1 { display: contents; }
     .tier { position: static; display: block; white-space: nowrap; z-index: 3;
             font-size: min(19vw, 11vh, (100vw - 2 * var(--pad)) / 4.6); line-height: .84; }
@@ -454,18 +304,16 @@
                    justify-content: center; text-align: center; gap: 1.1rem;
                    padding: 3vh var(--pad) 4vh; background: var(--ground); }
     .lede { max-width: 34ch; font-size: .95rem; }
-    /* The three links as a triangle: the two section links side by side, Etsy centred beneath. */
     .cta { display: grid; grid-template-columns: auto auto; justify-content: center;
            justify-items: center; gap: .8rem 2rem; white-space: nowrap; }
     .cta a.etsy { grid-column: 1 / -1; order: 3; }
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 8vh 0; }
-    #gallery-grid { gap: 7vh 0; }
+    #gallery-grid { gap: 7vh 3vw; }
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
     .lb-cap { gap: .8rem 1rem; }
     #lb-caption span { font-size: .85rem; margin-top: .35rem; }
     #lightbox { --lbh: 56vh; }
   }
-  /* Landscape phones: ~360-430px of height for everything. */
   @media (max-width: 1100px) and (max-height: 520px) {
     h1 { padding: 2vh var(--pad) 1vh; }
     .tier { font-size: min(9.5vw, 13vh); }
@@ -473,13 +321,9 @@
     .hero-chrome { flex-direction: row; align-items: flex-end; justify-content: space-between;
                    text-align: left; gap: 1.5rem; padding: 1.5vh var(--pad) 2.5vh; }
     .lede { max-width: 46ch; font-size: .8rem; }
-    /* Landscape has no spare height for the triangle: one row instead. */
     .cta { display: flex; font-size: .76rem; gap: .5rem .9rem; }
     .cta a.etsy { grid-column: auto; order: 0; }
     .t1 { padding-top: 1.5vh; }
-    /* Landscape phones have ~390px of height — four stacked rows do not fit, and DESIGN ended up
-       over the bowl or pushed off. So landscape goes back to the OVERLAY: the photo fills the hero
-       and the words sit on it, TEM top-left and DESIGN bottom-right, as on desktop. */
     header { display: block; position: relative; }
     .plate { display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
     .plate .photo { position: absolute; width: 100%; height: 100%; padding: 0;
@@ -489,7 +333,7 @@
     .t2 { top: auto; bottom: 14vh; right: var(--pad); left: auto; padding: 0; margin: 0; }
     .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
                    background: none; padding: 1.5vh var(--pad) 2.5vh; }
-    /* The lightbox has ~390px of height here: shrink its chrome so the photo keeps the middle. */
+    #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 8vh 3vw; }
     #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 54vh; }
     #lb-home img { width: 20px; height: 20px; }
     .logo { font-size: .8rem; }
@@ -497,15 +341,10 @@
     .lb-cap { padding-top: .5rem; border-top-width: 3px; }
     #lb-caption strong { font-size: 1.3rem; }
     #lb-caption span { font-size: .78rem; margin-top: .2rem; }
-    #lb-counter { font-size: .72rem; padding: .3em .55em; }
+    #lb-place, #lb-counter { font-size: .72rem; padding: .3em .55em; }
     .lb-btn { --sq: 2.2rem; }
     .lb-actions { font-size: .76rem; gap: .5rem 1rem; }
   }
-  /* Contact on phones: the text as it was, the two buttons centred on the screen beneath it, one above
-     the other, each fitted to its own text. The #contact rules outrank the hero's triangle. Unlike the
-     rest of the phone layout, a SHORT window only counts as a phone here if it's a touch screen: a
-     laptop at 150-175% display scaling has a ~490px-tall window and was getting the buttons under the
-     text instead of beside it (Torin, 18 Sept). */
   @media (max-width: 700px), (max-height: 520px) and (max-width: 1100px) and (pointer: coarse) {
     #contact .contact-body { display: block; }
     #contact p { margin-bottom: 6vh; }
@@ -514,71 +353,48 @@
     #contact .cta a { font-size: inherit; padding: .55em .9em; text-align: center; }
     #contact .cta a.etsy { grid-column: auto; order: 0; }
   }
-  /* Photo viewer on portrait phones (critique, 19 Sept): the arrows flanking the photo left it 254px
-     wide on a 390px screen, smaller than the thumbnail that opened it. Here the photo runs edge to
-     edge, the arrows are 44px+ blocks under it, and the caption with its action row sits at the
-     bottom of the screen, in thumb reach. Single- and multi-photo pieces now show at the same size. */
-  @media (max-width: 700px) {
-    /* The photo runs edge to edge; everything under it keeps the padded column. A 3:2 photo at 100vw
-       is 260px tall on an 844px screen, so the spare height sits in one field above the photo rather
-       than being split either side of it — and the whole block is bottom-weighted, in thumb reach. */
+  @media (max-width: 700px) and (min-height: 521px) {
     #lightbox { --lbh: 58vh; }
     .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
-    #lb-img { width: 100%; max-height: var(--lbh); object-fit: contain; }
+    #lb-img { width: 100%; max-height: var(--lbh); max-height: min(var(--lbh), 100cqh); object-fit: contain; }
     .lb-controls { margin: .9rem 0 .85rem; }
     .lb-btn { --sq: 3rem; }
+    #lb-place, #lb-counter { font-size: .85rem; letter-spacing: .04em; padding: .55em .65em; }
     .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
     .lb-actions { justify-content: space-between; align-items: center; }
-    #lb-act { padding: .85em 1.1em; }   /* the viewer's main action: a full 44px+ thumb target */
-    /* "← Bowls" sits at the right edge, alone or beside Buy on Etsy (Torin, 23 Sept). */
+    #lb-act { padding: .85em 1.1em; }
     #lb-coll { order: 1; margin-left: auto; }
   }
   @media (max-width: 360px) {
-    /* The lockup plus four links needs ~336px; hide the wordmark (the link keeps its aria-label) */
+    .lb-count { gap: .35rem; }
+    #lb-place, #lb-counter { font-size: .8rem; letter-spacing: .03em; padding: .5em .55em; }
     .logo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .nav-links { gap: .7rem; font-size: .8rem; }
     .nav-links a.shop { padding: .4rem .6rem; }
   }
+  @media (max-width: 340px) {
+    .lb-count { gap: .3rem; }
+    #lb-place, #lb-counter { font-size: .72rem; padding: .55em .45em; }
+  }
 
-  /* ---------- Portrait phones AND portrait tablets (up to 1100px wide; the 768px iPad used to crop
-     the bowl into a plank): the desktop hero, re-proportioned for a tall screen ----------
-     Gated on the screen being at least 5:4 tall, not just "portrait": the stack needs ~74vw plus the
-     lede and links, which a near-square window (900x1000) can't give; those keep the desktop hero.
-     The <source> media query must match this one exactly.
-     Same photo (its backdrop extended — see the <source>), drawn exactly 100vw wide, so the bowl is a
-     fixed fraction of the screen: centred on the WOOD (not its shadow), 90% of the width, a 5% gap
-     each side — the same as --pad, so TEM starts at the bowl's left edge and DESIGN ends at its right.
-     A phone has the height the desktop lacks, so the words do not overlap the bowl here (Torin, 18
-     Sept): TEM sits just above the rim, DESIGN just below the foot. Lede and links sit on the photo
-     at the bottom. Numbers from hero-bbox.json "phone". */
   @media (max-width: 1100px) and (max-aspect-ratio: 4/5) {
-    /* Rows: space / the bowl slot / space / chrome. The headline lives INSIDE .plate in the markup
-       (desktop positions it in the photo's coordinates), so the words are pinned to the slot's edges
-       rather than given grid rows; the slot's margins reserve room for them. */
-    /* --pad is 5vw here at every width (tablets use 4vw elsewhere) so the words line up with the bowl's 5% gap. */
     header { --pad: 5vw; display: grid; grid-template-rows: 1fr auto 1fr auto; align-content: stretch; }
-    /* .plate is a slot exactly the bowl's height. The tall photo hangs from it, placed so the bowl in
-       the photo lands in the slot; the header clips whatever reaches past its own edges. */
     .plate { grid-row: 2; display: block; position: relative; width: 100%; height: 34.375vw;
-             margin: calc(22vw * .9) 0;   /* a word's .78em line + its .12em gap, above and below */
+             margin: calc(22vw * .9) 0;
              left: auto; top: auto; translate: none; overflow: visible; container-type: normal; }
     .plate .photo { position: absolute; left: 0; top: -130vw; width: 100vw; height: 344.375vw;
                     max-width: none; max-height: none; padding: 0; object-fit: fill; }
-    /* 22vw keeps the desktop's type-to-bowl ratio (15.5 : 63 of the photo's width). The words stand
-       .12em clear of the wood: TEM above the rim, DESIGN below the foot. */
     .tier { position: absolute; font-size: 22vw; line-height: .78; margin: 0; padding: 0; }
     .t1 { left: var(--pad); right: auto; top: auto; bottom: calc(100% + .12em); }
     .t2 { right: var(--pad); left: auto; bottom: auto; top: calc(100% + .12em); }
     .hero-chrome { grid-row: 4; position: relative; background: none; flex-direction: column;
                    align-items: center; text-align: center; gap: 1.1rem; padding: 0 var(--pad) 4.5vh; }
     .lede { max-width: 34ch; font-size: clamp(.95rem, 2.2vw, 1.2rem); }
-    /* The three links as a triangle: the two section links side by side, Etsy centred beneath. */
     .cta { display: grid; grid-template-columns: auto auto; justify-content: center; justify-items: center;
-           gap: 1rem 2rem; white-space: nowrap; font-size: clamp(.9rem, 1.05vw, 1.1rem); }   /* 1rem: the rows' tap areas never meet */
+           gap: 1rem 2rem; white-space: nowrap; font-size: clamp(.9rem, 1.05vw, 1.1rem); }
     .cta a.etsy { grid-column: 1 / -1; order: 3; }
   }
 
-  /* ---------- Reduced motion: nothing moves, nothing is hidden ---------- */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }
@@ -601,22 +417,11 @@
   </div>
 </nav>
 
-<!-- The hero's runway. #hero-pin holds still inside it while the scroll rewinds the hero's text, then
-     the gallery covers it. The pin reaches up behind the nav and is the box that clips the photo. -->
 <div id="hero-run">
 <div id="hero-pin">
 <header id="hero">
   <div class="plate">
     <picture>
-      <!-- Portrait phones get the same photo with its own backdrop extended up and down
-           (docs/superpowers/scripts/make_hero.py), so it can fill a tall screen without cutting
-           the bowl's sides off. -->
-      <!-- NO WebP here, deliberately, and it was measured: the phone hero is the one photo on the
-           site that WebP loses on. make_hero.py sprinkles grain over the synthesised backdrop to
-           stop it banding, and grain is expensive in WebP — at the quality needed to match the
-           JPEG, 14.1-phone-1200 came out 164KB against the JPEG's 94KB, and 14.1-1600 could not
-           match it at any quality at all. A <source type="image/webp"> cannot mix formats inside
-           one srcset, so each breakpoint is all-or-nothing, and neither wins. -->
       <source media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
       <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     </picture>
@@ -634,10 +439,11 @@
 </div>
 </div>
 
+<main>
 <section id="work" tabindex="-1">
   <div class="section-head m"><h2 tabindex="-1">Gallery</h2><p class="section-sub">Four collections. Pick one to see the pieces.</p></div>
   <noscript><p class="section-sub">The photo gallery needs JavaScript to load. If it isn't showing, email me and I'll happily send pictures of anything.</p></noscript>
-  <p id="work-back" class="m" hidden><button type="button" aria-label="Back to gallery"><span class="mt">Back to gallery</span></button></p>
+  <p id="work-back" class="m" hidden><button type="button" aria-label="Back to gallery"><span class="mt">Back to gallery</span></button><span id="work-others"></span></p>
   <div id="gallery-grid"></div>
 </section>
 
@@ -672,33 +478,28 @@
     </div>
   </div>
 </section>
+</main>
 
 <footer>
   <span>© <span id="year"></span> Torin Ellis-Morton</span>
 </footer>
 
-<!-- Lightbox -->
-<!-- The open photo IS a gallery card at full size: the photo, its controls, the 4px rule, the
-     title, the note. Everything under the photo is a column exactly the photo's width. -->
 <div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
   <div class="lb-top">
     <a class="logo" id="lb-home" href="#" aria-label="TEM Design home"><img src="logo/logo-128.png" width="128" height="128" alt=""><span>TEMDesign</span></a>
     <button type="button" id="lb-close" class="lb-btn" aria-label="Close photo viewer"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/></svg></button>
   </div>
   <div class="lb-stage">
-    <div class="lb-frame"><picture><source id="lb-src" type="image/webp"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></picture></div>
+    <div class="lb-frame"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></div>
   </div>
   <div class="lb-foot">
-    <!-- The step controls and the counter they drive, as one cluster the width of the photo. -->
     <div class="lb-controls">
       <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
-      <div id="lb-counter"></div>
+      <div class="lb-count"><div id="lb-place"></div><div id="lb-counter"></div></div>
       <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
     </div>
     <div class="lb-cap">
       <div id="lb-caption"><strong></strong><span></span></div>
-      <!-- Filled per piece: its collection (closes back to that grid), then Buy on Etsy for a piece
-           that is listed. A piece that isn't for sale shows no action block (Torin, 19 Sept). -->
       <div class="lb-actions"><a id="lb-coll" href="#work"><span class="mt"></span></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
     </div>
     <p id="lb-live" class="vh" aria-live="polite"></p>
@@ -709,11 +510,8 @@
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Fail visibly, not blankly. Everything below depends on PIECES from photos.js; if that file
-  // didn't load (404, bad upload, half-synced file), drop the gating class so the page shows as
-  // plain HTML, and say what's missing.
   if (typeof PIECES === 'undefined' || !Array.isArray(PIECES)) {
-    document.documentElement.classList.remove('js', 'hero-pre');   // never leave the hero hidden
+    document.documentElement.classList.remove('js', 'hero-pre', 'arriving');
     const warn = document.createElement('p');
     warn.className = 'section-sub';
     warn.textContent = 'The gallery data (photos.js) could not be loaded, so the work isn’t showing. Everything else on this page still works.';
@@ -722,14 +520,8 @@
     throw new Error('photos.js did not load: PIECES is undefined');
   }
 
-  // Deep links: every piece is shareable as #its-title (e.g. #knotty-bowl); every collection as #its-tag.
-  // A piece can pin its link with an optional `slug` in photos.js, so renaming it never breaks old pins.
   const slug = t => String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   const pieceSlug = pc => pc.slug ? slug(pc.slug) : slug(pc.title);
-  // decodeURIComponent THROWS on a broken %-escape ("#%", or a link an email client or a messaging
-  // app has truncated mid-escape). Uncaught, that killed the whole script on load and left the page
-  // with an empty gallery. A hash that won't decode is used as typed, matches nothing, and lands on
-  // the same "this page has moved" message as any other dead link.
   const hashText = () => {
     const h = location.hash.slice(1);
     try { return decodeURIComponent(h); } catch (e) { return h; }
@@ -744,12 +536,6 @@
     return CATS.find(t => slug(t) === h) || null;
   };
 
-  // FINAL open-position rules (do not re-scope):
-  //  - a #piece link (e.g. #knotty-bowl) always wins: no pinning, the lightbox opens instead
-  //  - a followed #section link (e.g. /#work) is honored; on RELOAD the section hash is stripped
-  //  - any open WITHOUT a hash pins to the hero for 1.5s or until first interaction, and the
-  //    same pin re-arms on bfcache restores (pageshow) — iOS Safari re-applies old scroll
-  //    positions on fresh opens and tab restores, and ignores scrollRestoration = 'manual'.
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   const navEntry = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
   const docEl = document.documentElement;
@@ -762,13 +548,6 @@
   const startLock = () => {
     interacted = false;
     ['touchstart', 'wheel', 'keydown', 'mousedown', 'pointerdown'].forEach(ev => addEventListener(ev, release, { passive: true, once: true }));
-    // Same 1.5s window, same release triggers — but the position is corrected WHEN it moves rather
-    // than polled on every frame. Reading scrollY in a requestAnimationFrame loop forced a style
-    // recalculation on all 90 frames of the window, for a position that almost never moves: 91
-    // recalcs over the load became 41, and ~14ms of main-thread time went back to the page on a
-    // 4x-throttled phone, during the very window someone is most likely to tap something.
-    // A restore fires a scroll event, so the listener catches it at once; the slow interval is
-    // the belt for a restore applied without one.
     const snap = () => { if (!interacted && window.scrollY !== 0) window.scrollTo(0, 0); };
     addEventListener('scroll', snap, { passive: true });
     const sweep = setInterval(snap, 250);
@@ -780,9 +559,9 @@
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
   }
   if (location.hash && pieceFromHash() === -1) {
-    setTimeout(release, 400); // followed #section link: let the browser land there
+    setTimeout(release, 400);
   } else if (pieceFromHash() !== -1) {
-    setTimeout(release, 400); // piece link: the lightbox opens, no pinning
+    setTimeout(release, 400);
   } else {
     startLock();
   }
@@ -790,13 +569,7 @@
 
   const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  // Keep --navh in sync with the real nav height so the hero fills the rest of the screen exactly.
   const navEl = document.querySelector('nav');
-  // --navtop is the nav's EXACT height (68.875px on desktop, where --navh rounds to 69): the hero pins
-  // to it. Pinned at the rounded value it sat an eighth of a pixel lower than it does in the flow, which
-  // redrew all its text a fraction off.
-  // Written only when it changes: a phone fires resize every time its toolbar slides away or back, and
-  // setting a custom property on the root restyles the whole page for a value that has not moved.
   let navH = -1, navTop = -1;
   function setNavH() {
     const h = navEl.offsetHeight, t = navEl.getBoundingClientRect().height;
@@ -806,57 +579,38 @@
   setNavH();
   addEventListener('resize', setNavH, { passive: true });
 
-  // ---- Motion: one engine for everything tied to the scroll (spec 2026-10-02) ----
-  // Each block (.m) has a progress from 0 (its top just entering at the bottom edge) to 1 (its top at
-  // LAND of the way down the screen, or the furthest the page can scroll, so nothing near the bottom is
-  // ever stranded half-arrived). The shown progress glides there 260ms behind the scroll and runs
-  // backwards when you scroll back. A block rises 80px and drifts 90px in from its own side (none at
-  // 900px and below, where sideways travel would widen the page), grows from 90% and fades in; at 1
-  // every inline style comes off, so the resting site is exactly the flat one. Positions are measured
-  // once and again only when the layout changes; per frame the engine reads scrollY and nothing else.
   const clamp01 = v => v < 0 ? 0 : v > 1 ? 1 : v;
   const seg = (t, a, b) => clamp01((t - a) / (b - a));
-  const out3 = u => 1 - Math.pow(1 - u, 3);                                     // cubic ease-out
-  const inOut3 = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;  // cubic ease-in-out
-  const OUT3 = 'cubic-bezier(.33, 1, .68, 1)';   // out3, for the Web Animations API
+  const out3 = u => 1 - Math.pow(1 - u, 3);
+  const inOut3 = u => u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2;
+  const OUT3 = 'cubic-bezier(.33, 1, .68, 1)';
   const GLIDE_MS = 260;
-  // Where a block lands: its top this far down the screen (0 = top edge). So the arrival zone is the
-  // bottom 45% of the screen. It was the bottom 60% (LAND .4) until Torin's review on 2 Oct: when you
-  // stop scrolling, whatever is in the zone rests part-arrived, and 60% of the screen was too much.
   const LAND = .55;
+  const IDLE_MS = 300;
   const glide = (from, to, dt) => {
-    const v = from + (to - from) * (1 - Math.pow(.001, dt / GLIDE_MS));   // 99.9% of the gap in 260ms
+    const v = from + (to - from) * (1 - Math.pow(.001, dt / GLIDE_MS));
     return Math.abs(to - v) < 5e-4 ? to : v;
   };
-  // offsetTop ignores transforms, so a block is measured where it really sits even while it moves.
   const docTop = el => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
 
   const heroEl = document.getElementById('hero');
-  let viewerOpen = false;   // set by the photo viewer; nothing behind it is hurried while it is open
+  let viewerOpen = false;
 
   const Motion = (() => {
     const tracks = [];
     let live = !reduceMotion, vh = innerHeight, maxScroll = 0, narrow = false, raf = 0, last = 0, hero = null;
-    // The screen's height as the LAYOUT sees it. The hero is 100svh less the nav, so the two together
-    // are the small viewport, which never changes while you scroll. innerHeight does: a phone's toolbar
-    // slides away as you scroll and comes back when you turn round, innerHeight follows it (about 90px
-    // on an iPhone) and a resize fires. Measured against innerHeight, every block on its way in lurched
-    // at that moment: one at 67% jumped to 99% (2 Oct). This was half of the jitter on a phone.
     const screenH = () => heroEl ? heroEl.offsetHeight + navEl.offsetHeight : innerHeight;
     function measure() {
       vh = screenH();
-      // The furthest the page can scroll: on the taller screen, when the toolbar is away.
       maxScroll = Math.max(0, document.documentElement.scrollHeight - Math.max(vh, innerHeight));
       narrow = matchMedia('(max-width: 900px)').matches;
-      // A grid card's column is the rank of its left edge, so the sides follow the real layout at every
-      // width: two across for collections, three for pieces, fewer on a narrow screen.
       const lefts = [...new Set(tracks.filter(t => t.grid).map(t => t.el.offsetLeft))].sort((a, b) => a - b);
       for (const t of tracks) {
         if (t.grid) {
           t.col = lefts.indexOf(t.el.offsetLeft);
           t.side = lefts.length < 2 ? 0 : t.col === 0 ? -1 : t.col === lefts.length - 1 ? 1 : 0;
         }
-        const top = docTop(t.el), lag = t.col * .03 * vh;   // the row sweep: each column a little later
+        const top = docTop(t.el), lag = t.col * .03 * vh;
         t.start = top - vh + lag;
         t.end = Math.min(top - LAND * vh + lag, maxScroll);
       }
@@ -864,45 +618,42 @@
     const target = (t, y) => t.end <= t.start ? 1 : clamp01((y - t.start) / (t.end - t.start));
     function paint(t, p) {
       const s = t.mover.style, e = out3(p);
-      // Landed, or within half a pixel of it: clear everything. A block can come to REST a hair short of
-      // its line (the first row of a just-opened collection did, when the line was at 40%), and a
-      // leftover scale(0.9995) there redraws its photograph at 99.95%, which softens it.
       t.rest = 90 * (1 - e) < .5;
       if (t.rest) { s.transform = ''; s.opacity = ''; if (t.clip) t.el.classList.remove('m-clip'); return; }
-      const x = narrow ? 0 : t.side * 90 * (1 - e);
-      s.transform = `translate(${x.toFixed(1)}px, ${(80 * (1 - e)).toFixed(1)}px) scale(${(.9 + .1 * e).toFixed(4)})`;
+      if (t.grid) {
+        const x = narrow ? 0 : t.side * 90 * (1 - e);
+        s.transform = `translate(${x.toFixed(1)}px, ${(80 * (1 - e)).toFixed(1)}px) scale(${(.9 + .1 * e).toFixed(4)})`;
+      } else {
+        s.transform = `translateY(${(40 * (1 - e)).toFixed(1)}px)`;
+      }
       s.opacity = Math.min(1, 1.5 * p).toFixed(3);
       if (t.clip) t.el.classList.add('m-clip');
     }
-    // A block on its way sits on a LAYER OF ITS OWN (will-change), so a frame only moves that layer.
-    // Without it every frame repainted the block and redrew its photograph at a new size, and that was
-    // the other half of the jitter on a phone: one scroll down the page cost 1273 raster tasks on a
-    // 4x-slowed phone, 41 with the layers (2 Oct). The layer is made half a screen before the block
-    // comes into view, so it is drawn before anyone sees it, and given back the moment the block lands:
-    // the resting page keeps no layers.
-    // The same look-ahead starts a card's photograph loading, two screens out. Safari leaves a lazy
-    // photo until it is about 560px away, which a quick flick on a phone outruns, and the card then
-    // faded in around an empty box. (Chromium starts 2900px out and never showed it.)
     function heat(t, y, warm) {
       const hot = !t.rest && y > t.start - .5 * vh;
       if (hot !== t.hot) { t.hot = hot; t.mover.style.willChange = hot ? 'transform, opacity' : ''; }
       if (warm && t.img && y > t.start - 2 * vh) { t.img.loading = 'eager'; t.img = null; }
     }
+    let lastY = -1, moved = 0, wake = 0;
     function frame(now) {
       if (!live) return;
       const dt = last ? Math.min(now - last, 64) : 16;
       last = now;
       const y = scrollY;
+      if (y !== lastY) { lastY = y; moved = now; }
+      const idle = now - moved >= IDLE_MS;
+      if (!idle && !wake) wake = setTimeout(() => { wake = 0; kick(); }, IDLE_MS + 30);
       let busy = false;
       try {
-        if (hero && hero.frame(now, dt, y)) busy = true;
-        // No photograph is hurried while the hero is still opening on a fresh visit (the hero photo has
-        // the connection to itself: see Performance in CLAUDE.md), nor behind an open viewer.
+        if (hero && hero.frame(now, dt, y, idle)) busy = true;
         const warm = !viewerOpen && !(hero && hero.opening);
         for (const t of tracks) {
-          const goal = target(t, y);
+          let goal = target(t, y);
+          if (goal <= 0) t.held = false;
+          else if (idle && goal < 1) t.held = true;
+          if (t.held) goal = 1;
           let p;
-          if (t.timed) {   // a click-driven entrance: by the clock, never ahead of where the scroll puts it
+          if (t.timed) {
             const c = clamp01((now - t.timed.t0 - t.timed.delay) / 800);
             p = Math.min(c, goal);
             if (c >= 1) t.timed = null; else busy = true;
@@ -918,14 +669,12 @@
       if (!raf) last = 0;
     }
     function kick() { if (live && !raf) { last = 0; raf = requestAnimationFrame(frame); } }
-    // Never leave anything hidden: clear every motion style, show everything, stop.
     function fail(e) {
       live = false; raf = 0;
       docEl.classList.add('m-off');
       tracks.forEach(t => { t.mover.style.transform = ''; t.mover.style.opacity = ''; t.mover.style.willChange = ''; t.el.classList.remove('m-clip'); });
       console.warn('Motion stopped:', e);
     }
-    // Measure, and put every NEW track straight where the scroll puts it (existing ones glide there).
     function sync() {
       if (!live) return;
       try {
@@ -940,15 +689,11 @@
     }
     function add(el, opt = {}) {
       if (!el) return null;
-      // rest: landed and cleared. hot: on its own layer. img: a lazy photograph still to be hurried (cards).
-      const t = { el, mover: opt.mover || el, side: opt.side || 0, grid: !!opt.grid, clip: !!opt.clip, col: 0, start: 0, end: 0, p: -1, timed: null,
-                  rest: false, hot: false, img: null };
+      const t = { el, mover: opt.mover || el, side: 0, grid: !!opt.grid, clip: !!opt.clip, col: 0, start: 0, end: 0, p: -1, timed: null,
+                  rest: false, hot: false, held: false, img: null };
       tracks.push(t);
       return t;
     }
-    // The gallery grid: the old cards' tracks go and the new cards join. On a deliberate swap (enter)
-    // every new card starts unseen; the first six play in by the clock, 60ms apart in reading order,
-    // and the rest glide in from the start state as the scroll reaches them.
     function setGrid(cards, enter) {
       for (let i = tracks.length - 1; i >= 0; i--) if (tracks[i].grid) tracks.splice(i, 1);
       if (!live) return;
@@ -969,38 +714,24 @@
     }
     return { add, sync, setGrid, kick, setHero(h) { hero = h; kick(); }, get live() { return live; } };
   })();
-  Motion.add(document.querySelector('#work .section-head'), { side: -1 });
-  Motion.add(document.getElementById('work-back'), { side: -1 });
-  Motion.add(document.querySelector('.about-inner > div:first-child'), { side: -1 });
-  Motion.add(document.querySelector('.about-inner > div:last-child'), { side: 1 });
-  Motion.add(document.querySelector('#contact .contact-body'), { side: -1 });
+  Motion.add(document.querySelector('#work .section-head'));
+  Motion.add(document.getElementById('work-back'));
+  Motion.add(document.querySelector('.about-inner > div:first-child'));
+  Motion.add(document.querySelector('.about-inner > div:last-child'));
+  Motion.add(document.querySelector('#contact .contact-body'));
   Motion.sync();
 
-  // ---- The hero ----
-  // Two things play. The PHOTO plays once, on a fresh visit, by the clock: it opens as a band from the
-  // bowl's centre line (the parting cut: two ground-coloured shutters drawn apart) while it settles
-  // from 107%. Until the nav arrives, the strip
-  // the nav will cover shows the top of the photo, never a blank bar, and the nav slides in over it.
-  // The TEXT (TEM, DESIGN, the lede, the links) plays with it over the same 2.6s, and from then on, and
-  // on any other arrival, belongs to the scroll: the hero holds still (pinned in #hero-run by CSS)
-  // while the scroll rewinds the text over a runway, the photo stays, and then the gallery slides up
-  // over it. Scrolling back uncovers the photo and plays the text forward, so someone coming off a
-  // collection sees it play (Torin, 2 Oct). Each part is cleared the moment it lands. Spec 2026-10-02 §5.
   const Hero = (() => {
     if (!Motion.live) return null;
     const header = heroEl, runway = document.getElementById('hero-run'), pin = document.getElementById('hero-pin');
     const plate = header.querySelector('.plate'), photo = plate.querySelector('.photo');
     const t1 = header.querySelector('.t1'), t2 = header.querySelector('.t2'), lede = header.querySelector('.lede');
-    const links = [...header.querySelectorAll('.cta a')];
-    const SECS = 2.6, at = s => s / SECS;   // the intro's timings, in seconds of a fresh visit
-    const LAP = 2;                          // px the mirrored strip overlaps the photo's top (see measure)
+    const links = [...header.querySelectorAll('.cta a')], chrome = header.querySelector('.hero-chrome');
+    const SECS = 2.6, at = s => s / SECS, GONE = at(.8);
+    const LAP = 2;
     const fresh = docEl.classList.contains('hero-pre') && navEntry.type !== 'back_forward';
-    // tp / tt: the photo's and the text's shown progress; up: the mirrored strip above the photo;
-    // dirty: the geometry changed, so repaint even though neither progress did; away: the hero is
-    // covered by the gallery and scrolled off; key: what the last measure was taken against.
     let G = null, introT = fresh ? 0 : 1, playing = false, clock = 0, tp = -1, tt = -1, navIn = !fresh, up = null;
     let dirty = false, away = false, key = '';
-    // The parting cut's shutters (see .cut in the CSS): one above the bowl's centre line, one below.
     let cutA = null, cutB = null;
     if (fresh && pin) {
       cutA = document.createElement('div'); cutB = document.createElement('div');
@@ -1009,25 +740,12 @@
       pin.append(cutA, cutB);
     }
 
-    // A part that is moving sits on a layer of its own (will-change), so a frame moves the layer instead
-    // of repainting the words, their blur or the photograph; it is given back the moment the part lands,
-    // and while the hero is off screen under the rest of the page. See heat() in the engine.
     const lifted = new WeakSet();
     function lift(el, on, what) {
       if (lifted.has(el) === on) return;
       if (on) lifted.add(el); else lifted.delete(el);
       el.style.willChange = on ? what : '';
     }
-    // The browser's OWN bar above the page: an iPhone's status bar, Android's toolbar. It wears the
-    // ground's colour, so on a fresh visit it stood as a pale band over the photo until the nav landed
-    // (Torin, 2 Oct: "it covers the status bar and where the nav would be"). While the photo is at the
-    // top of the page and the nav is away, the bar takes the photo's backdrop colour instead, and the
-    // ground's again as the nav comes in. SKY is the top of both hero photos (200, 208, 229, even to
-    // within 4 across the top third of the phone canvas): re-measure it if make_hero.py is ever re-run.
-    // Two ways in, because Safari changed: up to iOS 18 it reads <meta name="theme-color">; from iOS 26
-    // it takes the background colour of whatever is fixed or stuck at the top edge, which here is the
-    // pin (the nav is hidden, not just moved away, so it is not the one sampled). The pin is covered by
-    // the photo whenever this is on, so its colour is never seen on the page itself.
     const barMeta = document.querySelector('meta[name="theme-color"]'), GROUND = barMeta ? barMeta.content : '', SKY = '#C8D0E5';
     let sky = false;
     function bar(on) {
@@ -1037,8 +755,6 @@
       if (pin) pin.style.backgroundColor = on ? SKY : '';
     }
 
-    // Where the bowl's centre falls in the photo as this layout draws it: stretched to the plate on
-    // desktop, the tall phone canvas in portrait, cover-cropped in landscape, contained when stacked.
     const geoKey = () => [innerWidth, header.offsetWidth, header.offsetHeight, photo.currentSrc, photo.naturalWidth].join();
     function measure() {
       key = geoKey();
@@ -1055,49 +771,34 @@
         const pos = (v, free) => /%$/.test(v) ? parseFloat(v) / 100 * free : parseFloat(v) || 0;
         ox = pos(px, cw - nw * s); oy = pos(py, ch - nh * s); sx = sy = s;
       }
-      // The bowl's centre as a fraction of each photo (hero-bbox.json): 46% across and 50.9% down the
-      // desktop photo; the phone canvas centres the wood, 1456 + 385/2 of its 3857 rows down.
       const [fx, fy] = phone ? [.5, .4274] : [.46, .5094];
-      // How far the photo runs up past the hero's top edge, behind the strip the nav covers. Measured
-      // where the photo rests, with the settle's scale off.
       const held = photo.style.transform; photo.style.transform = '';
       const photoTop = photo.getBoundingClientRect().top, over = header.getBoundingClientRect().top - photoTop;
       photo.style.transform = held;
       const hh = header.offsetHeight, pinned = !!(runway && pin) && runway.offsetHeight > hh * 1.5;
       G = { cx: pl + ox + fx * nw * sx, cy: pt + oy + fy * nh * sy, h: photo.offsetHeight, hh,
-            // the runway the text rewinds over: #hero-run is the pin, the runway, and the hero's height again
-            run: pinned ? runway.offsetHeight - pin.offsetHeight - hh : .7 * hh,
-            // the part of the strip the photo does NOT reach (none where the photo is not at the hero's top at all)
+            run: pinned ? runway.offsetHeight - pin.offsetHeight - hh : .4 * hh,
             gap: over >= 0 ? Math.max(0, navEl.offsetHeight - over) : 0,
-            // the strip behind the nav is photograph (itself or its mirrored copy), not the ground
             strip: over >= 0 };
       photo.style.transformOrigin = `${G.cx.toFixed(1)}px ${G.cy.toFixed(1)}px`;
-      // The shutters meet on the bowl's centre line, measured down the pin. They overlap by a pixel or
-      // two: two edges meeting on a fractional pixel would leave a hairline of the photo between them.
       if (cutA) {
         const line = photoTop - pin.getBoundingClientRect().top + G.cy;
         cutA.style.top = '0'; cutA.style.height = `${Math.ceil(line) + 1}px`;
         cutB.style.top = `${Math.floor(line)}px`; cutB.style.bottom = '0';
       }
-      // Where the photo stops short of the strip (a tall window, a phone held sideways), a mirrored copy
-      // carries its backdrop on upwards: a reflection is seamless at the join. It exists only until the
-      // nav has landed over the strip.
       if (G.gap > 0 && !navIn && !up) {
         up = new Image();
         up.className = 'photo-up'; up.alt = ''; up.setAttribute('aria-hidden', 'true');
-        up.style.willChange = 'transform';   // it settles with the photo, on a layer like it
+        up.style.willChange = 'transform';
         plate.appendChild(up);
       }
       if (up && (G.gap <= 0 || navIn)) { up.remove(); up = null; }
       if (up) {
         if (up.getAttribute('src') !== (photo.currentSrc || photo.src)) up.src = photo.currentSrc || photo.src;
-        // LAP: it tucks 2px over the photo's own top rows. Two separately anti-aliased edges meeting on a
-        // fractional pixel leave a hairline of the ground between them; an overlap leaves no gap to show.
         Object.assign(up.style, { left: `${photo.offsetLeft}px`, top: `${photo.offsetTop - G.h + LAP}px`, width: `${photo.offsetWidth}px`, height: `${G.h}px`,
                                   objectFit: cs.objectFit, objectPosition: cs.objectPosition, padding: cs.padding });
       }
     }
-    // The title: from 114%, blurred 0.14em and faint, to sharp. Opacity arrives in the first 60%.
     function pull(el, u) {
       const s = el.style;
       lift(el, u < 1 && !away, 'transform, opacity, filter');
@@ -1107,7 +808,6 @@
       s.transform = `scale(${(1 + .14 * (1 - e)).toFixed(4)})`;
       s.filter = `blur(${(.14 * (1 - e)).toFixed(4)}em)`;
     }
-    // The lede and links: up 32px, fading in.
     function rise(el, u) {
       const s = el.style;
       lift(el, u < 1 && !away, 'transform, opacity');
@@ -1116,13 +816,9 @@
       s.opacity = e.toFixed(3);
       s.transform = `translateY(${(32 * (1 - e)).toFixed(1)}px)`;
     }
-    // vp: the photo's progress (the clock only). vt: the text's (the clock, then the scroll).
     function paint(vp, vt) {
-      const c = inOut3(seg(vp, 0, at(1.2)));                                       // the parting cut: 0 = closed to the centre line
-      const z = seg(vp, 0, at(1.8)), sc = z >= 1 ? 1 : 1 + .07 * (1 - out3(z));    // the settle from 107%
-      // Each shutter slides its own height away from the centre line: the upper one off the top of the
-      // pin (so the band reaches the very top of the page, through the nav's strip), the lower one off
-      // the bottom. Both go once the photo is fully open.
+      const c = inOut3(seg(vp, 0, at(1.2)));
+      const z = seg(vp, 0, at(1.8)), sc = z >= 1 ? 1 : 1 + .07 * (1 - out3(z));
       if (cutA) {
         if (c >= 1) { cutA.remove(); cutB.remove(); cutA = cutB = null; }
         else { cutA.style.transform = `translateY(${(-100 * c).toFixed(2)}%)`; cutB.style.transform = `translateY(${(100 * c).toFixed(2)}%)`; }
@@ -1130,7 +826,6 @@
       lift(photo, sc !== 1, 'transform');
       photo.style.transform = sc === 1 ? '' : `scale(${sc.toFixed(4)})`;
       if (up) {
-        // Flipped about its own middle, then settled with the photo about the bowl's centre.
         const by = G.h - LAP + G.cy;
         up.style.transform = `translate(${G.cx.toFixed(1)}px, ${by.toFixed(1)}px) scale(${sc.toFixed(4)}) translate(${(-G.cx).toFixed(1)}px, ${(-by).toFixed(1)}px) ` +
                              `translate(0px, ${(G.h / 2).toFixed(1)}px) scaleY(-1) translate(0px, ${(-G.h / 2).toFixed(1)}px)`;
@@ -1139,31 +834,29 @@
       pull(t2, seg(vt, at(1.0), at(1.9)));
       rise(lede, seg(vt, at(1.6), at(2.1)));
       links.forEach((a, i) => rise(a, seg(vt, at(1.75 + .08 * i), at(2.25 + .08 * i))));
+      const unseen = vt <= at(1.75);
+      if (chrome.inert !== unseen) chrome.inert = unseen;
     }
-    // The scroll rewinds the TEXT only, and only as far as the title's first frame: by the end of the
-    // runway the words are gone and the photo stands alone for the gallery to cover.
     const textGoal = y => Math.min(introT, 1 - clamp01(y / G.run) * (1 - at(.8)));
     function showNav(animate) {
       if (navIn) return;
       navIn = true;
-      bar(false);   // the browser's bar goes back to the ground's colour as the nav comes down under it
+      bar(false);
       navEl.style.transform = ''; navEl.style.visibility = '';
-      const landed = () => { if (up) { up.remove(); up = null; } };   // the nav covers the strip from here on
+      const landed = () => { if (up) { up.remove(); up = null; } };
       if (animate) navEl.animate([{ transform: 'translateY(-100%)' }, { transform: 'none' }], { duration: 600, easing: OUT3 }).finished.then(landed, landed);
       else landed();
     }
-    // Called by the Motion loop on every frame it runs; returns true while the hero is still moving.
-    function frame(now, dt, y) {
+    function frame(now, dt, y, idle) {
       if (!G) return false;
       if (playing) { introT = clamp01((now - clock) / (SECS * 1000)); if (introT >= 1) playing = false; }
-      const gone = y > G.run + G.hh;   // covered by the gallery and scrolled off: its layers are given back
+      const gone = y > G.run + G.hh;
       if (gone !== away) { away = gone; dirty = true; }
-      const goal = textGoal(y);
+      let goal = textGoal(y);
+      if (idle && introT >= 1 && goal > GONE && goal < 1) goal = goal > (1 + GONE) / 2 ? 1 : GONE;
       const v = tt < 0 ? goal : glide(tt, goal, dt);
       if (v !== tt || introT !== tp || dirty) { paint(introT, v); tt = v; tp = introT; dirty = false; }
       if (!navIn) {
-        // The bar changes as the cut's top edge nears the top of the screen (0.85s in: the cut is 90%
-        // open, and the browser takes a moment to blend the colour), never while the ground still shows.
         bar(G.strip && introT >= at(.85));
         if (introT >= at(2.4)) showNav(true);
       }
@@ -1172,67 +865,45 @@
     measure();
     tp = introT; tt = textGoal(scrollY);
     paint(tp, tt);
-    // Hidden as well as moved away: a hidden nav is not what Safari samples for its bar (see bar()).
     if (fresh) { navEl.style.transform = 'translateY(-100%)'; navEl.style.visibility = 'hidden'; }
     docEl.classList.remove('hero-pre');
     if (fresh) {
-      // The clock starts once the photo can be drawn, so the cut never opens onto nothing; a slow photo
-      // is waited on for 1.5s at most.
       const ready = photo.decode ? photo.decode().catch(() => {}) : Promise.resolve();
       Promise.race([ready, new Promise(r => setTimeout(r, 1500))]).then(() => { clock = performance.now(); playing = true; Motion.kick(); });
-      // Any key, tap, click or wheel during the intro brings the nav in at once, so nothing is out of reach.
       ['keydown', 'pointerdown', 'touchstart', 'wheel'].forEach(ev => addEventListener(ev, () => showNav(true), { passive: true, once: true }));
     }
-    // Only when something it measures has changed. A phone's toolbar sliding away fires resize and
-    // changes none of it; and the text is never snapped, it glides on from where it is.
     const remeasure = () => { if (geoKey() === key) return; measure(); dirty = true; Motion.kick(); };
     addEventListener('resize', remeasure, { passive: true });
-    photo.addEventListener('load', remeasure);   // a new srcset candidate, or the phone/desktop photo swap
-    // A page restored from the back/forward cache comes back as it left, possibly mid-intro: finish it.
+    photo.addEventListener('load', remeasure);
     addEventListener('pageshow', e => { if (e.persisted && (playing || !navIn)) { playing = false; introT = 1; showNav(false); Motion.kick(); } });
     return { frame, get opening() { return fresh && introT < 1; } };
   })();
   if (Hero) Motion.setHero(Hero); else docEl.classList.remove('hero-pre');
 
-  // Escape user-editable strings from photos.js before they hit innerHTML.
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  // Photos are split into one folder per collection (Homeware/, Bowls/, …) sitting next to this
-  // file. A photo's folder is the tag of the piece it belongs to.
   const PHOTO_CAT = {};
   PIECES.forEach(pc => pc.photos.forEach(n => { PHOTO_CAT[n] = pc.tag; }));
-  const dirFor = name => PHOTO_DIR + (PHOTO_CAT[name] ? encodeURIComponent(PHOTO_CAT[name]) + '/' : '');
+  const fileFor = name => PHOTO_DIR + (PHOTO_CAT[name] ? encodeURIComponent(PHOTO_CAT[name]) + '-webp/' : '') + name.replace(/\.(jpe?g|png|webp)$/i, '');
+  const srcsetFor = name => `${fileFor(name)}-480.webp 480w, ${fileFor(name)}-960.webp 960w`;
+  const imgSrc = name => `${fileFor(name)}-960.webp`;
+  const noBig = new Set();
+  const bigFor = name => noBig.has(name) ? '' : `, ${fileFor(name)}-1600.webp 1600w`;
 
-  // Only the -480/-960 web variants are deployed, so -960 is the largest size ever requested here.
-  const srcsetFor = name => {
-    const b = dirFor(name) + name.replace(/\.jpg$/i, '');
-    return `${b}-480.jpg 480w, ${b}-960.jpg 960w`;
-  };
-  const imgSrc = name => `${dirFor(name) + name.replace(/\.jpg$/i, '')}-960.jpg`;
-
-  // WebP sits in a PARALLEL folder per collection ("Bowls-webp/"), never mixed in with the JPEGs:
-  // each folder then stays far below GitHub's 100-file upload limit, and adding WebP never means
-  // re-uploading the JPEGs. The JPEG remains the <img> fallback, so nothing depends on WebP.
-  const webpDirFor = name => PHOTO_DIR + (PHOTO_CAT[name] ? encodeURIComponent(PHOTO_CAT[name]) + '-webp/' : '');
-  const webpSrcsetFor = name => {
-    const b = webpDirFor(name) + name.replace(/\.jpg$/i, '');
-    return `${b}-480.webp 480w, ${b}-960.webp 960w`;
-  };
-
-  // If a photo fails to load, swap in a transparent pixel so the broken-image glyph never shows.
   const BLANK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='2'%3E%3C/svg%3E";
   const softFail = im => im.addEventListener('error', () => { im.src = BLANK; }, { once: true });
 
-  // ---- Gallery: one card per collection, opening into that collection's grid in place ----
   const grid = document.getElementById('gallery-grid');
   const workBack = document.getElementById('work-back');
+  const workOthers = document.getElementById('work-others');
   const workSection = document.getElementById('work');
   const workH2 = document.querySelector('#work .section-head h2');
   const workSub = document.querySelector('#work .section-sub');
-  let curCat = null; // null = collection overview
+  let curCat = null;
+  const BASE_TITLE = document.title;
+  const viewTitle = () => curCat ? `${curCat} — ${BASE_TITLE}` : BASE_TITLE;
   const tagClass = t => 'tag-' + slug(t);
 
-  // Every card is a motion block (.m): the engine moves its inner .slide (see Motion).
   function baseCard() {
     const card = document.createElement('article');
     card.className = 'piece m';
@@ -1240,9 +911,6 @@
   }
   function wireCard(card, onOpen) {
     card.querySelector('.thumb img').addEventListener('error', e => e.target.closest('.thumb').classList.add('noimg'));
-    // The title is a real link now, so a modified click belongs to the browser: cmd/ctrl-click opens
-    // the piece's own deep link in a new tab, shift-click in a new window. A plain click opens the
-    // viewer here instead of navigating.
     card.addEventListener('click', e => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
@@ -1250,29 +918,25 @@
     });
     return card;
   }
-  // Piece card: the photo whole, a rule, the title (a real button stretched over the card),
-  // the photo count when there is more than one, and the note.
+  const forSale = pc => typeof pc.etsy === 'string' && /^https:\/\//.test(pc.etsy);
   function pieceCard(piece, pi) {
     const card = baseCard();
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><picture><source type="image/webp" srcset="${webpSrcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></picture></div>
+        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
           <h3><a href="#${esc(pieceSlug(piece))}">${esc(piece.title)}</a></h3>
-          ${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}
+          <span class="cts">${forSale(piece) ? '<span class="ct sale">For sale</span>' : ''}${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}</span>
         </div>
         <p class="note">${esc(piece.note)}</p>
       </div>`;
-    // With a real pointer, hovering a piece that has a second angle crossfades to it (250ms) and back
-    // on leave. The second photo is layered over the first in a <picture> of its own (WebP first, like
-    // every photo), added on the first hover and faded in once it has loaded. Touch never sees this.
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const thumb = card.querySelector('.thumb');
       let alt = null;
       card.addEventListener('mouseenter', () => {
         if (!alt) {
           const n = esc(piece.photos[1]), sizes = '(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px';
-          thumb.insertAdjacentHTML('beforeend', `<picture><source type="image/webp" srcset="${webpSrcsetFor(n)}" sizes="${sizes}"><img class="thumb-b" src="${imgSrc(n)}" srcset="${srcsetFor(n)}" sizes="${sizes}" alt="" width="1600" height="1067"></picture>`);
+          thumb.insertAdjacentHTML('beforeend', `<img class="thumb-b" src="${imgSrc(n)}" srcset="${srcsetFor(n)}" sizes="${sizes}" alt="" width="1600" height="1067">`);
           alt = thumb.querySelector('.thumb-b');
           alt.addEventListener('error', () => alt.remove(), { once: true });
         }
@@ -1281,13 +945,8 @@
       });
       card.addEventListener('mouseleave', () => thumb.classList.remove('alt'));
     }
-    // ALWAYS open on the piece's first photo. This used to open whichever angle the card happened to
-    // be showing, which sounded right and was wrong in practice: with a mouse you have to hover a
-    // card to click it, so a multi-photo piece ALWAYS opened on photo 2 and its first angle could
-    // only be reached by stepping backwards (Torin, 21 Sept). The hover swap stays a preview.
     return wireCard(card, () => openLightbox(pi, 0));
   }
-  // Collection card: the cover photo whole, a rule, the tag as a heading and the count as a colour tab.
   function catCard(tag) {
     const members = PIECES.filter(pc => pc.tag === tag);
     const cover = (members.find(pc => pc.cover) || members[0]).photos[0];
@@ -1295,7 +954,7 @@
     card.classList.add('collection', tagClass(tag));
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><picture><source type="image/webp" srcset="${webpSrcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></picture></div>
+        <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
           <h3><a href="#${esc(slug(tag))}" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
           <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
@@ -1303,37 +962,30 @@
       </div>`;
     return wireCard(card, () => showCat(tag, true));
   }
-  let booted = false;   // set once the page has finished arriving; until then a heading change is not a click
-  // Three ways a grid can appear. 'scroll' is first load: the cards take their places in the scroll
-  // engine like any other block. 'enter' is a deliberate swap (a collection opened or closed, Back or
-  // Forward between them): the old cards go at once and the new ones on screen play in by the clock
-  // before the scroll takes them over. false is no motion at all, for arrivals where the viewer covers
-  // the grid (a pin landing straight on a piece) and motion would be invisible work.
+  let booted = false;
   function renderGrid(mode) {
-    if (reduceMotion && mode === 'enter') mode = false;   // the cards are simply there
+    if (reduceMotion && mode === 'enter') mode = false;
     grid.innerHTML = '';
     workBack.hidden = curCat === null;
+    workOthers.textContent = '';
+    if (curCat !== null) CATS.filter(t => t !== curCat).forEach(t => {
+      const a = document.createElement('a');
+      a.href = '#' + slug(t); a.className = tagClass(t); a.textContent = t;
+      a.setAttribute('aria-label', `Open the ${t} collection`);
+      workOthers.appendChild(a);
+    });
     grid.classList.toggle('cats', curCat === null);
     const heading = curCat === null ? 'Gallery' : curCat;
-    // A swap that changes the heading ("Gallery" ↔ "Bowls") pulls the new name into focus, a quiet
-    // echo of the hero title. Not on arrival: a collection link landing on the page is not a click.
     const relabel = mode === 'enter' && booted && workH2.textContent !== heading;
     workH2.textContent = heading;
+    if (!viewerOpen) document.title = viewTitle();
     if (relabel) workH2.animate([{ opacity: 0, scale: 1.06, filter: 'blur(.06em)' }, { opacity: 1, scale: 1, filter: 'blur(0em)' }], { duration: 500, easing: OUT3 });
     workSub.textContent = curCat === null
       ? 'Four collections. Pick one to see the pieces.'
-      : `${PIECES.filter(pc => pc.tag === curCat).length} pieces. Click any one to see more photos.`;
-    // Built off-document and inserted once: appending card by card put each one into the live
-    // tree on its own, so every card invalidated the grid's layout again on the way in.
+      : `${PIECES.filter(pc => pc.tag === curCat).length} pieces. Pick one for a closer look.`;
     const frag = document.createDocumentFragment();
     if (curCat === null) CATS.forEach(t => frag.appendChild(catCard(t)));
     else PIECES.forEach((pc, pi) => { if (pc.tag === curCat) frag.appendChild(pieceCard(pc, pi)); });
-    // A swapped-in card is a NEW <img>, and loading="lazy" defers a freshly inserted image by about
-    // 450ms (measured: ready at 460ms lazy, 15ms eager), so the cards played in with no photograph in
-    // them and the photos dropped in afterwards. The first screenful is about to be on show, so it
-    // loads eagerly. The rest stay lazy: they are off screen and should not all fetch at once.
-    // First load is deliberately NOT treated this way — there the covers sit below the fold and
-    // compete with the hero, where priority games measured worse (see Performance in CLAUDE.md).
     if (mode === 'enter') {
       [...frag.children].slice(0, 6).forEach(c => {
         const im = c.querySelector('.thumb img');
@@ -1347,23 +999,17 @@
     curCat = tag;
     renderGrid('enter');
     if (push) { try { history.pushState(null, '', tag ? '#' + slug(tag) : location.pathname + location.search); } catch (e) {} }
-    // The grid swaps in place; scroll to its top on a deliberate switch only — never when routing
-    // a deep link on load, where the open-at-top rules own the scroll position.
     if (scroll !== false && push) workSection.scrollIntoView({ block: 'start' });
-    // The grid holding focus was just replaced; move focus to the heading so a screen reader
-    // announces the new view ("Bowls") and the next Tab lands on its first piece.
     if (push) workH2.focus({ preventScroll: true });
   }
   workBack.querySelector('button').addEventListener('click', () => showCat(null, true));
+  workOthers.addEventListener('click', e => {
+    const a = e.target.closest('a');
+    if (!a || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    showCat(a.textContent, true);
+  });
 
-  // "Back to gallery" (and the viewer's "Bowls") → ← on hover, and back again. The words are rasterised, broken into a few
-  // hundred drops of ink, and each drop flows along a curve into its place in an arrow the same size:
-  // down into one stream along the arrow's shaft, then out into the head. The drops are summed into
-  // a density field OFF screen, blurred together mid-flow so they merge like liquid (Torin allowed
-  // blur here, 23 Sept — the one exception to Hard rule 13), and only the thresholded result is
-  // painted: flat ink with a text-like anti-aliased edge, never a soft or translucent one.
-  // Mouse only: on touch there is no hover, and a tap just goes back.
-  // Returns a reset() that snaps back to the words at once (for when the control is taken away mid-hover).
   function morphArrow(btn) {
     const label = btn.querySelector('.mt'), none = () => {};
     if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return none;
@@ -1375,14 +1021,13 @@
     const textC = document.createElement('canvas'), arrowC = document.createElement('canvas');
     const sprite = document.createElement('canvas');
     const dropC = document.createElement('canvas'), dx = dropC.getContext('2d');
-    const DUR = 720;           // ms for the whole flow, either way
-    let S = null;              // the built shapes, for one size of the words
+    const DUR = 720;
+    let S = null;
     let t = 0, target = 0, last = 0, raf = 0;
 
     const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
     const ease = v => v < .5 ? 4 * v * v * v : 1 - Math.pow(-2 * v + 2, 3) / 2;
 
-    // Sample one raster into drop positions on a regular grid, left to right.
     function sample(c, step) {
       const d = c.getContext('2d').getImageData(0, 0, c.width, c.height).data, pts = [];
       for (let y = step / 2 | 0; y < c.height; y += step)
@@ -1397,32 +1042,26 @@
       const dpr = Math.min(window.devicePixelRatio || 1, 3), em = parseFloat(cs.fontSize);
       const key = [r.width, r.height, dpr, font, label.textContent].join();
       if (S && S.key === key) return;
-      const pad = Math.ceil(em * .4);                       // room for the ink to bulge while it flows
+      const pad = Math.ceil(em * .4);
       const w = Math.ceil(r.width + pad * 2), h = Math.ceil(r.height + pad * 2);
       for (const c of [cv, field, textC, arrowC]) { c.width = Math.round(w * dpr); c.height = Math.round(h * dpr); }
       Object.assign(cv.style, { left: `${r.left - b.left - pad}px`, top: `${r.top - b.top - pad}px`, width: `${w}px`, height: `${h}px` });
       const ink = getComputedStyle(btn).color;
 
-      // The words, drawn where the DOM draws them: an inline box's top sits one font-ascent above
-      // its baseline.
       const tx = textC.getContext('2d');
       tx.setTransform(dpr, 0, 0, dpr, 0, 0); tx.font = font; tx.fillStyle = ink; tx.textBaseline = 'alphabetic';
-      // As the DOM shows it: its case and its tracking (the viewer's "BOWLS" is uppercased by CSS).
       const tt = cs.textTransform, word = tt === 'uppercase' ? label.textContent.toUpperCase() : tt === 'lowercase' ? label.textContent.toLowerCase() : label.textContent;
       if ('letterSpacing' in tx) tx.letterSpacing = cs.letterSpacing === 'normal' ? '0px' : cs.letterSpacing;
       const m = tx.measureText(word);
       const base = pad + (m.fontBoundingBoxAscent || em * .77);
       tx.fillText(word, pad, base);
 
-      // The arrow: the words' width, a shaft as thick as the bold stems, the head as tall as a capital.
       const ax = arrowC.getContext('2d'), sw = Math.max(2, em * .17), mid = base - em * .36, hh = em * .5;
       ax.setTransform(dpr, 0, 0, dpr, 0, 0); ax.strokeStyle = ink; ax.lineWidth = sw; ax.lineCap = 'butt'; ax.lineJoin = 'miter';
       const x0 = pad + sw * .7, x1 = pad + r.width;
       ax.beginPath(); ax.moveTo(x1, mid); ax.lineTo(x0 + sw * .3, mid); ax.stroke();
       ax.beginPath(); ax.moveTo(x0 + hh, mid - hh); ax.lineTo(x0, mid); ax.lineTo(x0 + hh, mid + hh); ax.stroke();
 
-      // Drops: one per grid cell of ink, then both shapes stretched to the same count and paired in
-      // left-to-right order, so each letter flows into the part of the arrow beneath it.
       const step = Math.max(1, Math.round(dpr));
       const A = sample(textC, step), B = sample(arrowC, step), n = Math.max(A.length, B.length);
       const pick = (P, i) => P[Math.floor(i * P.length / n)];
@@ -1430,20 +1069,12 @@
       const drops = [];
       for (let i = 0; i < n; i++) {
         const a = pick(A, i), z = pick(B, i);
-        // Every path bends through the shaft's line, pulled a little towards the middle, so the ink
-        // pools into one body before it spreads out again. Each drop leaves slightly after the one
-        // to its left, the way the arrow points.
         const hx = (a[0] + z[0]) / 2;
         drops.push({ a, z, c: [hx + (cx - hx) * .3, my], d: .16 * (a[0] / W) });
       }
-      // The words hold more ink than the arrow, so several drops land on each point of it. Each
-      // drop's weight moves from one shape's share to the other's, keeping the ink's thickness true
-      // at both ends instead of arriving at a bold arrow that then snaps thin.
       const wA = A.length / n, wB = B.length / n;
       dropC.width = field.width; dropC.height = field.height;
 
-      // The drop's footprint: a soft disc in the off-screen field only. Its weight is set so a solid
-      // run of drops sums to the same density as the solid words.
       const R = step * 2.2, sr = Math.ceil(R);
       sprite.width = sprite.height = sr * 2;
       const sx = sprite.getContext('2d'), g = sx.createRadialGradient(sr, sr, 0, sr, sr, R);
@@ -1460,12 +1091,7 @@
       fx.globalCompositeOperation = 'source-over';
       fx.clearRect(0, 0, W, H);
       fx.globalCompositeOperation = 'lighter';
-      // The crisp words hand over to the drops at the start, and the drops to the crisp arrow at the
-      // end, inside the field — so the outline melts rather than swaps.
       const wa = clamp(1 - t / .18), wb = clamp((t - .82) / .18), wd = 1 - Math.max(wa, wb);
-      // Mid-flow the drops are blurred together into one liquid body; the blur swells and subsides
-      // with the flow, so both ends are sharp. The threshold drops with it, or the blur would thin
-      // the ink away.
       const bf = Math.pow(Math.sin(Math.PI * clamp((t - .02) / .74)), 2);
       if (wa > 0) { fx.globalAlpha = wa; fx.drawImage(textC, 0, 0); }
       if (wb > 0) { fx.globalAlpha = wb; fx.drawImage(arrowC, 0, 0); }
@@ -1485,9 +1111,7 @@
         fx.filter = 'none';
       }
       fx.globalAlpha = 1;
-      // Threshold: solid ink inside, a narrow edge like any text anti-aliasing, nothing outside.
       const src = fx.getImageData(0, 0, W, H).data, dst = img.data;
-      // The blur flattens the field's slope, so the edge band narrows with it to stay a crisp edge.
       const lo = 100 - 64 * bf, hi = lo + 64 / (1 + 5 * bf), span = 255 / (hi - lo);
       for (let i = 3; i < src.length; i += 4) {
         const a = src[i], o = a <= lo ? 0 : a >= hi ? 255 : (a - lo) * span;
@@ -1499,7 +1123,7 @@
     function frame(now) {
       const dt = last ? now - last : 16; last = now;
       t = target > t ? Math.min(target, t + dt / DUR) : Math.max(target, t - dt / DUR);
-      if (t === 0) { stop(); return; }     // back to the words themselves
+      if (t === 0) { stop(); return; }
       draw();
       raf = t === target ? 0 : requestAnimationFrame(frame);
       if (!raf) last = 0;
@@ -1520,8 +1144,6 @@
     }
     btn.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') go(1); });
     btn.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') go(0); });
-    // The control is taken away by its own click (the grid swaps, the viewer closes), so it must
-    // not be left showing the arrow when it next appears.
     const reset = () => { target = t = 0; stop(); };
     btn.addEventListener('click', reset);
     return reset;
@@ -1529,14 +1151,14 @@
   morphArrow(workBack.querySelector('button'));
   renderGrid('scroll');
 
-  // ---- Lightbox ----
   const lb = document.getElementById('lightbox');
   const lbImg = document.getElementById('lb-img');
   const lbFrame = lb.querySelector('.lb-frame');
-  const lbSrc = document.getElementById('lb-src');   // the WebP candidate; must be kept in step with lbImg
+
   const lbTitle = document.querySelector('#lb-caption strong');
   const lbNote = document.querySelector('#lb-caption span');
   const lbCounter = document.getElementById('lb-counter');
+  const lbPlace = document.getElementById('lb-place');
   const lbClose = document.getElementById('lb-close');
   const lbPrev = document.getElementById('lb-prev');
   const lbNext = document.getElementById('lb-next');
@@ -1546,28 +1168,25 @@
   const lbAct = document.getElementById('lb-act');
   const lbLive = document.getElementById('lb-live');
   const lbHome = document.getElementById('lb-home');
-  const BASE_TITLE = document.title;
   let cur = { piece: 0, photo: 0 };
-  let openedPiece = 0;   // the piece the viewer was opened on, before any stepping
+  let openedPiece = 0;
   let lastFocus = null;
 
-  // History: an open piece is ONE history entry on top of its collection, so the phone's Back button
-  // (and ✕ / Esc, which step back through it) land on the collection's grid, never two views back
-  // and never off the site. Stepping through photos never adds entries.
   const PIECE_STATE = { tem: 'piece' };
   const inPieceEntry = () => !!(history.state && history.state.tem === 'piece');
 
-  // The arrows walk the whole collection (see step), so they are only pointless when the collection
-  // holds a single photo in total.
   const reelOf = tag => PIECES.reduce((a, pc, i) => { if (pc.tag === tag) a.push(i); return a; }, []);
   const reelPhotos = tag => reelOf(tag).reduce((n, i) => n + PIECES[i].photos.length, 0);
+
+  const behind = [...document.body.children].filter(e => e !== lb && !/^(SCRIPT|NOSCRIPT)$/.test(e.tagName));
+  const setBehind = on => behind.forEach(e => { e.inert = on; });
 
   function openLightbox(pi, idx) {
     cur = { piece: pi, photo: idx };
     openedPiece = pi;
     const arriving = !lb.classList.contains('open');
     if (arriving) lastFocus = document.activeElement;
-    stepRun++;   // abandon any slide still waiting from the last visit
+    stepRun++;
     lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
     lbImg.getAnimations().forEach(a => a.cancel());
     lbImg.style.translate = '';
@@ -1577,27 +1196,24 @@
     lb.classList.add('open');
     if (arriving && !reduceMotion) viewerArrive();
     document.body.style.overflow = 'hidden';
+    setBehind(true);
     const h = '#' + pieceSlug(PIECES[pi]);
     try { if (inPieceEntry()) history.replaceState(PIECE_STATE, '', h); else history.pushState(PIECE_STATE, '', h); } catch (e) {}
-    document.title = `${PIECES[pi].title} — ${BASE_TITLE}`;   // shared or bookmarked tabs name the piece
+    document.title = `${PIECES[pi].title} — ${BASE_TITLE}`;
     requestAnimationFrame(() => lbClose.focus());
   }
-  // viaHistory: the browser already stepped back (popstate), so don't step again.
-  // focusTarget: where focus goes after closing (default: whatever opened the viewer).
   function closeLightbox(viaHistory, focusTarget) {
     if (!lb.classList.contains('open')) return;
     lb.classList.remove('open');
-    viewerOpen = false; Motion.kick();   // the grid behind may hurry its photographs again
-    resetColl();   // Esc or ✕ with the pointer resting on it: don't reopen onto an arrow
+    viewerOpen = false; Motion.kick();
+    resetColl();
     document.body.style.overflow = '';
-    document.title = BASE_TITLE;
+    setBehind(false);
+    document.title = viewTitle();
     if (!viaHistory) {
       if (inPieceEntry()) { try { history.back(); } catch (e) {} }
       else if (pieceFromHash() !== -1) { try { history.replaceState(null, '', curCat ? '#' + slug(curCat) : location.pathname + location.search); } catch (e) {} }
     }
-    // Stepping through the collection can end on a different piece than the one that opened the
-    // viewer, so focus goes to THAT piece's card. Only when it actually moved: on a pin arrival
-    // nothing had focus, and focusing a card there would scroll the page off the grid it parked on.
     const f = focusTarget || (cur.piece !== openedPiece ? cardLinkFor(cur.piece) : null) || lastFocus;
     if (f && typeof f.focus === 'function' && document.contains(f)) f.focus(focusTarget ? { preventScroll: true } : undefined);
   }
@@ -1605,56 +1221,41 @@
     const h = '#' + pieceSlug(PIECES[pi]);
     return [...grid.querySelectorAll('h3 a')].find(a => a.getAttribute('href') === h) || null;
   }
-  // A photo that fails outright blanks out and says so, rather than leaving the previous photo up.
   lbImg.addEventListener('error', () => {
-    // The <source> has to go too: it outranks the <img>, so blanking src alone would leave the
-    // browser still holding the WebP candidate for the photo that just failed.
-    lbSrc.removeAttribute('srcset');
+    const name = PIECES[cur.piece].photos[cur.photo];
+    if (/-1600\.webp$/i.test(lbImg.currentSrc) && !noBig.has(name)) { noBig.add(name); render(); return; }
     lbImg.removeAttribute('srcset'); lbImg.src = BLANK; lb.classList.add('noimg');
   });
-  // Once the open photo has arrived, the photos a step either side of it are fetched too, so a step
-  // shows the next photograph at once. Before this each step went to the network on demand, and the
-  // slide waits 300ms at most: on a phone the new photo slid in late, or still empty. Same format,
-  // srcset and sizes as the viewer's own request, so it is the very file the step will ask for. Only
-  // ever the two neighbours, and only after the open photo has landed: never the whole reel.
-  const ahead = new Map();   // photo name -> the Image fetching it
+  const ahead = new Map();
   lbImg.addEventListener('load', () => {
     if (!viewerOpen || lb.classList.contains('noimg')) return;
-    const setFor = /\.webp$/i.test(lbImg.currentSrc) ? webpSrcsetFor : srcsetFor;
     [1, -1].forEach(dir => {
       const n = neighbour(dir), name = PIECES[n.piece].photos[n.photo];
       if (ahead.has(name) || (n.piece === cur.piece && n.photo === cur.photo)) return;
       const im = new Image();
-      im.sizes = lbImg.sizes; im.srcset = setFor(name);
+      im.sizes = lbImg.sizes; im.srcset = srcsetFor(name) + bigFor(name);
       ahead.set(name, im);
-      if (ahead.size > 8) ahead.delete(ahead.keys().next().value);   // the oldest has long since arrived
+      if (ahead.size > 8) ahead.delete(ahead.keys().next().value);
     });
   });
   function render() {
     const p = PIECES[cur.piece];
     lb.classList.remove('noimg');
-    lbSrc.srcset = webpSrcsetFor(p.photos[cur.photo]);
-    lbSrc.sizes = '(max-width: 700px) 100vw, 92vw';
-    lbImg.srcset = srcsetFor(p.photos[cur.photo]);
+    lbImg.srcset = srcsetFor(p.photos[cur.photo]) + bigFor(p.photos[cur.photo]);
     lbImg.sizes = '(max-width: 700px) 100vw, 92vw';
     lbImg.src = imgSrc(p.photos[cur.photo]);
     lbImg.alt = `${p.title}, photo ${cur.photo + 1}`;
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
+    const reel = reelOf(p.tag), at = reel.indexOf(cur.piece) + 1;
+    lbPlace.textContent = `${p.tag} ${at} / ${reel.length}`;
     lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
-    // The dialog is named after the piece, so opening it announces "Oak Bowl, photo viewer" instead
-    // of a bare "Photo viewer"; the live region then reports each step.
     lb.setAttribute('aria-label', `${p.title}, photo viewer`);
-    lbLive.textContent = p.photos.length > 1
-      ? `${p.title}, photo ${cur.photo + 1} of ${p.photos.length}`
-      : p.title;
-    // The action row: this piece's collection, then Buy on Etsy if it's listed (an https link in
-    // photos.js). A piece that isn't listed shows no action block at all.
-    // The word alone; on hover it melts into the arrow (morphArrow). The name says where it goes.
+    lbLive.textContent = `${p.title}, ${at} of ${reel.length} in ${p.tag}` + (p.photos.length > 1 ? `, photo ${cur.photo + 1} of ${p.photos.length}` : '');
     lbCollText.textContent = p.tag;
     lbColl.setAttribute('aria-label', `Back to ${p.tag}`);
     lbColl.href = '#' + slug(p.tag);
-    const etsy = typeof p.etsy === 'string' && /^https:\/\//.test(p.etsy) ? p.etsy : '';
+    const etsy = forSale(p) ? p.etsy : '';
     lbAct.hidden = !etsy;
     lbAct.classList.toggle('buy', !!etsy);
     if (etsy) {
@@ -1665,16 +1266,11 @@
       lbAct.textContent = '';
     }
   }
-  // The step: the photo on screen is copied into a stand-in that slides off one side while the real
-  // <img>, already holding the next photo, slides in from the other. The easing is a sampled spring
-  // (bounce .2, visual duration .3s — it peaks 1.5% past centre and settles). Old browsers without
-  // linear() easing get the site's own ease-out instead, with no overshoot.
   const SPRING = 'linear(0, 0.034, 0.117, 0.227, 0.345, 0.463, 0.572, 0.668, 0.751, 0.819, 0.874, 0.917, 0.95, 0.974, 0.991, 1.002, 1.009, 1.013, 1.015, 1.015, 1.014, 1.013, 1.011, 1.009, 1.007, 1.006, 1.004, 1.003, 1.002, 1.002, 1)';
   const STEP_EASE = CSS.supports('animation-timing-function', SPRING) ? SPRING : 'cubic-bezier(.16, 1, .3, 1)';
   const STEP_MS = 485;
   let stepRun = 0;
   function slidePhotos(dir, paint) {
-    // A second click mid-slide lands the first one at once, so the strip never piles up.
     lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
     lbImg.getAnimations().forEach(a => a.cancel());
     const run = ++stepRun;
@@ -1688,10 +1284,8 @@
       Object.assign(out.style, { left: `${r.left - f.left}px`, top: `${r.top - f.top}px`, width: `${r.width}px`, height: `${r.height}px` });
       lbFrame.appendChild(out);
     }
-    const w = lb.clientWidth;   // a whole screen: both photos travel fully off it, never half-visible
+    const w = lb.clientWidth;
     paint();
-    // Park the new photo off screen until it can be drawn, so it never slides in empty. A cached
-    // photo decodes at once; a slow one is waited on for at most 300ms, then it slides regardless.
     lbImg.style.translate = `${dir * w}px 0`;
     const ready = lbImg.decode ? lbImg.decode().catch(() => {}) : Promise.resolve();
     Promise.race([ready, new Promise(r => setTimeout(r, 300))]).then(() => {
@@ -1703,8 +1297,6 @@
         .finished.then(() => out.remove(), () => out.remove());
     });
   }
-  // Opening: the viewer slides up (CSS, 0.7s), the photo sharpens into focus as it lands, and the
-  // caption rises in behind it: the title, then the note and the action row.
   function riseIn(el, delay, duration) {
     if (el) el.animate([{ opacity: 0, translate: '0 24px' }, { opacity: 1, translate: '0 0' }], { duration, delay, easing: OUT3, fill: 'backwards' });
   }
@@ -1714,18 +1306,11 @@
     riseIn(lbNote, 430, 450);
     riseIn(lb.querySelector('.lb-actions'), 430, 450);
   }
-  // The URL and the tab title follow the open piece WITHOUT adding a history entry, so ✕ / Esc /
-  // Back still step off the one piece entry onto the collection, however far along the reel you are.
   function syncPiece() {
     const p = PIECES[cur.piece];
     document.title = `${p.title} — ${BASE_TITLE}`;
     try { history.replaceState(PIECE_STATE, '', '#' + pieceSlug(p)); } catch (e) {}
   }
-  // ← → walk the whole COLLECTION as one reel: this piece's angles, then straight on into the next
-  // piece's. Before this they cycled one piece's photos only, so 19 of the 40 pieces (single-photo)
-  // had no arrows at all and seeing eleven bowls cost eleven open-look-close cycles.
-  // The photo one step along the reel from the open one: this piece's next angle, or on into the
-  // neighbouring piece (and round the ends).
   function neighbour(dir) {
     const reel = reelOf(PIECES[cur.piece].tag);
     let piece = cur.piece, photo = cur.photo + dir;
@@ -1737,22 +1322,18 @@
   }
   function step(dir) {
     const { piece, photo } = neighbour(dir);
-    if (piece === cur.piece && photo === cur.photo) return;   // one piece, one photo: nowhere to go
+    if (piece === cur.piece && photo === cur.photo) return;
     const moved = piece !== cur.piece;
     cur = { piece, photo };
     if (reduceMotion) render(); else slidePhotos(dir, render);
     if (moved) {
       syncPiece();
-      // A new piece: its title and note rise in fresh rather than just swapping text.
       if (!reduceMotion) { riseIn(lbTitle, 0, 350); riseIn(lbNote, 0, 350); }
     }
   }
   lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
   lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
-  // Photos change via the arrow buttons / keyboard only — deliberately no swipe, so that
-  // pinch-zooming a photo on a phone never accidentally flips to the next one.
   lbClose.addEventListener('click', () => closeLightbox());
-  // "← Bowls": close back to the piece's collection, at the top of its grid.
   lbColl.addEventListener('click', e => {
     e.preventDefault();
     const tag = PIECES[cur.piece].tag;
@@ -1760,15 +1341,11 @@
     closeLightbox(false, workH2);
     workSection.scrollIntoView({ block: 'start' });
   });
-  // The lockup: close the piece and go to the top of the site. On a pin arrival this is the only
-  // branding on screen, and it was an inert image — no way in at all.
   lbHome.addEventListener('click', e => {
     e.preventDefault();
-    closeLightbox(false, document.querySelector('nav .logo'));   // a focus target means no scroll fight
+    closeLightbox(false, document.querySelector('nav .logo'));
     scrollTo({ top: 0 });
   });
-  // With a mouse, a click on the black ground around the photo closes it too. Not on touch, where a
-  // near-miss on an arrow would throw the visitor out of the viewer.
   if (matchMedia('(pointer: fine)').matches) {
     const lbStage = lb.querySelector('.lb-stage');
     lb.addEventListener('click', e => { if (e.target === lb || e.target === lbStage || e.target === lbFrame) closeLightbox(); });
@@ -1779,7 +1356,6 @@
     if (e.key === 'ArrowLeft') step(-1);
     if (e.key === 'ArrowRight') step(1);
     if (e.key === 'Tab') {
-      // Keep focus inside the dialog.
       const focusables = [lbHome, lbClose, lbPrev, lbNext, lbColl, lbAct].filter(b => b.offsetParent !== null);
       if (!focusables.length) return;
       const first = focusables[0], last = focusables[focusables.length - 1];
@@ -1789,18 +1365,12 @@
     }
   });
 
-
-  // ---- Nav: highlight the section in view (the external Shop link is ignored) ----
   if ('IntersectionObserver' in window) {
     const spyLinks = new Map([...document.querySelectorAll('.nav-links a[href^="#"]')].map(a => [a.getAttribute('href').slice(1), a]));
     const clearSpy = () => spyLinks.forEach(a => a.classList.remove('active'));
     const spy = new IntersectionObserver(es => {
       es.forEach(en => {
         if (!en.isIntersecting) {
-          // The gallery has dropped back below the band: you are on the hero again, and nothing is
-          // highlighted. The hero itself is no use as the signal any more: it stays pinned BEHIND the
-          // gallery, still "in view" to an observer, and watching it cleared the Gallery underline
-          // while the gallery was on screen (2 Oct).
           if (en.target === workSection && en.boundingClientRect.top >= (en.rootBounds ? en.rootBounds.bottom : innerHeight * .45)) clearSpy();
           return;
         }
@@ -1812,19 +1382,15 @@
     spyLinks.forEach((a, id) => { const sec = document.getElementById(id); if (sec) spy.observe(sec); });
   }
 
-  // ---- Route a shared link: #piece opens its lightbox inside its collection; #collection opens that view ----
-  // A piece link that matches nothing (renamed or mistyped): show the gallery and say so, in the 404
-  // page's own words, instead of silently showing the top of the page.
   function showMoved() {
     if (curCat !== null) { curCat = null; renderGrid('enter'); }
     workSub.textContent = 'This page has moved. Have a look through the gallery instead.';
     try { history.replaceState(null, '', location.pathname + location.search); } catch (e) {}
     workSection.scrollIntoView({ block: 'start' });
   }
+  let landOnHeading = false;
   const linkedPiece = pieceFromHash();
   if (linkedPiece !== -1) {
-    // A pin lands here. Put the piece's collection in history underneath it and park the page on
-    // that grid, so Back or ✕ shows the rest of the collection instead of leaving the site.
     curCat = PIECES[linkedPiece].tag;
     renderGrid(false);
     if (!inPieceEntry()) { try { history.replaceState(null, '', '#' + slug(curCat)); } catch (e) {} }
@@ -1835,27 +1401,30 @@
     const h = hashText();
     if (linkedCat) {
       curCat = linkedCat; renderGrid('enter');
-      workSection.scrollIntoView({ block: 'start' });   // a collection has no element of its own to land on
+      workSection.scrollIntoView({ block: 'start' });
+      landOnHeading = true;
     } else if (h && !document.getElementById(h)) {
       showMoved();
     }
   }
   addEventListener('popstate', () => {
     const pi = pieceFromHash();
-    if (pi !== -1) {   // Forward onto a piece: reopen it in its collection
+    if (pi !== -1) {
       if (PIECES[pi].tag !== curCat) { curCat = PIECES[pi].tag; renderGrid(false); }
       if (!lb.classList.contains('open') || cur.piece !== pi) openLightbox(pi, 0);
       return;
     }
     if (lb.classList.contains('open')) closeLightbox(true);
     const ct = catFromHash(), h = hashText();
-    if (!ct && h && !document.getElementById(h)) { showMoved(); return; }   // edited to a dead link
+    if (!ct && h && !document.getElementById(h)) { showMoved(); return; }
     if (ct !== curCat) {
       curCat = ct; renderGrid('enter');
       if (document.activeElement === document.body) workH2.focus({ preventScroll: true });
     }
   });
-  booted = true;   // from here on a heading change is the visitor's doing
+  booted = true;
+  docEl.classList.remove('arriving');
+  if (landOnHeading) workH2.focus({ preventScroll: true });
 </script>
 
 </body>
