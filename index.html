@@ -144,11 +144,13 @@
   .section-sub { font-size: clamp(1rem, 1.25vw, 1.3rem); }
 
   #work { padding: 14vh var(--pad) 12vh; position: relative; z-index: 1; background: var(--ground); }
-  #work-back { margin: -3vh 0 5vh; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 1.2rem 2.4rem; }
+  #work-back { margin: -3vh 0 5vh; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1.2rem 2.4rem; }
   #work-back[hidden] { display: none; }
-  #work-back button, #work-others a { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
-  #work-others { display: flex; flex-wrap: wrap; gap: 1.2rem 1.8rem; }
-  #work-others a:hover { border-bottom-color: var(--c); }
+  #work-back button { position: relative; font-weight: 700; font-size: 1rem; border-bottom: 3px solid var(--ink); padding-bottom: .1em; }
+  #work-others { display: flex; flex-wrap: wrap; gap: .8rem; }
+  #work-others a { position: relative; font-weight: 700; font-size: .85rem; line-height: 1.4; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
+                   padding: .6em .85em; background: var(--c); color: var(--cink); }
+  #work-others a:hover { background: var(--ink); color: var(--ground); }
   .morph-cv { position: absolute; pointer-events: none; }
   .morphing .mt { visibility: hidden; }
   #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
@@ -175,6 +177,7 @@
   .piece.m-clip h3 a:focus-visible::after { outline-offset: -3px; }
   .piece .cts { display: flex; align-items: baseline; gap: .9rem; white-space: nowrap; }
   .piece .cts:empty { display: none; }
+  .piece .bar:has(.sale) { flex-wrap: wrap; row-gap: .5rem; }
   .piece .ct { font-size: .85rem; letter-spacing: .04em; white-space: nowrap; }
   .piece .ct.sale { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: .4em .65em; background: var(--lichen); color: var(--ink); }
   .piece.collection .ct { font-size: clamp(.8rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; padding: .5em .8em; background: var(--c); color: var(--cink); }
@@ -244,11 +247,10 @@
   #lb-act.buy:hover { background: var(--ground); }
   #lb-caption strong { display: block; font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -.035em; line-height: .95; }
   #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: .7rem; max-width: 60ch; }
-  .lb-count { display: flex; align-items: center; gap: .5rem; min-width: 0; }
-  #lb-place, #lb-counter { font-size: .95rem; font-weight: 700; letter-spacing: .06em;
-                           background: var(--ground); color: var(--ink);
-                           padding: .5em .8em; white-space: nowrap; }
-  #lb-place:empty, #lb-counter:empty { display: none; }
+  #lb-counter { font-size: .95rem; font-weight: 700; letter-spacing: .06em;
+                background: var(--ground); color: var(--ink);
+                padding: .5em .8em; white-space: nowrap; }
+  #lb-counter:empty { display: none; }
   .lb-out { position: absolute; margin: 0; max-width: none; max-height: none; pointer-events: none; }
 
   @media (hover: none) {
@@ -258,7 +260,7 @@
     .cta a:hover { border-bottom-color: var(--ink); }
     .cta a.etsy:hover { background: var(--lichen); color: var(--ink); }
     .piece:hover .bar, .piece.collection:hover .bar { border-top-color: var(--ink); }
-    #work-others a:hover { border-bottom-color: var(--ink); }
+    #work-others a:hover { background: var(--c); color: var(--cink); }
     .lb-btn:hover { background: var(--ground); }
     #lb-close:hover { background: var(--ground); color: var(--ink); border-color: transparent; }
     #lb-coll:hover { border-bottom-color: var(--ground); }
@@ -266,7 +268,7 @@
   }
   @media (pointer: coarse) {
     .nav-links a, .hero-chrome .cta a:not(.etsy), #lb-coll, #work-back button { position: relative; }
-    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before, #work-others a::before {
+    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before {
       content: ""; position: absolute; top: -12px; right: -6px; bottom: -12px; left: -6px; }
     .cta a.etsy, #contact .cta a { position: relative; }
     .cta a.etsy::before, #contact .cta a::before { content: ""; position: absolute; top: -4px; right: 0; bottom: -4px; left: 0; }
@@ -276,6 +278,7 @@
     #lb-coll::before { top: -14px; bottom: -14px; }
     .logo { position: relative; }
     .logo::before { content: ""; position: absolute; top: -12px; right: -6px; bottom: -15px; left: -6px; }
+    #work-others a::before { content: ""; position: absolute; top: -5px; right: 0; bottom: -5px; left: 0; }
   }
   @media (pointer: coarse) and (max-height: 520px) {
     .hero-chrome .cta a.etsy::before { top: -7px; bottom: -7px; }
@@ -320,30 +323,41 @@
     .t2 { margin-left: .9em; }
     .hero-chrome { flex-direction: row; align-items: flex-end; justify-content: space-between;
                    text-align: left; gap: 1.5rem; padding: 1.5vh var(--pad) 2.5vh; }
-    .lede { max-width: 46ch; font-size: .8rem; }
+    .lede { max-width: 46ch; font-size: clamp(.72rem, 1.5vw, .75rem); line-height: 1.25; }
     .cta { display: flex; font-size: .76rem; gap: .5rem .9rem; }
     .cta a.etsy { grid-column: auto; order: 0; }
     .t1 { padding-top: 1.5vh; }
     header { display: block; position: relative; }
     .plate { display: block; position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
     .plate .photo { position: absolute; width: 100%; height: 100%; padding: 0;
-                    object-fit: cover; object-position: calc(var(--bcx) * 1%) 50%; }
+                    object-fit: cover; object-position: calc(var(--bcx) * 1%) 53%; }
     .tier { position: absolute; z-index: 3; font-size: min(13vw, 22vh); }
-    .t1 { top: 6vh; left: var(--pad); right: auto; bottom: auto; padding: 0; margin: 0; }
+    .t1 { top: 4vh; left: var(--pad); right: auto; bottom: auto; padding: 0; margin: 0; }
     .t2 { top: auto; bottom: 14vh; right: var(--pad); left: auto; padding: 0; margin: 0; }
     .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
-                   background: none; padding: 1.5vh var(--pad) 2.5vh; }
+                   background: none; padding: 1.5vh var(--pad) 1.5vh; }
+    #gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8vh 3vw; }
+    .piece .bar { margin-top: .7rem; padding-top: .6rem; }
+    .piece .note { margin-top: .4rem; }
     #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 8vh 3vw; }
-    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 54vh; }
+    .about-inner { grid-template-columns: 1.15fr .85fr; gap: 5vw; }
+    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 100vh;
+                grid-template-columns: minmax(0, 1fr) minmax(13rem, 32%); grid-template-rows: auto minmax(0, 1fr); gap: .5rem 1.4rem; }
+    .lb-top { grid-column: 1 / -1; }
+    .lb-stage { grid-column: 1; grid-row: 2; }
+    .lb-foot { grid-column: 2; grid-row: 2; align-self: end; }
     #lb-home img { width: 20px; height: 20px; }
     .logo { font-size: .8rem; }
-    .lb-controls { margin: .5rem 0 .45rem; }
-    .lb-cap { padding-top: .5rem; border-top-width: 3px; }
+    .lb-controls { margin: 0 0 .55rem; }
+    .lb-cap { padding-top: .5rem; border-top-width: 3px; grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .7rem; }
     #lb-caption strong { font-size: 1.3rem; }
-    #lb-caption span { font-size: .78rem; margin-top: .2rem; }
-    #lb-place, #lb-counter { font-size: .72rem; padding: .3em .55em; }
+    #lb-caption span { font-size: .78rem; margin-top: .3rem; }
+    #lb-counter { font-size: .72rem; padding: .3em .55em; }
     .lb-btn { --sq: 2.2rem; }
-    .lb-actions { font-size: .76rem; gap: .5rem 1rem; }
+    .lb-actions { font-size: .76rem; gap: .5rem 1rem; justify-content: space-between; align-items: center; }
+  }
+  @media (max-width: 620px) and (max-height: 520px) {
+    #gallery-grid { grid-template-columns: 1fr 1fr; }
   }
   @media (max-width: 700px), (max-height: 520px) and (max-width: 1100px) and (pointer: coarse) {
     #contact .contact-body { display: block; }
@@ -353,28 +367,28 @@
     #contact .cta a { font-size: inherit; padding: .55em .9em; text-align: center; }
     #contact .cta a.etsy { grid-column: auto; order: 0; }
   }
+  @media (max-width: 1100px) and (max-height: 520px) and (pointer: coarse) {
+    #contact h2 { font-size: min(9vw, 16vh); max-width: none; }
+    #contact p { margin: 4vh 0 5vh; max-width: 60ch; }
+    #contact .cta { flex-direction: row; justify-content: flex-start; align-items: center; gap: 1rem; }
+  }
   @media (max-width: 700px) and (min-height: 521px) {
     #lightbox { --lbh: 58vh; }
     .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
     #lb-img { width: 100%; max-height: var(--lbh); max-height: min(var(--lbh), 100cqh); object-fit: contain; }
     .lb-controls { margin: .9rem 0 .85rem; }
     .lb-btn { --sq: 3rem; }
-    #lb-place, #lb-counter { font-size: .85rem; letter-spacing: .04em; padding: .55em .65em; }
+
     .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
     .lb-actions { justify-content: space-between; align-items: center; }
     #lb-act { padding: .85em 1.1em; }
     #lb-coll { order: 1; margin-left: auto; }
   }
   @media (max-width: 360px) {
-    .lb-count { gap: .35rem; }
-    #lb-place, #lb-counter { font-size: .8rem; letter-spacing: .03em; padding: .5em .55em; }
+
     .logo span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
     .nav-links { gap: .7rem; font-size: .8rem; }
     .nav-links a.shop { padding: .4rem .6rem; }
-  }
-  @media (max-width: 340px) {
-    .lb-count { gap: .3rem; }
-    #lb-place, #lb-counter { font-size: .72rem; padding: .55em .45em; }
   }
 
   @media (max-width: 1100px) and (max-aspect-ratio: 4/5) {
@@ -495,7 +509,7 @@
   <div class="lb-foot">
     <div class="lb-controls">
       <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
-      <div class="lb-count"><div id="lb-place"></div><div id="lb-counter"></div></div>
+      <div id="lb-counter"></div>
       <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
     </div>
     <div class="lb-cap">
@@ -1158,7 +1172,7 @@
   const lbTitle = document.querySelector('#lb-caption strong');
   const lbNote = document.querySelector('#lb-caption span');
   const lbCounter = document.getElementById('lb-counter');
-  const lbPlace = document.getElementById('lb-place');
+
   const lbClose = document.getElementById('lb-close');
   const lbPrev = document.getElementById('lb-prev');
   const lbNext = document.getElementById('lb-next');
@@ -1248,7 +1262,7 @@
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
     const reel = reelOf(p.tag), at = reel.indexOf(cur.piece) + 1;
-    lbPlace.textContent = `${p.tag} ${at} / ${reel.length}`;
+
     lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
     lb.setAttribute('aria-label', `${p.title}, photo viewer`);
     lbLive.textContent = `${p.title}, ${at} of ${reel.length} in ${p.tag}` + (p.photos.length > 1 ? `, photo ${cur.photo + 1} of ${p.photos.length}` : '');
