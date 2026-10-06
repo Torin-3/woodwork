@@ -153,7 +153,7 @@
   #work-others a:hover { background: var(--ink); color: var(--ground); }
   .morph-cv { position: absolute; pointer-events: none; }
   .morphing .mt { visibility: hidden; }
-  #gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 9vh 3vw; }
+  #gallery-grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: clamp(1.6rem, 3.8vh, 2.6rem) .4rem; }
   #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 10vh 3vw; }
   .piece { position: relative; display: block; --c: var(--ink); --cink: var(--ground); }
   .piece .thumb img { width: 100%; height: auto; }
@@ -163,6 +163,7 @@
   .piece .thumb.alt .thumb-b { opacity: 1; }
   .thumb.noimg { aspect-ratio: 3 / 2; display: grid; place-items: center; }
   .thumb.noimg img { display: none; }
+  .thumb.noimg .ext { display: none; }
   .thumb.noimg::after { content: "photo on its way"; font-weight: 700; font-size: .875rem; text-transform: uppercase; letter-spacing: .06em; }
   .piece .bar { display: flex; justify-content: space-between; align-items: baseline; gap: 1.5rem; border-top: 4px solid var(--ink); margin-top: 1rem; padding-top: .9rem; transition: border-color var(--dur-fb) var(--ease-fast); }
   .piece:hover .bar { border-top-color: var(--xanth); }
@@ -181,11 +182,30 @@
   .piece .ct { font-size: .85rem; letter-spacing: .04em; white-space: nowrap; }
   .piece .ct.sale { font-size: .75rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: .4em .65em; background: var(--lichen); color: var(--ink); }
   .piece.collection .ct { font-size: clamp(.8rem, .95vw, 1rem); letter-spacing: .06em; text-transform: uppercase; padding: .5em .8em; background: var(--c); color: var(--cink); }
-  .piece .note { font-size: clamp(.95rem, 1.05vw, 1.1rem); line-height: 1.4; margin-top: .6rem; max-width: 40ch; }
   .tag-bowls { --c: var(--kelp); --cink: var(--ground); }
   .tag-homeware { --c: var(--xanth); --cink: var(--ink); }
   .tag-jewellery { --c: var(--lichen); --cink: var(--ink); }
   .tag-decorative { --c: var(--slate); --cink: var(--ground); }
+  .tile.size-s { grid-column: span 3; }
+  .tile.size-m { grid-column: span 4; }
+  .tile.size-b { grid-column: span 6; }
+  .tile .thumb { aspect-ratio: 3 / 2; overflow: hidden; }
+  .tile .thumb img, .tile .thumb .ext { position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
+  .tile .thumb .ext { object-fit: fill; }
+  .tile .thumb .thumb-b { background: none; }
+  .tile .thumb .ext-b { opacity: 0; transition: opacity .25s var(--ease-out3); }
+  .tile .thumb.alt .ext-b { opacity: 1; }
+  .tile .bar { border-top: 0; margin-top: .75rem; padding: 0 .8rem 0 0; align-items: center; }
+  .tile h3 { font-size: clamp(.72rem, .8vw, .85rem); letter-spacing: .05em; line-height: 1.2; text-transform: uppercase;
+             padding: 0 1em 0 0; transition: padding var(--dur-fb) var(--ease-fast); }
+  .tile.size-m h3 { font-size: clamp(1rem, 1.2vw, 1.35rem); letter-spacing: -.02em; line-height: 1; }
+  .tile.size-b h3 { font-size: clamp(1.15rem, 1.6vw, 1.75rem); letter-spacing: -.025em; line-height: 1; }
+  .tile h3::before { content: ""; float: left; width: .62em; height: .62em; margin: .2em 0 0 -1em; background: var(--xanth);
+                     opacity: 0; transition: opacity var(--dur-fb) var(--ease-fast); }
+  .tile.size-m h3::before, .tile.size-b h3::before { margin-top: .1em; }
+  .tile:hover h3 { padding: 0 0 0 1em; }
+  .tile:hover h3::before { opacity: 1; }
+  .tile .ct.sale { font-size: .62rem; }
 
   #about { padding: 16vh var(--pad); }
   .about-inner { display: grid; grid-template-columns: 1.15fr .85fr; gap: 6vw; align-items: start; }
@@ -260,6 +280,8 @@
     .cta a:hover { border-bottom-color: var(--ink); }
     .cta a.etsy:hover { background: var(--lichen); color: var(--ink); }
     .piece:hover .bar, .piece.collection:hover .bar { border-top-color: var(--ink); }
+    .tile h3, .tile:hover h3 { padding: 0; }
+    .tile:hover h3::before { opacity: 0; }
     #work-others a:hover { background: var(--c); color: var(--cink); }
     .lb-btn:hover { background: var(--ground); }
     #lb-close:hover { background: var(--ground); color: var(--ink); border-color: transparent; }
@@ -311,7 +333,6 @@
            justify-items: center; gap: .8rem 2rem; white-space: nowrap; }
     .cta a.etsy { grid-column: 1 / -1; order: 3; }
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 8vh 0; }
-    #gallery-grid { gap: 7vh 3vw; }
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
     .lb-cap { gap: .8rem 1rem; }
     #lb-caption span { font-size: .85rem; margin-top: .35rem; }
@@ -336,9 +357,7 @@
     .t2 { top: auto; bottom: 14vh; right: var(--pad); left: auto; padding: 0; margin: 0; }
     .hero-chrome { position: absolute; left: 0; right: 0; bottom: 0; z-index: 4;
                    background: none; padding: 1.5vh var(--pad) 1.5vh; }
-    #gallery-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8vh 3vw; }
-    .piece .bar { margin-top: .7rem; padding-top: .6rem; }
-    .piece .note { margin-top: .4rem; }
+    .piece.collection .bar { margin-top: .7rem; padding-top: .6rem; }
     #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 8vh 3vw; }
     .about-inner { grid-template-columns: 1.15fr .85fr; gap: 5vw; }
     #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 100vh;
@@ -356,8 +375,13 @@
     .lb-btn { --sq: 2.2rem; }
     .lb-actions { font-size: .76rem; gap: .5rem 1rem; justify-content: space-between; align-items: center; }
   }
-  @media (max-width: 620px) and (max-height: 520px) {
-    #gallery-grid { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 700px) and (min-height: 521px) {
+    #gallery-grid:not(.cats) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .tile.size-s, .tile.size-m { grid-column: span 1; }
+    .tile.size-b, .tile.size-m.m-end { grid-column: span 2; }
+    .tile.size-m:not(.m-end) h3 { font-size: .72rem; letter-spacing: .05em; line-height: 1.2; }
+    .tile.size-m:not(.m-end) h3::before { margin-top: .2em; }
+    .tile.size-m.m-end h3 { font-size: clamp(1.15rem, 1.6vw, 1.75rem); letter-spacing: -.025em; }
   }
   @media (max-width: 700px), (max-height: 520px) and (max-width: 1100px) and (pointer: coarse) {
     #contact .contact-body { display: block; }
@@ -618,12 +642,13 @@
       vh = screenH();
       maxScroll = Math.max(0, document.documentElement.scrollHeight - Math.max(vh, innerHeight));
       narrow = matchMedia('(max-width: 900px)').matches;
-      const lefts = [...new Set(tracks.filter(t => t.grid).map(t => t.el.offsetLeft))].sort((a, b) => a - b);
+      const rows = new Map();
+      for (const t of tracks) if (t.grid) { const k = t.el.offsetTop; if (!rows.has(k)) rows.set(k, []); rows.get(k).push(t); }
+      for (const r of rows.values()) {
+        r.sort((a, b) => a.el.offsetLeft - b.el.offsetLeft);
+        r.forEach((t, i) => { t.col = i; t.side = r.length < 2 ? 0 : i === 0 ? -1 : i === r.length - 1 ? 1 : 0; });
+      }
       for (const t of tracks) {
-        if (t.grid) {
-          t.col = lefts.indexOf(t.el.offsetLeft);
-          t.side = lefts.length < 2 ? 0 : t.col === 0 ? -1 : t.col === lefts.length - 1 ? 1 : 0;
-        }
         const top = docTop(t.el), lag = t.col * .03 * vh;
         t.start = top - vh + lag;
         t.end = Math.min(top - LAND * vh + lag, maxScroll);
@@ -933,26 +958,76 @@
     return card;
   }
   const forSale = pc => typeof pc.etsy === 'string' && /^https:\/\//.test(pc.etsy);
-  function pieceCard(piece, pi) {
-    const card = baseCard();
+  function rowPlan(n) {
+    const rows = [];
+    for (let left = n, big = false; left > 0; big = !big) { const k = Math.min(left, big ? 2 : 4); rows.push(k); left -= k; }
+    if (rows.length > 1 && rows[rows.length - 1] === 1) rows.splice(-2, 2, ...(rows[rows.length - 2] === 2 ? [3] : [3, 2]));
+    return rows.flatMap(r => Array.from({ length: r }, (_, i) => r === 4 ? 's' : r === 3 ? (i === 2 ? 'e' : 'm') : 'b'));
+  }
+  const PHONE = '(max-width: 700px) and (min-height: 521px)';
+  const TILE = {
+    s: { cls: ['size-s'], sizes: `${PHONE} 46vw, 23vw` },
+    m: { cls: ['size-m'], sizes: `${PHONE} 46vw, 31vw` },
+    e: { cls: ['size-m', 'm-end'], sizes: `${PHONE} 92vw, 31vw`, big: true },
+    b: { cls: ['size-b'], sizes: `${PHONE} 92vw, 46vw`, big: true },
+  };
+  function extendBackdrop(im) {
+    const prev = im.previousElementSibling;
+    if (prev && prev.matches('canvas.ext')) prev.remove();
+    const w = im.naturalWidth, h = im.naturalHeight;
+    if (!w || !h || Math.abs(w / h / 1.5 - 1) <= 0.005) return;
+    const cv = document.createElement('canvas'), x = cv.getContext('2d');
+    if (!x) return;
+    const tall = w / h < 1.5, W = tall ? Math.round(h * 1.5) : w, H = tall ? h : Math.round(w / 1.5);
+    const dx = Math.round((W - w) / 2), dy = Math.round((H - h) / 2);
+    cv.width = W; cv.height = H;
+    cv.className = im.classList.contains('thumb-b') ? 'ext ext-b' : 'ext';
+    cv.setAttribute('aria-hidden', 'true');
+    x.drawImage(im, dx, dy, w, h);
+    if (tall) {
+      x.drawImage(cv, dx + 1, dy, 1, h, 0, dy, dx + 1, h);
+      x.drawImage(cv, dx + w - 2, dy, 1, h, dx + w - 1, dy, W - dx - w + 1, h);
+    } else {
+      x.drawImage(cv, dx, dy + 1, w, 1, dx, 0, w, dy + 1);
+      x.drawImage(cv, dx, dy + h - 2, w, 1, dx, dy + h - 1, w, H - dy - h + 1);
+    }
+    im.before(cv);
+  }
+  function pieceCard(piece, pi, size) {
+    const card = baseCard(), T = TILE[size] || TILE.s;
+    card.classList.add('tile', ...T.cls);
+    const set = n => srcsetFor(n) + (T.big ? bigFor(n) : '');
+    const first = esc(piece.photos[0]);
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><img src="${imgSrc(esc(piece.photos[0]))}" srcset="${srcsetFor(esc(piece.photos[0]))}" sizes="(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px" alt="" width="1600" height="1067" loading="lazy"></div>
+        <div class="thumb"><img src="${imgSrc(first)}" srcset="${set(first)}" sizes="${T.sizes}" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
           <h3><a href="#${esc(pieceSlug(piece))}">${esc(piece.title)}</a></h3>
-          <span class="cts">${forSale(piece) ? '<span class="ct sale">For sale</span>' : ''}${piece.photos.length > 1 ? `<span class="ct">${piece.photos.length} photos</span>` : ''}</span>
+          ${forSale(piece) ? '<span class="cts"><span class="ct sale">For sale</span></span>' : ''}
         </div>
-        <p class="note">${esc(piece.note)}</p>
       </div>`;
+    const cover = card.querySelector('.thumb img');
+    cover.addEventListener('load', () => extendBackdrop(cover));
+    cover.addEventListener('error', e => {
+      if (!/-1600\.webp$/i.test(cover.currentSrc)) return;
+      e.stopImmediatePropagation();
+      noBig.add(piece.photos[0]);
+      cover.srcset = srcsetFor(first);
+    });
     if (piece.photos.length > 1 && matchMedia('(hover: hover) and (pointer: fine)').matches) {
       const thumb = card.querySelector('.thumb');
       let alt = null;
       card.addEventListener('mouseenter', () => {
         if (!alt) {
-          const n = esc(piece.photos[1]), sizes = '(max-width: 820px) 90vw, (max-width: 1200px) 44vw, 420px';
-          thumb.insertAdjacentHTML('beforeend', `<img class="thumb-b" src="${imgSrc(n)}" srcset="${srcsetFor(n)}" sizes="${sizes}" alt="" width="1600" height="1067">`);
+          const n = esc(piece.photos[1]);
+          thumb.insertAdjacentHTML('beforeend', `<img class="thumb-b" src="${imgSrc(n)}" srcset="${set(n)}" sizes="${T.sizes}" alt="" width="1600" height="1067">`);
           alt = thumb.querySelector('.thumb-b');
-          alt.addEventListener('error', () => alt.remove(), { once: true });
+          alt.addEventListener('load', () => extendBackdrop(alt));
+          alt.addEventListener('error', () => {
+            if (/-1600\.webp$/i.test(alt.currentSrc)) { noBig.add(piece.photos[1]); alt.srcset = srcsetFor(n); return; }
+            const pb = alt.previousElementSibling; if (pb && pb.matches('canvas.ext')) pb.remove();
+            alt.remove();
+          });
         }
         const show = () => { if (card.matches(':hover')) thumb.classList.add('alt'); };
         if (alt.complete) show(); else alt.addEventListener('load', show, { once: true });
@@ -999,7 +1074,12 @@
       : `${PIECES.filter(pc => pc.tag === curCat).length} pieces. Pick one for a closer look.`;
     const frag = document.createDocumentFragment();
     if (curCat === null) CATS.forEach(t => frag.appendChild(catCard(t)));
-    else PIECES.forEach((pc, pi) => { if (pc.tag === curCat) frag.appendChild(pieceCard(pc, pi)); });
+    else {
+      const members = [];
+      PIECES.forEach((pc, pi) => { if (pc.tag === curCat) members.push(pi); });
+      const plan = rowPlan(members.length);
+      members.forEach((pi, i) => frag.appendChild(pieceCard(PIECES[pi], pi, plan[i])));
+    }
     if (mode === 'enter') {
       [...frag.children].slice(0, 6).forEach(c => {
         const im = c.querySelector('.thumb img');
