@@ -940,7 +940,7 @@
   const workSub = document.querySelector('#work .section-sub');
   let curCat = null;
   const BASE_TITLE = document.title;
-  const viewTitle = () => curCat ? `${curCat} — ${BASE_TITLE}` : BASE_TITLE;
+  const viewTitle = () => curCat ? `${curCat} | ${BASE_TITLE}` : BASE_TITLE;
   const tagClass = t => 'tag-' + slug(t);
 
   function baseCard() {
@@ -1293,7 +1293,7 @@
     setBehind(true);
     const h = '#' + pieceSlug(PIECES[pi]);
     try { if (inPieceEntry()) history.replaceState(PIECE_STATE, '', h); else history.pushState(PIECE_STATE, '', h); } catch (e) {}
-    document.title = `${PIECES[pi].title} — ${BASE_TITLE}`;
+    document.title = `${PIECES[pi].title} | ${BASE_TITLE}`;
     requestAnimationFrame(() => lbClose.focus());
   }
   function closeLightbox(viaHistory, focusTarget) {
@@ -1402,7 +1402,7 @@
   }
   function syncPiece() {
     const p = PIECES[cur.piece];
-    document.title = `${p.title} — ${BASE_TITLE}`;
+    document.title = `${p.title} | ${BASE_TITLE}`;
     try { history.replaceState(PIECE_STATE, '', '#' + pieceSlug(p)); } catch (e) {}
   }
   function neighbour(dir) {

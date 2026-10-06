@@ -142,7 +142,7 @@ const PIECES = [
     note: "Elm and Oak pendants, hung on a leather cord.",
     tag: "Jewellery",
     etsy: "https://torinemdesigns.etsy.com",
-    photos: ["16.1.jpg", "16.2.jpg", "16.3.jpg"],
+    photos: ["16.4.jpg", "16.2.jpg", "16.3.jpg"],
   },
   {
     title: "Elm Bangle",
