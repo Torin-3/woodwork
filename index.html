@@ -5,20 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Hand-turned wooden bowls, homeware and jewellery | TEMDesign</title>
 <link rel="canonical" href="https://torin-3.github.io/woodwork/">
-<meta name="description" content="Hand-turned wooden bowls, homeware, jewellery and decorative pieces, made on the lathe in a workshop in Fife, Scotland. Most pieces are one-offs. Wood is sustainably sourced where possible.">
+<meta name="description" content="Hand-turned wooden bowls, homeware, jewellery and decorative pieces, made on the lathe in a workshop in Fife, Scotland. Most pieces are one-offs.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="TEMDesign, hand-turned wooden bowls, homeware and jewellery in Fife, Scotland">
 <meta property="og:description" content="Hand-turned bowls, homeware, jewellery and decorative pieces, made on the lathe in Fife, Scotland.">
-<meta property="og:image" content="https://torin-3.github.io/woodwork/hero/14.1-960.jpg">
+<meta property="og:image" content="https://torin-3.github.io/woodwork/hero/hand-turned-oak-bowl-960.jpg">
 <meta property="og:image:width" content="960">
 <meta property="og:image:height" content="640">
 <meta property="og:image:alt" content="A hand-turned oak bowl with a clean taper down to a narrow foot.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 <meta name="p:domain_verify" content="83834553f194f9127ad4e61206f0baca"/>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://torin-3.github.io/woodwork/#website","url":"https://torin-3.github.io/woodwork/","name":"TEMDesign","alternateName":"TEM Design","publisher":{"@id":"https://torin-3.github.io/woodwork/#business"}},{"@type":"Organization","@id":"https://torin-3.github.io/woodwork/#business","name":"TEM Design","alternateName":"TEMDesign","url":"https://torin-3.github.io/woodwork/","logo":"https://torin-3.github.io/woodwork/logo/logo-500.png","email":"TEMDesign@proton.me","founder":{"@type":"Person","name":"Torin Ellis-Morton"},"address":{"@type":"PostalAddress","addressRegion":"Fife","addressCountry":"GB"},"sameAs":["https://torinemdesigns.etsy.com"]}]}</script>
 <meta name="theme-color" content="#F0F0EE">
-<link rel="preload" as="image" fetchpriority="high" media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" imagesizes="100vw">
-<link rel="preload" as="image" fetchpriority="high" media="not all and (max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" imagesizes="(max-aspect-ratio: 3/2) 150vh, 100vw">
+<link rel="preload" as="image" fetchpriority="high" media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/hand-turned-oak-bowl-phone-600.jpg 600w, hero/hand-turned-oak-bowl-phone-900.jpg 900w, hero/hand-turned-oak-bowl-phone-1200.jpg 1200w" imagesizes="100vw">
+<link rel="preload" as="image" fetchpriority="high" media="not all and (max-width: 1100px) and (max-aspect-ratio: 4/5)" imagesrcset="hero/hand-turned-oak-bowl-960.jpg 960w, hero/hand-turned-oak-bowl-1600.jpg 1600w" imagesizes="(max-aspect-ratio: 3/2) 150vh, 100vw">
 <link rel="icon" type="image/png" sizes="32x32" href="logo/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="logo/favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="logo/favicon-512.png">
@@ -460,8 +461,8 @@
 <header id="hero">
   <div class="plate">
     <picture>
-      <source media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" srcset="hero/14.1-phone-600.jpg 600w, hero/14.1-phone-900.jpg 900w, hero/14.1-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
-      <img class="photo" src="hero/14.1-1600.jpg" srcset="hero/14.1-960.jpg 960w, hero/14.1-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
+      <source media="(max-width: 1100px) and (max-aspect-ratio: 4/5)" srcset="hero/hand-turned-oak-bowl-phone-600.jpg 600w, hero/hand-turned-oak-bowl-phone-900.jpg 900w, hero/hand-turned-oak-bowl-phone-1200.jpg 1200w" sizes="100vw" width="1120" height="3857">
+      <img class="photo" src="hero/hand-turned-oak-bowl-1600.jpg" srcset="hero/hand-turned-oak-bowl-960.jpg 960w, hero/hand-turned-oak-bowl-1600.jpg 1600w" sizes="(max-aspect-ratio: 3/2) 150vh, 100vw" width="1600" height="1067" alt="A hand-turned oak bowl with a clean taper down to a narrow foot." fetchpriority="high">
     </picture>
     <h1 aria-label="TEM Design"><span class="tier t1" aria-hidden="true">TEM</span><span class="tier t2" aria-hidden="true">Design</span></h1>
   </div>
@@ -921,9 +922,10 @@
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const PHOTO_CAT = {};
-  PIECES.forEach(pc => pc.photos.forEach(n => { PHOTO_CAT[n] = pc.tag; }));
-  const fileFor = name => PHOTO_DIR + (PHOTO_CAT[name] ? encodeURIComponent(PHOTO_CAT[name]) + '-webp/' : '') + name.replace(/\.(jpe?g|png|webp)$/i, '');
+  const pageFor = pc => `${slug(pc.tag)}/${pieceSlug(pc)}/`;
+  const PHOTO_AT = {};
+  PIECES.forEach(pc => pc.photos.forEach(n => { PHOTO_AT[n] = pageFor(pc); }));
+  const fileFor = name => PHOTO_DIR + (PHOTO_AT[name] || '') + name.replace(/\.(jpe?g|png|webp)$/i, '');
   const srcsetFor = name => `${fileFor(name)}-480.webp 480w, ${fileFor(name)}-960.webp 960w`;
   const imgSrc = name => `${fileFor(name)}-960.webp`;
   const noBig = new Set();
@@ -1002,7 +1004,7 @@
       <div class="slide">
         <div class="thumb"><img src="${imgSrc(first)}" srcset="${set(first)}" sizes="${T.sizes}" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
-          <h3><a href="#${esc(pieceSlug(piece))}">${esc(piece.title)}</a></h3>
+          <h3><a href="${esc(pageFor(piece))}">${esc(piece.title)}</a></h3>
           ${forSale(piece) ? '<span class="cts"><span class="ct sale">For sale</span></span>' : ''}
         </div>
       </div>`;
@@ -1045,7 +1047,7 @@
       <div class="slide">
         <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="${esc(coverPiece.alt || '')}" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
-          <h3><a href="#${esc(slug(tag))}" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
+          <h3><a href="${esc(slug(tag))}/" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
           <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
         </div>
       </div>`;
@@ -1312,7 +1314,7 @@
     if (f && typeof f.focus === 'function' && document.contains(f)) f.focus(focusTarget ? { preventScroll: true } : undefined);
   }
   function cardLinkFor(pi) {
-    const h = '#' + pieceSlug(PIECES[pi]);
+    const h = pageFor(PIECES[pi]);
     return [...grid.querySelectorAll('h3 a')].find(a => a.getAttribute('href') === h) || null;
   }
   lbImg.addEventListener('error', () => {
