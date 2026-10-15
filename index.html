@@ -703,7 +703,7 @@
       const pl = parseFloat(cs.paddingLeft) || 0, pr = parseFloat(cs.paddingRight) || 0;
       const pt = parseFloat(cs.paddingTop) || 0, pb = parseFloat(cs.paddingBottom) || 0;
       const cw = photo.offsetWidth - pl - pr, ch = photo.offsetHeight - pt - pb;
-      const phone = /14\.1-phone-/.test(photo.currentSrc || '');
+      const phone = /-phone-\d+\.jpg$/.test(photo.currentSrc || '');
       const nw = photo.naturalWidth || (phone ? 1120 : 1600), nh = photo.naturalHeight || (phone ? 3857 : 1067);
       let sx = cw / nw, sy = ch / nh, ox = 0, oy = 0;
       if (cs.objectFit === 'cover' || cs.objectFit === 'contain') {
@@ -799,7 +799,7 @@
       if (v !== tt || introT !== tp || dirty) { paint(introT, v); tt = v; tp = introT; dirty = false; }
       if (!navIn) {
         bar(G.strip && introT >= at(.85));
-        if (introT >= at(2.4)) showNav(true);
+        if (introT >= at(1.6)) showNav(true);
       }
       return playing || v !== goal;
     }
@@ -847,8 +847,23 @@
     card.className = 'piece m';
     return card;
   }
+  let lastScroll = -1e9, tappedAt = -1e9;
+  addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
+  document.addEventListener('click', e => { if (performance.now() - tappedAt < 700) { e.preventDefault(); e.stopPropagation(); } }, true);
   function wireCard(card, onOpen) {
     card.querySelector('.thumb img').addEventListener('error', e => e.target.closest('.thumb').classList.add('noimg'));
+    const open = onOpen || (() => { location.href = card.querySelector('h3 a').href; });
+    let down = null;
+    card.addEventListener('pointerdown', e => {
+      down = e.pointerType === 'touch' && e.isPrimary && performance.now() - lastScroll > 150 ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
+    });
+    card.addEventListener('pointercancel', () => { down = null; });
+    card.addEventListener('pointerup', e => {
+      const d = down; down = null;
+      if (!d || e.pointerType !== 'touch' || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 10 || performance.now() - d.t > 700 || lastScroll > d.t) return;
+      tappedAt = performance.now();
+      open();
+    });
     if (onOpen) card.addEventListener('click', e => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
