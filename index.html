@@ -64,10 +64,9 @@
 
   a:focus-visible, button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   #work:focus, #work:focus-visible { outline: none; }
-  #lightbox :focus-visible, #contact :focus-visible { outline-color: var(--ground); }
+  #contact :focus-visible { outline-color: var(--ground); }
   .skip-link { position: absolute; left: 16px; top: -56px; z-index: 600; background: var(--ink); color: var(--ground); padding: 10px 18px; font-weight: 700; font-size: .875rem; transition: top .2s; }
   .skip-link:focus { top: 0; }
-  .vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
   nav { position: sticky; top: 0; z-index: 100; background: var(--ground); border-bottom: 2px solid var(--ink); }
   .nav-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 14px var(--pad); }
@@ -132,10 +131,9 @@
   @media (prefers-reduced-motion: no-preference) { .js .m:not(.m-live) { opacity: 0; } }
   .m-off .m, .m-off .m > .slide { opacity: 1 !important; transform: none !important; }
 
-  .nav-links a, .cta a, #lb-coll, #work-others a { transition: border-color var(--dur-fb) var(--ease-fast), background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
-  .nav-links a.shop, .cta a.etsy, #contact .cta a, .lb-btn, #lb-act { transition: background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
-  .nav-links a:active, .cta a:active, .lb-btn:active, #lb-coll:active, #lb-act:active,
-  #work-back button:active, #work-others a:active, .piece h3 a:active { translate: 0 1px; transition: translate 90ms var(--ease-fast); }
+  .nav-links a, .cta a, #work-others a { transition: border-color var(--dur-fb) var(--ease-fast), background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
+  .nav-links a.shop, .cta a.etsy, #contact .cta a { transition: background-color var(--dur-fb) var(--ease-fast), color var(--dur-fb) var(--ease-fast); }
+  .nav-links a:active, .cta a:active, #work-back button:active, #work-others a:active, .piece h3 a:active { translate: 0 1px; transition: translate 90ms var(--ease-fast); }
 
   section { scroll-margin-top: calc(var(--navh) - 1px); }
   #work, #about, #contact { overflow-x: clip; }
@@ -232,48 +230,6 @@
 
   footer { padding: 4rem var(--pad) 3rem; font-size: .9rem; border-top: 4px solid var(--ink); }
 
-  #lightbox { --lbh: 66vh;
-              position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 200; background: var(--ink); color: var(--ground);
-              display: grid; grid-template-rows: auto 1fr auto; padding: var(--space-4) var(--pad) var(--space-5); overflow: hidden;
-              translate: 0 100%; visibility: hidden; transition: translate .5s var(--ease-in), visibility 0s linear .5s; }
-  #lightbox.open { translate: 0 0; visibility: visible; transition: translate .7s var(--ease-glide); }
-  .lb-top { position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; gap: var(--space-3); }
-  #lb-home { color: var(--ground); }
-  #lb-home img { width: 28px; height: 28px; }
-  .lb-stage { position: relative; display: flex; align-items: end; justify-content: center; min-height: 0; container-type: size; }
-  .lb-frame { position: relative; min-width: 0; flex: 1 1 auto; width: 100%; }
-  #lb-img { max-width: 100%; max-height: var(--lbh); max-height: min(var(--lbh), 100cqh); width: auto; height: auto; margin: 0 auto; display: block; }
-  #lightbox.noimg #lb-img { visibility: hidden; }
-  #lightbox.noimg .lb-frame::after { content: "photo on its way"; position: absolute; left: 0; right: 0; top: 50%; translate: 0 -50%; text-align: center; font-size: .85rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
-  .lb-foot { width: 100%; min-width: 0; }
-  .lb-controls { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); margin: var(--space-4) 0 var(--space-3); }
-  .lb-btn { --sq: 3.2rem; display: grid; place-items: center; flex: none; width: var(--sq); height: var(--sq); padding: 0;
-            background: var(--ground); color: var(--ink); user-select: none; }
-  .lb-btn svg { display: block; width: calc(var(--sq) * .58); height: auto; overflow: visible; }
-  #lb-next svg { scale: -1 1; }
-  .lb-btn:hover { background: var(--xanth); }
-  #lb-close { border: 3px solid transparent; }
-  #lb-close:hover { background: var(--ink); color: var(--ground); border-color: var(--ground); }
-  #lightbox.single .lb-controls { display: none; }
-  .lb-cap { display: grid; grid-template-columns: 1fr auto; grid-template-areas: "cap act"; gap: var(--space-3) var(--space-6);
-            align-items: end; border-top: 4px solid var(--ground); padding-top: var(--space-3); }
-  #lb-caption { grid-area: cap; min-width: 0; }
-  .lb-actions { grid-area: act; display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-5); font-weight: 700;
-                font-size: clamp(.9rem, 1.05vw, 1.1rem); text-transform: uppercase; letter-spacing: .02em; white-space: nowrap; }
-  #lb-coll { position: relative; border-bottom: 3px solid var(--ground); padding-bottom: .15em; }
-  #lb-coll:hover { border-bottom-color: var(--xanth); }
-  #lb-act { padding: .55em .9em; background: var(--ground); color: var(--ink); }
-  #lb-act:hover { background: var(--xanth); }
-  #lb-act.buy { background: var(--lichen); }
-  #lb-act.buy:hover { background: var(--ground); }
-  #lb-caption strong { display: block; font-size: clamp(1.8rem, 3.2vw, 3.4rem); letter-spacing: -.035em; line-height: .95; }
-  #lb-caption span { display: block; font-size: clamp(1rem, 1.15vw, 1.2rem); margin-top: var(--space-2); max-width: 60ch; }
-  #lb-counter { font-size: .85rem; font-weight: 700; letter-spacing: .06em;
-                background: var(--ground); color: var(--ink);
-                padding: .5em .8em; white-space: nowrap; }
-  #lb-counter:empty { display: none; }
-  .lb-out { position: absolute; margin: 0; max-width: none; max-height: none; pointer-events: none; }
-
   @media (hover: none) {
     .nav-links a:hover { border-bottom-color: transparent; }
     .nav-links a.active { border-bottom-color: var(--ink); }
@@ -284,21 +240,13 @@
     .tile h3, .tile:hover h3 { padding: 0; }
     .tile:hover h3::before { opacity: 0; }
     #work-others a:hover { background: var(--c); color: var(--cink); }
-    .lb-btn:hover { background: var(--ground); }
-    #lb-close:hover { background: var(--ground); color: var(--ink); border-color: transparent; }
-    #lb-coll:hover { border-bottom-color: var(--ground); }
-    #lb-act:hover { background: var(--ground); } #lb-act.buy:hover { background: var(--lichen); }
   }
   @media (pointer: coarse) {
-    .nav-links a, .hero-chrome .cta a:not(.etsy), #lb-coll, #work-back button { position: relative; }
-    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #lb-coll::before, #work-back button::before {
+    .nav-links a, .hero-chrome .cta a:not(.etsy), #work-back button { position: relative; }
+    .nav-links a::before, .hero-chrome .cta a:not(.etsy)::before, #work-back button::before {
       content: ""; position: absolute; top: -12px; right: -6px; bottom: -12px; left: -6px; }
     .cta a.etsy, #contact .cta a { position: relative; }
     .cta a.etsy::before, #contact .cta a::before { content: ""; position: absolute; top: -4px; right: 0; bottom: -4px; left: 0; }
-    #lb-close, .lb-btn, #lb-act { position: relative; }
-    #lb-close::before, .lb-btn::before, #lb-act::before { content: ""; position: absolute; top: -8px; right: -7px; bottom: -8px; left: -7px; }
-    #lb-close::before { top: -11px; right: -10px; bottom: -11px; left: -10px; }
-    #lb-coll::before { top: -14px; bottom: -14px; }
     .logo { position: relative; }
     .logo::before { content: ""; position: absolute; top: -12px; right: -6px; bottom: -15px; left: -6px; }
     #work-others a::before { content: ""; position: absolute; top: -5px; right: 0; bottom: -5px; left: 0; }
@@ -335,9 +283,6 @@
     .cta a.etsy { grid-column: 1 / -1; order: 3; }
     #gallery-grid.cats { grid-template-columns: 1fr; gap: 8vh 0; }
     .about-inner { grid-template-columns: 1fr; gap: 6vh; }
-    .lb-cap { gap: .8rem 1rem; }
-    #lb-caption span { font-size: .85rem; margin-top: .35rem; }
-    #lightbox { --lbh: 56vh; }
   }
   @media (max-width: 1100px) and (max-height: 520px) {
     h1 { padding: 2vh var(--pad) 1vh; }
@@ -361,20 +306,7 @@
     .piece.collection .bar { margin-top: .7rem; padding-top: .6rem; }
     #gallery-grid.cats { grid-template-columns: 1fr 1fr; gap: 8vh 3vw; }
     .about-inner { grid-template-columns: 1.15fr .85fr; gap: 5vw; }
-    #lightbox { padding: .6rem var(--pad) .7rem; --lbh: 100vh;
-                grid-template-columns: minmax(0, 1fr) minmax(13rem, 32%); grid-template-rows: auto minmax(0, 1fr); gap: .5rem 1.4rem; }
-    .lb-top { grid-column: 1 / -1; }
-    .lb-stage { grid-column: 1; grid-row: 2; }
-    .lb-foot { grid-column: 2; grid-row: 2; align-self: end; }
-    #lb-home img { width: 20px; height: 20px; }
     .logo { font-size: .8rem; }
-    .lb-controls { margin: 0 0 .55rem; }
-    .lb-cap { padding-top: .5rem; border-top-width: 3px; grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .7rem; }
-    #lb-caption strong { font-size: 1.3rem; }
-    #lb-caption span { font-size: .78rem; margin-top: .3rem; }
-    #lb-counter { font-size: .72rem; padding: .3em .55em; }
-    .lb-btn { --sq: 2.2rem; }
-    .lb-actions { font-size: .76rem; gap: .5rem 1rem; justify-content: space-between; align-items: center; }
   }
   @media (max-width: 700px) and (min-height: 521px) {
     #gallery-grid:not(.cats) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -396,18 +328,6 @@
     #contact h2 { font-size: min(9vw, 16vh); max-width: none; }
     #contact p { margin: 4vh 0 5vh; max-width: 60ch; }
     #contact .cta { flex-direction: row; justify-content: flex-start; align-items: center; gap: 1rem; }
-  }
-  @media (max-width: 700px) and (min-height: 521px) {
-    #lightbox { --lbh: 58vh; }
-    .lb-frame { width: calc(100% + 2 * var(--pad)); margin: 0 calc(-1 * var(--pad)); }
-    #lb-img { width: 100%; max-height: var(--lbh); max-height: min(var(--lbh), 100cqh); object-fit: contain; }
-    .lb-controls { margin: .9rem 0 .85rem; }
-    .lb-btn { --sq: 3rem; }
-
-    .lb-cap { grid-template-columns: 1fr; grid-template-areas: "cap" "act"; gap: .9rem; }
-    .lb-actions { justify-content: space-between; align-items: center; }
-    #lb-act { padding: .85em 1.1em; }
-    #lb-coll { order: 1; margin-left: auto; }
   }
   @media (max-width: 360px) {
 
@@ -523,28 +443,6 @@
   <span>© <span id="year"></span> Torin Ellis-Morton</span>
 </footer>
 
-<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
-  <div class="lb-top">
-    <a class="logo" id="lb-home" href="#" aria-label="TEM Design home"><img src="logo/logo-128.png" width="128" height="128" alt=""><span>TEMDesign</span></a>
-    <button type="button" id="lb-close" class="lb-btn" aria-label="Close photo viewer"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M5.5 5.5l13 13M18.5 5.5l-13 13" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt"/></svg></button>
-  </div>
-  <div class="lb-stage">
-    <div class="lb-frame"><img id="lb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3C/svg%3E" width="1600" height="1067" alt=""></div>
-  </div>
-  <div class="lb-foot">
-    <div class="lb-controls">
-      <button type="button" id="lb-prev" class="lb-btn" aria-label="Previous photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
-      <div id="lb-counter"></div>
-      <button type="button" id="lb-next" class="lb-btn" aria-label="Next photo"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M23 12H5M13.5 3.5L5 12l8.5 8.5" fill="none" stroke="currentColor" stroke-width="4.6" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="8"/></svg></button>
-    </div>
-    <div class="lb-cap">
-      <div id="lb-caption"><strong></strong><span></span></div>
-      <div class="lb-actions"><a id="lb-coll" href="#work"><span class="mt"></span></a><a id="lb-act" href="https://torinemdesigns.etsy.com" hidden></a></div>
-    </div>
-    <p id="lb-live" class="vh" aria-live="polite"></p>
-  </div>
-</div>
-
 <script src="photos.js"></script>
 <script>
   document.getElementById('year').textContent = new Date().getFullYear();
@@ -574,6 +472,10 @@
     const h = hashText();
     return CATS.find(t => slug(t) === h) || null;
   };
+  const pageFor = pc => `${slug(pc.tag)}/${pieceSlug(pc)}/`;
+  const pageLink = pc => pageFor(pc) + (location.protocol === 'file:' ? 'index.html' : '');
+  const forwardTo = pieceFromHash();
+  if (forwardTo !== -1) location.replace(pageLink(PIECES[forwardTo]));
 
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   const navEntry = (performance.getEntriesByType && performance.getEntriesByType('navigation')[0]) || {};
@@ -633,7 +535,6 @@
   const docTop = el => { let y = 0; for (let n = el; n; n = n.offsetParent) y += n.offsetTop; return y; };
 
   const heroEl = document.getElementById('hero');
-  let viewerOpen = false;
 
   const Motion = (() => {
     const tracks = [];
@@ -686,7 +587,7 @@
       let busy = false;
       try {
         if (hero && hero.frame(now, dt, y, idle)) busy = true;
-        const warm = !viewerOpen && !(hero && hero.opening);
+        const warm = !(hero && hero.opening);
         for (const t of tracks) {
           let goal = target(t, y);
           if (goal <= 0) t.held = false;
@@ -922,7 +823,6 @@
 
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  const pageFor = pc => `${slug(pc.tag)}/${pieceSlug(pc)}/`;
   const PHOTO_AT = {};
   PIECES.forEach(pc => pc.photos.forEach(n => { PHOTO_AT[n] = pageFor(pc); }));
   const fileFor = name => PHOTO_DIR + (PHOTO_AT[name] || '') + name.replace(/\.(jpe?g|png|webp)$/i, '');
@@ -930,9 +830,6 @@
   const imgSrc = name => `${fileFor(name)}-960.webp`;
   const noBig = new Set();
   const bigFor = name => noBig.has(name) ? '' : `, ${fileFor(name)}-1600.webp 1600w`;
-
-  const BLANK = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='3' height='2'%3E%3C/svg%3E";
-  const softFail = im => im.addEventListener('error', () => { im.src = BLANK; }, { once: true });
 
   const grid = document.getElementById('gallery-grid');
   const workBack = document.getElementById('work-back');
@@ -952,7 +849,7 @@
   }
   function wireCard(card, onOpen) {
     card.querySelector('.thumb img').addEventListener('error', e => e.target.closest('.thumb').classList.add('noimg'));
-    card.addEventListener('click', e => {
+    if (onOpen) card.addEventListener('click', e => {
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
       e.preventDefault();
       onOpen();
@@ -1004,7 +901,7 @@
       <div class="slide">
         <div class="thumb"><img src="${imgSrc(first)}" srcset="${set(first)}" sizes="${T.sizes}" alt="" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
-          <h3><a href="${esc(pageFor(piece))}">${esc(piece.title)}</a></h3>
+          <h3><a href="${esc(pageLink(piece))}">${esc(piece.title)}</a></h3>
           ${forSale(piece) ? '<span class="cts"><span class="ct sale">For sale</span></span>' : ''}
         </div>
       </div>`;
@@ -1036,7 +933,7 @@
       });
       card.addEventListener('mouseleave', () => thumb.classList.remove('alt'));
     }
-    return wireCard(card, () => openLightbox(pi, 0));
+    return wireCard(card, null);
   }
   function catCard(tag) {
     const members = PIECES.filter(pc => pc.tag === tag);
@@ -1069,7 +966,7 @@
     const heading = curCat === null ? 'Gallery' : curCat;
     const relabel = mode === 'enter' && booted && workH2.textContent !== heading;
     workH2.textContent = heading;
-    if (!viewerOpen) document.title = viewTitle();
+    document.title = viewTitle();
     if (relabel) workH2.animate([{ opacity: 0, scale: 1.06, filter: 'blur(.06em)' }, { opacity: 1, scale: 1, filter: 'blur(0em)' }], { duration: 500, easing: OUT3 });
     workSub.textContent = curCat === null
       ? 'Four collections. Pick one to see the pieces.'
@@ -1247,220 +1144,6 @@
   morphArrow(workBack.querySelector('button'));
   renderGrid('scroll');
 
-  const lb = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lb-img');
-  const lbFrame = lb.querySelector('.lb-frame');
-
-  const lbTitle = document.querySelector('#lb-caption strong');
-  const lbNote = document.querySelector('#lb-caption span');
-  const lbCounter = document.getElementById('lb-counter');
-
-  const lbClose = document.getElementById('lb-close');
-  const lbPrev = document.getElementById('lb-prev');
-  const lbNext = document.getElementById('lb-next');
-  const lbColl = document.getElementById('lb-coll');
-  const lbCollText = lbColl.querySelector('.mt');
-  const resetColl = morphArrow(lbColl);
-  const lbAct = document.getElementById('lb-act');
-  const lbLive = document.getElementById('lb-live');
-  const lbHome = document.getElementById('lb-home');
-  let cur = { piece: 0, photo: 0 };
-  let openedPiece = 0;
-  let lastFocus = null;
-
-  const PIECE_STATE = { tem: 'piece' };
-  const inPieceEntry = () => !!(history.state && history.state.tem === 'piece');
-
-  const reelOf = tag => PIECES.reduce((a, pc, i) => { if (pc.tag === tag) a.push(i); return a; }, []);
-  const reelPhotos = tag => reelOf(tag).reduce((n, i) => n + PIECES[i].photos.length, 0);
-
-  const behind = [...document.body.children].filter(e => e !== lb && !/^(SCRIPT|NOSCRIPT)$/.test(e.tagName));
-  const setBehind = on => behind.forEach(e => { e.inert = on; });
-
-  function openLightbox(pi, idx) {
-    cur = { piece: pi, photo: idx };
-    openedPiece = pi;
-    const arriving = !lb.classList.contains('open');
-    if (arriving) lastFocus = document.activeElement;
-    stepRun++;
-    lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
-    lbImg.getAnimations().forEach(a => a.cancel());
-    lbImg.style.translate = '';
-    lb.classList.toggle('single', reelPhotos(PIECES[pi].tag) < 2);
-    viewerOpen = true;
-    render();
-    lb.classList.add('open');
-    if (arriving && !reduceMotion) viewerArrive();
-    document.body.style.overflow = 'hidden';
-    setBehind(true);
-    const h = '#' + pieceSlug(PIECES[pi]);
-    try { if (inPieceEntry()) history.replaceState(PIECE_STATE, '', h); else history.pushState(PIECE_STATE, '', h); } catch (e) {}
-    document.title = `${PIECES[pi].title} | ${BASE_TITLE}`;
-    requestAnimationFrame(() => lbClose.focus());
-  }
-  function closeLightbox(viaHistory, focusTarget) {
-    if (!lb.classList.contains('open')) return;
-    lb.classList.remove('open');
-    viewerOpen = false; Motion.kick();
-    resetColl();
-    document.body.style.overflow = '';
-    setBehind(false);
-    document.title = viewTitle();
-    if (!viaHistory) {
-      if (inPieceEntry()) { try { history.back(); } catch (e) {} }
-      else if (pieceFromHash() !== -1) { try { history.replaceState(null, '', curCat ? '#' + slug(curCat) : location.pathname + location.search); } catch (e) {} }
-    }
-    const f = focusTarget || (cur.piece !== openedPiece ? cardLinkFor(cur.piece) : null) || lastFocus;
-    if (f && typeof f.focus === 'function' && document.contains(f)) f.focus(focusTarget ? { preventScroll: true } : undefined);
-  }
-  function cardLinkFor(pi) {
-    const h = pageFor(PIECES[pi]);
-    return [...grid.querySelectorAll('h3 a')].find(a => a.getAttribute('href') === h) || null;
-  }
-  lbImg.addEventListener('error', () => {
-    const name = PIECES[cur.piece].photos[cur.photo];
-    if (/-1600\.webp$/i.test(lbImg.currentSrc) && !noBig.has(name)) { noBig.add(name); render(); return; }
-    lbImg.removeAttribute('srcset'); lbImg.src = BLANK; lb.classList.add('noimg');
-  });
-  const ahead = new Map();
-  lbImg.addEventListener('load', () => {
-    if (!viewerOpen || lb.classList.contains('noimg')) return;
-    [1, -1].forEach(dir => {
-      const n = neighbour(dir), name = PIECES[n.piece].photos[n.photo];
-      if (ahead.has(name) || (n.piece === cur.piece && n.photo === cur.photo)) return;
-      const im = new Image();
-      im.sizes = lbImg.sizes; im.srcset = srcsetFor(name) + bigFor(name);
-      ahead.set(name, im);
-      if (ahead.size > 8) ahead.delete(ahead.keys().next().value);
-    });
-  });
-  function render() {
-    const p = PIECES[cur.piece];
-    lb.classList.remove('noimg');
-    lbImg.srcset = srcsetFor(p.photos[cur.photo]) + bigFor(p.photos[cur.photo]);
-    lbImg.sizes = '(max-width: 700px) 100vw, 92vw';
-    lbImg.src = imgSrc(p.photos[cur.photo]);
-    lbImg.alt = p.photos.length > 1 ? `${p.alt || p.title}, photo ${cur.photo + 1}` : (p.alt || p.title);
-    lbTitle.textContent = p.title;
-    lbNote.textContent = p.note;
-    const reel = reelOf(p.tag), at = reel.indexOf(cur.piece) + 1;
-
-    lbCounter.textContent = p.photos.length > 1 ? `${cur.photo + 1} / ${p.photos.length}` : '';
-    lb.setAttribute('aria-label', `${p.title}, photo viewer`);
-    lbLive.textContent = `${p.title}, ${at} of ${reel.length} in ${p.tag}` + (p.photos.length > 1 ? `, photo ${cur.photo + 1} of ${p.photos.length}` : '');
-    lbCollText.textContent = p.tag;
-    lbColl.setAttribute('aria-label', `Back to ${p.tag}`);
-    lbColl.href = '#' + slug(p.tag);
-    const etsy = forSale(p) ? p.etsy : '';
-    lbAct.hidden = !etsy;
-    lbAct.classList.toggle('buy', !!etsy);
-    if (etsy) {
-      lbAct.textContent = 'Buy on Etsy';
-      lbAct.href = etsy; lbAct.target = '_blank'; lbAct.rel = 'noopener';
-      lbAct.setAttribute('aria-label', 'Buy on Etsy (opens in a new tab)');
-    } else {
-      lbAct.textContent = '';
-    }
-  }
-  const SPRING = 'linear(0, 0.034, 0.117, 0.227, 0.345, 0.463, 0.572, 0.668, 0.751, 0.819, 0.874, 0.917, 0.95, 0.974, 0.991, 1.002, 1.009, 1.013, 1.015, 1.015, 1.014, 1.013, 1.011, 1.009, 1.007, 1.006, 1.004, 1.003, 1.002, 1.002, 1)';
-  const STEP_EASE = CSS.supports('animation-timing-function', SPRING) ? SPRING : 'cubic-bezier(.16, 1, .3, 1)';
-  const STEP_MS = 485;
-  let stepRun = 0;
-  function slidePhotos(dir, paint) {
-    lbFrame.querySelectorAll('.lb-out').forEach(o => o.remove());
-    lbImg.getAnimations().forEach(a => a.cancel());
-    const run = ++stepRun;
-    const shown = !lb.classList.contains('noimg') && lbImg.currentSrc && lbImg.currentSrc !== BLANK;
-    let out = null;
-    if (shown) {
-      const f = lbFrame.getBoundingClientRect(), r = lbImg.getBoundingClientRect();
-      out = document.createElement('img');
-      out.className = 'lb-out'; out.alt = ''; out.setAttribute('aria-hidden', 'true');
-      out.src = lbImg.currentSrc;
-      Object.assign(out.style, { left: `${r.left - f.left}px`, top: `${r.top - f.top}px`, width: `${r.width}px`, height: `${r.height}px` });
-      lbFrame.appendChild(out);
-    }
-    const w = lb.clientWidth;
-    paint();
-    lbImg.style.translate = `${dir * w}px 0`;
-    const ready = lbImg.decode ? lbImg.decode().catch(() => {}) : Promise.resolve();
-    Promise.race([ready, new Promise(r => setTimeout(r, 300))]).then(() => {
-      if (run !== stepRun) return;
-      lbImg.style.translate = '';
-      const opts = { duration: STEP_MS, easing: STEP_EASE };
-      lbImg.animate([{ translate: `${dir * w}px 0` }, { translate: '0 0' }], opts);
-      if (out) out.animate([{ translate: '0 0' }, { translate: `${-dir * w}px 0` }], { ...opts, fill: 'forwards' })
-        .finished.then(() => out.remove(), () => out.remove());
-    });
-  }
-  function riseIn(el, delay, duration) {
-    if (el) el.animate([{ opacity: 0, translate: '0 24px' }, { opacity: 1, translate: '0 0' }], { duration, delay, easing: OUT3, fill: 'backwards' });
-  }
-  function viewerArrive() {
-    lbImg.animate([{ filter: 'blur(10px)', scale: 1.05 }, { filter: 'blur(0px)', scale: 1 }], { duration: 600, delay: 200, easing: OUT3, fill: 'backwards' });
-    riseIn(lbTitle, 350, 450);
-    riseIn(lbNote, 430, 450);
-    riseIn(lb.querySelector('.lb-actions'), 430, 450);
-  }
-  function syncPiece() {
-    const p = PIECES[cur.piece];
-    document.title = `${p.title} | ${BASE_TITLE}`;
-    try { history.replaceState(PIECE_STATE, '', '#' + pieceSlug(p)); } catch (e) {}
-  }
-  function neighbour(dir) {
-    const reel = reelOf(PIECES[cur.piece].tag);
-    let piece = cur.piece, photo = cur.photo + dir;
-    if (photo < 0 || photo >= PIECES[piece].photos.length) {
-      piece = reel[(reel.indexOf(piece) + dir + reel.length) % reel.length];
-      photo = dir > 0 ? 0 : PIECES[piece].photos.length - 1;
-    }
-    return { piece, photo };
-  }
-  function step(dir) {
-    const { piece, photo } = neighbour(dir);
-    if (piece === cur.piece && photo === cur.photo) return;
-    const moved = piece !== cur.piece;
-    cur = { piece, photo };
-    if (reduceMotion) render(); else slidePhotos(dir, render);
-    if (moved) {
-      syncPiece();
-      if (!reduceMotion) { riseIn(lbTitle, 0, 350); riseIn(lbNote, 0, 350); }
-    }
-  }
-  lbPrev.addEventListener('click', e => { e.stopPropagation(); step(-1); });
-  lbNext.addEventListener('click', e => { e.stopPropagation(); step(1); });
-  lbClose.addEventListener('click', () => closeLightbox());
-  lbColl.addEventListener('click', e => {
-    e.preventDefault();
-    const tag = PIECES[cur.piece].tag;
-    if (curCat !== tag) { curCat = tag; renderGrid('enter'); }
-    closeLightbox(false, workH2);
-    workSection.scrollIntoView({ block: 'start' });
-  });
-  lbHome.addEventListener('click', e => {
-    e.preventDefault();
-    closeLightbox(false, document.querySelector('nav .logo'));
-    scrollTo({ top: 0 });
-  });
-  if (matchMedia('(pointer: fine)').matches) {
-    const lbStage = lb.querySelector('.lb-stage');
-    lb.addEventListener('click', e => { if (e.target === lb || e.target === lbStage || e.target === lbFrame) closeLightbox(); });
-  }
-  document.addEventListener('keydown', e => {
-    if (!lb.classList.contains('open')) return;
-    if (e.key === 'Escape') closeLightbox();
-    if (e.key === 'ArrowLeft') step(-1);
-    if (e.key === 'ArrowRight') step(1);
-    if (e.key === 'Tab') {
-      const focusables = [lbHome, lbClose, lbPrev, lbNext, lbColl, lbAct].filter(b => b.offsetParent !== null);
-      if (!focusables.length) return;
-      const first = focusables[0], last = focusables[focusables.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-      else if (!focusables.includes(document.activeElement)) { e.preventDefault(); first.focus(); }
-    }
-  });
-
   if ('IntersectionObserver' in window) {
     const spyLinks = new Map([...document.querySelectorAll('.nav-links a[href^="#"]')].map(a => [a.getAttribute('href').slice(1), a]));
     const clearSpy = () => spyLinks.forEach(a => a.classList.remove('active'));
@@ -1485,14 +1168,7 @@
     workSection.scrollIntoView({ block: 'start' });
   }
   let landOnHeading = false;
-  const linkedPiece = pieceFromHash();
-  if (linkedPiece !== -1) {
-    curCat = PIECES[linkedPiece].tag;
-    renderGrid(false);
-    if (!inPieceEntry()) { try { history.replaceState(null, '', '#' + slug(curCat)); } catch (e) {} }
-    workSection.scrollIntoView({ block: 'start' });
-    openLightbox(linkedPiece, 0);
-  } else {
+  if (forwardTo === -1) {
     const linkedCat = catFromHash();
     const h = hashText();
     if (linkedCat) {
@@ -1505,12 +1181,7 @@
   }
   addEventListener('popstate', () => {
     const pi = pieceFromHash();
-    if (pi !== -1) {
-      if (PIECES[pi].tag !== curCat) { curCat = PIECES[pi].tag; renderGrid(false); }
-      if (!lb.classList.contains('open') || cur.piece !== pi) openLightbox(pi, 0);
-      return;
-    }
-    if (lb.classList.contains('open')) closeLightbox(true);
+    if (pi !== -1) { location.replace(pageLink(PIECES[pi])); return; }
     const ct = catFromHash(), h = hashText();
     if (!ct && h && !document.getElementById(h)) { showMoved(); return; }
     if (ct !== curCat) {
@@ -1519,7 +1190,7 @@
     }
   });
   booted = true;
-  docEl.classList.remove('arriving');
+  if (forwardTo === -1) docEl.classList.remove('arriving');
   if (landOnHeading) workH2.focus({ preventScroll: true });
 </script>
 
