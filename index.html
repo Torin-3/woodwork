@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TEMDesign</title>
+<title>Hand-turned wooden bowls, homeware and jewellery | TEMDesign</title>
+<link rel="canonical" href="https://torin-3.github.io/woodwork/">
 <meta name="description" content="Hand-turned wooden bowls, homeware, jewellery and decorative pieces, made on the lathe in a workshop in Fife, Scotland. Most pieces are one-offs. Wood is sustainably sourced where possible.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="TEMDesign, hand-turned wooden bowls, homeware and jewellery in Fife, Scotland">
@@ -938,8 +939,8 @@
   const workH2 = document.querySelector('#work .section-head h2');
   const workSub = document.querySelector('#work .section-sub');
   let curCat = null;
-  const BASE_TITLE = document.title;
-  const viewTitle = () => curCat ? `${curCat} | ${BASE_TITLE}` : BASE_TITLE;
+  const HOME_TITLE = document.title, BASE_TITLE = 'TEMDesign';
+  const viewTitle = () => curCat ? `${curCat} | ${BASE_TITLE}` : HOME_TITLE;
   const tagClass = t => 'tag-' + slug(t);
 
   function baseCard() {
@@ -1037,12 +1038,12 @@
   }
   function catCard(tag) {
     const members = PIECES.filter(pc => pc.tag === tag);
-    const cover = (members.find(pc => pc.cover) || members[0]).photos[0];
+    const coverPiece = members.find(pc => pc.cover) || members[0], cover = coverPiece.photos[0];
     const card = baseCard();
     card.classList.add('collection', tagClass(tag));
     card.innerHTML = `
       <div class="slide">
-        <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="" width="1600" height="1067" loading="lazy"></div>
+        <div class="thumb"><img src="${imgSrc(esc(cover))}" srcset="${srcsetFor(esc(cover))}" sizes="(max-width: 820px) 90vw, 46vw" alt="${esc(coverPiece.alt || '')}" width="1600" height="1067" loading="lazy"></div>
         <div class="bar">
           <h3><a href="#${esc(slug(tag))}" aria-label="Open the ${esc(tag)} collection">${esc(tag)}</a></h3>
           <span class="ct">${members.length} piece${members.length > 1 ? 's' : ''}</span>
@@ -1337,7 +1338,7 @@
     lbImg.srcset = srcsetFor(p.photos[cur.photo]) + bigFor(p.photos[cur.photo]);
     lbImg.sizes = '(max-width: 700px) 100vw, 92vw';
     lbImg.src = imgSrc(p.photos[cur.photo]);
-    lbImg.alt = `${p.title}, photo ${cur.photo + 1}`;
+    lbImg.alt = p.photos.length > 1 ? `${p.alt || p.title}, photo ${cur.photo + 1}` : (p.alt || p.title);
     lbTitle.textContent = p.title;
     lbNote.textContent = p.note;
     const reel = reelOf(p.tag), at = reel.indexOf(cur.piece) + 1;
